@@ -3,9 +3,38 @@
     "description": "Synchronize Exact orders to Magento to display them as regular orders",
     "type": "magento2-module",
     "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.1",
+        "magento/framework": "^103.0",
+        "magento/module-customer": "^103.0",
+        "magento/module-sales": "^103.0",
+        "magento/module-store": "^101.1",
+        "symfony/console": "^4.4|^5.4"
+    },
+    "require-dev": {
+        "bitexpert/phpstan-magento": "^0.30.1",
+        "phpstan/extension-installer": "^1.3",
+        "youwe/coding-standard-magento2": "^2.0.0",
+        "youwe/testing-suite": "^2.17"
+    },
+    "repositories": {
+        "magento": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    },
     "autoload": {
+        "files": [
+            "src/registration.php"
+        ],
         "psr-4": {
-            "JcElectronics\\Magento2ExactOrders\\": "src/"
+            "JcElectronics\\ExactOrders\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JcElectronics\\ExactOrders\\Test\\": "tests/"
         }
     },
     "authors": [
@@ -14,18 +43,8 @@
             "email": "a.miedema@jc-electronics.nl"
         }
     ],
-    "minimum-stability": "stable",
-    "repositories": {
-        "magento": {
-            "type": "composer",
-            "url": "https://repo.magento.com/"
-        }
-    },
-    "require-dev": {
-        "bitexpert/phpstan-magento": "^0.30.1",
-        "phpstan/extension-installer": "^1.3",
-        "youwe/coding-standard-magento2": "^2.0.0",
-        "youwe/testing-suite": "^2.17"
+    "conflict": {
+        "dealer4dealer/module-substituteorders": "*"
     },
     "config": {
         "sort-packages": true,
@@ -49,10 +68,8 @@
             "/phpmd.xml",
             "/package.json",
             "/.eslintrc.json",
-            "/.eslintignore"
+            "/.eslintignore",
+            "/tests"
         ]
-    },
-    "require": {
-        "magento/framework": "^103.0"
     }
 }

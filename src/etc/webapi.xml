@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd"
+>
+    <!-- GET endpoints-->
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/:id">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magento_Sales::actions_view" />
+        </resources>
+    </route>
+
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/magentoorder/:id">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magento_Sales::actions_view" />
+        </resources>
+    </route>
+
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/magento-increment-id/:id">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getByIncrementId"/>
+        <resources>
+            <resource ref="Magento_Sales::actions_view" />
+        </resources>
+    </route>
+
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/extorder/:id">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getByExternalId"/>
+        <resources>
+            <resource ref="Magento_Sales::actions_view" />
+        </resources>
+    </route>
+
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/search">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magento_Sales::actions_view" />
+        </resources>
+    </route>
+
+    <!-- POST / PUT endpoints -->
+    <route method="POST" url="/V1/dealer4dealer-substituteorders/order">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magento_Sales::create" />
+        </resources>
+    </route>
+
+    <route method="PUT" url="/V1/dealer4dealer-substituteorders/order">
+        <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magento_Sales::create" />
+        </resources>
+    </route>
+</routes>
