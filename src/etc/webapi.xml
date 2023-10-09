@@ -2,6 +2,7 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd"
 >
+    <!-- ORDERS -->
     <!-- GET endpoints-->
     <route method="GET" url="/V1/dealer4dealer-substituteorders/order/:id">
         <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="getById"/>
@@ -50,6 +51,94 @@
         <service class="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" method="save"/>
         <resources>
             <resource ref="Magento_Sales::create" />
+        </resources>
+    </route>
+
+    <!-- INVOICES -->
+    <!-- GET endpoints-->
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/order/:id/invoices">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="getByOrder" />
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/invoice/:id">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/invoice/extorder/:id">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="getByExternalId"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/invoice/magento-increment-id/:id">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="getByIncrementId"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/invoice/search">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+
+    <!-- POST / PUT endpoints -->
+    <route method="POST" url="/V1/dealer4dealer-substituteorders/invoice">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+    <route method="PUT" url="/V1/dealer4dealer-substituteorders/invoice">
+        <service class="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Magento_Sales::sales_invoice" />
+        </resources>
+    </route>
+
+    <!-- SHIPMENTS -->
+    <!-- GET endpoints-->
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/shipment/:id">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="Magento_Sales::shipment" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/shipment/extorder/:id">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="getByExternalId"/>
+        <resources>
+            <resource ref="Magento_Sales::shipment" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/shipment/magento-increment-id/:id">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="getByIncrementId"/>
+        <resources>
+            <resource ref="Magento_Sales::shipment" />
+        </resources>
+    </route>
+    <route method="GET" url="/V1/dealer4dealer-substituteorders/shipment/search">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="getList"/>
+        <resources>
+            <resource ref="Magento_Sales::shipment" />
+        </resources>
+    </route>
+
+    <!-- POST / PUT endpoints -->
+    <route method="POST" url="/V1/dealer4dealer-substituteorders/shipment">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Dealer4Dealer_SubstituteOrders::Shipment_save"/>
+        </resources>
+    </route>
+    <route method="PUT" url="/V1/dealer4dealer-substituteorders/shipment">
+        <service class="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="Dealer4Dealer_SubstituteOrders::Shipment_update"/>
         </resources>
     </route>
 </routes>

@@ -63,7 +63,7 @@ class OrderRepository implements OrderRepositoryInterface
             );
         }
 
-        return $this->normalizeOrder($order);
+        return $this->normalize($order);
     }
 
     /**
@@ -86,7 +86,7 @@ class OrderRepository implements OrderRepositoryInterface
             );
         }
 
-        return $this->normalizeOrder(
+        return $this->normalize(
             current($collection->getItems())
         );
     }
@@ -111,7 +111,7 @@ class OrderRepository implements OrderRepositoryInterface
             );
         }
 
-        return $this->normalizeOrder(
+        return $this->normalize(
             current($collection->getItems())
         );
     }
@@ -127,7 +127,7 @@ class OrderRepository implements OrderRepositoryInterface
 
         return array_reduce(
             $collection->getItems(),
-            fn (OrderInterface $order) => $this->normalizeOrder($order),
+            fn (OrderInterface $order) => $this->normalize($order),
             []
         );
     }
@@ -166,12 +166,12 @@ class OrderRepository implements OrderRepositoryInterface
         return $externalOrder;
     }
 
-    private function normalizeOrder(
+    private function normalize(
         OrderInterface $order
     ): ExternalOrderInterface {
         /** @var ExternalOrderInterface $externalOrder */
         $externalOrder = $this->externalOrderFactory->create();
-        $externalOrder->normalizeOrder($order);
+        $externalOrder->normalize($order);
 
         return $externalOrder;
     }

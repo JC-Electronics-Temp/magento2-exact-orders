@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Invoice;
 
-interface ExternalOrderInterface
+interface ExternalInvoiceInterface
 {
     public function getItems(): array;
 
-    public function normalize(Order $order): self;
+    public function normalize(Invoice $invoice): self;
 
     /**
      * @param string     $key

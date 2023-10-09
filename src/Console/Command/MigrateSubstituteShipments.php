@@ -19,10 +19,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateSubstituteOrders extends Command
+class MigrateSubstituteShipments extends Command
 {
-    private const COMMAND_NAME = 'exact:migrate:orders',
-        COMMAND_DESCRIPTION    = 'Migrate all order from the original Dealer4Dealer ' .
+    private const COMMAND_NAME = 'exact:migrate:shipments',
+        COMMAND_DESCRIPTION    = 'Migrate all shipments from the original Dealer4Dealer ' .
             'substitute module that do not exist in Magento.';
 
     public function __construct(

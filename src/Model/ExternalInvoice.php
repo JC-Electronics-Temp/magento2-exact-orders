@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use Magento\Framework\DataObject;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Invoice;
 
-class ExternalOrder extends DataObject implements ExternalOrderInterface
+class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
 {
-    public function normalize(Order $order): self
+    public function normalize(Invoice $invoice): self
     {
-        $this->setData($order->getData());
+        $this->setData($invoice->getData());
 
         return $this;
     }

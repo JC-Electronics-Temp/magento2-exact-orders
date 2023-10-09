@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Shipment;
 
-interface ExternalOrderInterface
+interface ExternalShipmentInterface
 {
     public function getItems(): array;
 
-    public function normalize(Order $order): self;
+    public function normalize(Shipment $shipment): self;
 
     /**
      * @param string     $key

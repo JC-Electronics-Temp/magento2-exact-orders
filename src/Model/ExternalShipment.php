@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
 use Magento\Framework\DataObject;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Shipment;
 
-class ExternalOrder extends DataObject implements ExternalOrderInterface
+class ExternalShipment extends DataObject implements ExternalShipmentInterface
 {
-    public function normalize(Order $order): self
+    public function normalize(Shipment $shipment): self
     {
-        $this->setData($order->getData());
+        $this->setData($shipment->getData());
 
         return $this;
     }

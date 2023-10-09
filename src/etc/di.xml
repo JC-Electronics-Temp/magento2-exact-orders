@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <preference for="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\OrderRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\InvoiceRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\ShipmentRepository" />
+
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface" type="JcElectronics\ExactOrders\Model\ExternalShipment" />
+
+    <!-- Commands -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="migrateInvoices" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteInvoices</item>
+                <item name="migrateOrders" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteOrders</item>
+                <item name="migrateShipments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteShipments</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
