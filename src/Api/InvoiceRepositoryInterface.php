@@ -11,6 +11,7 @@ namespace JcElectronics\ExactOrders\Api;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Model\ResourceModel\Order\Invoice\Collection;
 
 interface InvoiceRepositoryInterface
@@ -39,9 +40,9 @@ interface InvoiceRepositoryInterface
     /**
      * @param string $id
      *
-     * @return Collection
+     * @return ExternalInvoiceInterface[]
      */
-    public function getByOrder(string $id): Collection;
+    public function getByOrder(string $id): array;
 
     /**
      * @param SearchCriteriaInterface $searchCriteria
@@ -51,9 +52,9 @@ interface InvoiceRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): array;
 
     /**
-     * @param ExternalInvoiceInterface $externalInvoice
+     * @param ExternalInvoiceInterface $invoice
      *
-     * @return ExternalInvoiceInterface
+     * @return int
      */
-    public function save(ExternalInvoiceInterface $externalInvoice): ExternalInvoiceInterface;
+    public function save(ExternalInvoiceInterface $invoice): int;
 }

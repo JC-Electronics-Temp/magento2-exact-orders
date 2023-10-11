@@ -16,6 +16,12 @@
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface" type="JcElectronics\ExactOrders\Model\ExternalShipment" />
 
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice\Item" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Address" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Item" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface" type="JcElectronics\ExactOrders\Model\AdditionalData" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
+
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>

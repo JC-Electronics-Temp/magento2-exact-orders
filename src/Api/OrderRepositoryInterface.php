@@ -11,6 +11,7 @@ namespace JcElectronics\ExactOrders\Api;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 interface OrderRepositoryInterface
 {
@@ -23,10 +24,14 @@ interface OrderRepositoryInterface
 
     /**
      * @param string $incrementId
+     * @param bool   $normalize
      *
-     * @return ExternalOrderInterface
+     * @return ExternalOrderInterface|OrderInterface
      */
-    public function getByIncrementId(string $incrementId): ExternalOrderInterface;
+    public function getByIncrementId(
+        string $incrementId,
+        bool $normalize = true
+    ): ExternalOrderInterface|OrderInterface;
 
     /**
      * @param string $id
@@ -43,9 +48,9 @@ interface OrderRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): array;
 
     /**
-     * @param ExternalOrderInterface $externalOrder
+     * @param ExternalOrderInterface $order
      *
-     * @return ExternalOrderInterface
+     * @return int
      */
-    public function save(ExternalOrderInterface $externalOrder): ExternalOrderInterface;
+    public function save(ExternalOrderInterface $order): int;
 }

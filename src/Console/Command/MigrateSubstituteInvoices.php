@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
-use JcElectronics\ExactOrders\Model\ExternalOrderFactory;
+use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
+use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
+use JcElectronics\ExactOrders\Model\ExternalInvoiceFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Console\Cli;
-use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\OrderRepositoryInterface as MagentoInvoiceRepositoryInterface;
 use Magento\Sales\Model\Order\ItemFactory;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Order\AddressFactory;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Model\ResourceModel\Order as OrderResourceModel;
+use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResourceModel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,11 +26,11 @@ class MigrateSubstituteInvoices extends Command
             'substitute module that do not exist in Magento.';
 
     public function __construct(
-        private readonly OrderRepositoryInterface $orderRepository,
-        private readonly ExternalOrderFactory $externalOrderFactory,
-        private readonly OrderResourceModel $orderResourceModel,
+        private readonly InvoiceRepositoryInterface $invoiceRepository,
+        private readonly ExternalInvoiceFactory $externalInvoiceFactory,
+        private readonly InvoiceResourceModel $invoiceResourceModel,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly MagentoOrderRepositoryInterface $magentoOrderRepository,
+        private readonly MagentoInvoiceRepositoryInterface $magentoInvoiceRepository,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -45,43 +45,43 @@ class MigrateSubstituteInvoices extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
-        foreach ($this->fetchAllSubstituteOrders() as $orderData) {
-            if ($this->hasMagentoOrder($orderData)) {
+        foreach ($this->fetchAllSubstituteInvoices() as $invoiceData) {
+            if ($this->hasMagentoInvoice($invoiceData)) {
                 $output->writeln(
-                    __('The order with ID %1 already exists', $orderData['magento_order_id'])
+                    __('The invoice with ID %1 already exists', $invoiceData['magento_invoice_id'])
                 );
 
                 continue;
             }
 
-            /** @var ExternalOrderInterface $externalOrder */
-            $externalOrder = $this->externalOrderFactory->create($orderData);
-            $this->orderRepository->save($externalOrder);
+            /** @var ExternalInvoiceInterface $externalInvoice */
+            $externalInvoice = $this->externalInvoiceFactory->create($invoiceData);
+            $this->invoiceRepository->save($externalInvoice);
         }
 
         return Cli::RETURN_SUCCESS;
     }
 
-    private function fetchAllSubstituteOrders(): array
+    private function fetchAllSubstituteInvoices(): array
     {
-        $connection = $this->orderResourceModel->getConnection();
+        $connection = $this->invoiceResourceModel->getConnection();
         $query      = $connection->select()
-            ->from($this->orderResourceModel->getTable('dealer4dealer_order'));
+            ->from($this->invoiceResourceModel->getTable('dealer4dealer_invoice'));
 
         return $connection->fetchAll($query);
     }
 
-    private function hasMagentoOrder(array $substituteOrder): bool
+    private function hasMagentoInvoice(array $substituteInvoice): bool
     {
-        if (!$substituteOrder['magento_increment_id']) {
+        if (!$substituteInvoice['magento_increment_id']) {
             return false;
         }
 
-        $collection = $this->magentoOrderRepository->getList(
+        $collection = $this->magentoInvoiceRepository->getList(
             $this->searchCriteriaBuilder
                 ->addFilter(
-                    OrderInterface::INCREMENT_ID,
-                    $substituteOrder['magento_increment_id']
+                    InvoiceInterface::INCREMENT_ID,
+                    $substituteInvoice['magento_increment_id']
                 )
                 ->create()
         );
