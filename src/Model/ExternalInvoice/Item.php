@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model\ExternalInvoice;
 
-use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface;
 use Magento\Framework\DataObject;
 

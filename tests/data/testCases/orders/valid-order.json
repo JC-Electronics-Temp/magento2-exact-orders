@@ -1,0 +1,95 @@
+{
+  "id": "1",
+  "magentoOrderData": {
+    "id": 4,
+    "invoices": [],
+    "customer_id": 2,
+    "base_grand_total": 150.95,
+    "grand_total":  150.95,
+    "base_subtotal": 124.75,
+    "subtotal":  124.75,
+    "state": "processing",
+    "shipping_method": "flatrate",
+    "shipping_address": {
+      "entity_id": 4,
+      "firstname": "John",
+      "lastname": "Doe",
+      "company": "Acme Inc.",
+      "street": "Test 123",
+      "postcode": "1234AA",
+      "city": "Test",
+      "country": "NL",
+      "telephone": "0612345678"
+    },
+    "billing_address":  {
+      "entity_id": 3,
+      "firstname": "John",
+      "lastname": "Doe",
+      "company": "Acme Inc.",
+      "street": "Test 123",
+      "postcode": "1234AA",
+      "city": "Test",
+      "country": "NL",
+      "telephone": "0612345678"
+    },
+    "payment": {
+      "method": "overview"
+    },
+    "base_discount_amount": 0,
+    "discount_amount": 0,
+    "order_date": "2023-01-01 01:48:59",
+    "base_tax_amount": 26.2,
+    "tax_amount": 26.2,
+    "base_shipping_amount": 0,
+    "shipping_amount": 0,
+    "items": [
+      {
+        "entity_id": 1,
+        "order_id": 4,
+        "name": "Demo Product",
+        "sku": "DEMO-1234",
+        "base_price": 50.95,
+        "price": 50.95,
+        "base_row_total": 50.95,
+        "row_total": 50.95,
+        "base_tax_amount": 24.95,
+        "tax_amount": 24.95,
+        "qty": 1,
+        "base_discount_amount": 0,
+        "discount_amount": 0
+      },
+      {
+        "entity_id": 2,
+        "order_id": 4,
+        "name": "Demo Product II",
+        "sku": "DEMO-1234",
+        "base_price": 30.49,
+        "price": 30.49,
+        "base_row_total": 30.49,
+        "row_total": 30.49,
+        "base_tax_amount": 13.12,
+        "tax_amount": 13.12,
+        "qty": 1,
+        "base_discount_amount": 0,
+        "discount_amount": 0
+      },
+      {
+        "entity_id": 3,
+        "order_id": 4,
+        "name": "Demo Product III",
+        "sku": "DEMO-1234",
+        "base_price": 48.18,
+        "price": 48.18,
+        "base_row_total": 96.36,
+        "row_total": 96.36,
+        "base_tax_amount": 31.83,
+        "tax_amount": 31.83,
+        "qty": 2,
+        "base_discount_amount": 0,
+        "discount_amount": 0
+      }
+    ],
+    "increment_id": "100001234",
+    "updated_at":  "2023-01-01 03:45:12"
+  }
+}

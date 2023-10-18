@@ -84,15 +84,17 @@ class OrderRepository implements OrderRepositoryInterface
                 ->create()
         );
 
-        if (!$collection->getItems()) {
+        $items = $collection->getItems();
+
+        if (!$items) {
             throw new LocalizedException(
                 __('No order found with the specified increment ID.')
             );
         }
 
         return $normalize
-            ? $this->normalize(current($collection->getItems()))
-            : current($collection->getItems());
+            ? $this->normalize(current($items))
+            : current($items);
     }
 
     /**
@@ -109,15 +111,15 @@ class OrderRepository implements OrderRepositoryInterface
                 ->create()
         );
 
-        if (!$collection->getItems()) {
+        $items = $collection->getItems();
+        
+        if (!$items) {
             throw new LocalizedException(
                 __('No order found with the specified external ID.')
             );
         }
 
-        return $this->normalize(
-            current($collection->getItems())
-        );
+        return $this->normalize(current($items));
     }
 
     /**
@@ -384,7 +386,7 @@ class OrderRepository implements OrderRepositoryInterface
                         $externalItem = $this->externalOrderItemFactory->create();
                         $externalItem->setData(
                             [
-                                'orderitem_id' => $item->getId(),
+                                'orderitem_id' => $item->getEntityId(),
                                 'order_id' => $item->getOrderId(),
                                 'name' => $item->getName(),
                                 'sku' => $item->getSku(),
