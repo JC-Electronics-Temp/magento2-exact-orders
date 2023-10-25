@@ -64,7 +64,9 @@ class Address extends DataObject implements AddressInterface
 
     public function getStreet(): ?string
     {
-        return $this->_getData(self::KEY_STREET);
+        $street = $this->_getData(self::KEY_STREET);
+
+        return is_array($street) ? implode(' ', $street) : $street;
     }
 
     public function setStreet(string $street): self

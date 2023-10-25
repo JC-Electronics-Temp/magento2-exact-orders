@@ -69,7 +69,7 @@ class Item extends DataObject implements ItemInterface
 
     public function setPrice(string $price): self
     {
-        $this->setData(self::KEY_PRICE, $this->formatCurrencyValue($price));
+        $this->setData(self::KEY_PRICE, $price);
 
         return $this;
     }
@@ -81,7 +81,7 @@ class Item extends DataObject implements ItemInterface
 
     public function setRowTotal(string $rowTotal): self
     {
-        $this->setData(self::KEY_ROW_TOTAL, $this->formatCurrencyValue($rowTotal));
+        $this->setData(self::KEY_ROW_TOTAL, $rowTotal);
 
         return $this;
     }
@@ -132,12 +132,5 @@ class Item extends DataObject implements ItemInterface
         $this->setData(self::KEY_DESCRIPTION, $description);
 
         return $this;
-    }
-
-    private function formatCurrencyValue(?string $value): ?string
-    {
-        return $value !== null
-            ? str_replace(',', '.', $value)
-            : null;
     }
 }

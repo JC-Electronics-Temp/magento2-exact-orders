@@ -105,48 +105,48 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
 
     public function getBaseGrandtotal(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_GRAND_TOTAL));
+        return $this->_getData(self::KEY_BASE_GRAND_TOTAL);
     }
 
     public function setBaseGrandtotal(string $grandTotal): self
     {
-        $this->setData(self::KEY_BASE_GRAND_TOTAL, $grandTotal);
+        $this->setData(self::KEY_BASE_GRAND_TOTAL, $this->formatCurrencyValue($grandTotal));
 
         return $this;
     }
 
     public function getBaseSubtotal(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_SUBTOTAL));
+        return $this->_getData(self::KEY_BASE_SUBTOTAL);
     }
 
     public function setBaseSubtotal(string $subtotal): self
     {
-        $this->setData(self::KEY_BASE_SUBTOTAL, $subtotal);
+        $this->setData(self::KEY_BASE_SUBTOTAL, $this->formatCurrencyValue($subtotal));
 
         return $this;
     }
 
     public function getGrandtotal(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_GRAND_TOTAL));
+        return $this->_getData(self::KEY_GRAND_TOTAL);
     }
 
     public function setGrandtotal(string $grandTotal): self
     {
-        $this->setData(self::KEY_GRAND_TOTAL, $grandTotal);
+        $this->setData(self::KEY_GRAND_TOTAL, $this->formatCurrencyValue($grandTotal));
 
         return $this;
     }
 
     public function getSubtotal(): ?string
     {
-        return   $this->formatCurrencyValue($this->_getData(self::KEY_SUBTOTAL));
+        return   $this->_getData(self::KEY_SUBTOTAL);
     }
 
     public function setSubtotal(string $subtotal): self
     {
-        $this->setData(self::KEY_SUBTOTAL, $subtotal);
+        $this->setData(self::KEY_SUBTOTAL, $this->formatCurrencyValue($subtotal));
 
         return $this;
     }
@@ -219,7 +219,7 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
 
     public function setBaseDiscountAmount(string $discountAmount): self
     {
-        $this->setData(self::KEY_BASE_DISCOUNT_AMOUNT, $discountAmount);
+        $this->setData(self::KEY_BASE_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
         return $this;
     }
@@ -231,7 +231,7 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
 
     public function setDiscountAmount(string $discountAmount): self
     {
-        $this->setData(self::KEY_DISCOUNT_AMOUNT, $discountAmount);
+        $this->setData(self::KEY_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
         return $this;
     }
@@ -262,36 +262,36 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
 
     public function getTaxAmount(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_TAX_AMOUNT));
+        return $this->_getData(self::KEY_TAX_AMOUNT);
     }
 
     public function setTaxAmount(string $taxAmount): self
     {
-        $this->setData(self::KEY_TAX_AMOUNT, $taxAmount);
+        $this->setData(self::KEY_TAX_AMOUNT, $this->formatCurrencyValue($taxAmount));
 
         return $this;
     }
 
     public function getBaseShippingAmount(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_SHIPPING_AMOUNT));
+        return $this->_getData(self::KEY_BASE_SHIPPING_AMOUNT);
     }
 
     public function setBaseShippingAmount(string $shippingAmount): self
     {
-        $this->setData(self::KEY_BASE_SHIPPING_AMOUNT, $shippingAmount);
+        $this->setData(self::KEY_BASE_SHIPPING_AMOUNT, $this->formatCurrencyValue($shippingAmount));
 
         return $this;
     }
 
     public function getShippingAmount(): ?string
     {
-        return $this->formatCurrencyValue($this->_getData(self::KEY_SHIPPING_AMOUNT));
+        return $this->_getData(self::KEY_SHIPPING_AMOUNT);
     }
 
     public function setShippingAmount(string $shippingAmount): self
     {
-        $this->setData(self::KEY_SHIPPING_AMOUNT, $shippingAmount);
+        $this->setData(self::KEY_SHIPPING_AMOUNT, $this->formatCurrencyValue($shippingAmount));
 
         return $this;
     }

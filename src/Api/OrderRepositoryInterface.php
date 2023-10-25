@@ -24,14 +24,10 @@ interface OrderRepositoryInterface
 
     /**
      * @param string $incrementId
-     * @param bool   $normalize
      *
-     * @return ExternalOrderInterface|OrderInterface
+     * @return ExternalOrderInterface
      */
-    public function getByIncrementId(
-        string $incrementId,
-        bool $normalize = true
-    ): ExternalOrderInterface|OrderInterface;
+    public function getByIncrementId(string $incrementId): ExternalOrderInterface;
 
     /**
      * @param string $id

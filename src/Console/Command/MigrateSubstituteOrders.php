@@ -48,18 +48,24 @@ class MigrateSubstituteOrders extends Command
         foreach ($this->fetchAllSubstituteOrders() as $orderData) {
             if ($this->hasMagentoOrder($orderData)) {
                 $output->writeln(
-                    __('The order with ID %1 already exists', $orderData['magento_order_id'])
+                    __('The order with ID %1 already exists', $orderData['magento_increment_id'])
                 );
 
                 continue;
             }
 
-            /** @var ExternalOrderInterface $externalOrder */
-            $externalOrder = $this->externalOrderFactory->create($orderData);
-            $this->orderRepository->save($externalOrder);
+            $this->processExternalOrder($orderData);
         }
 
         return Cli::RETURN_SUCCESS;
+    }
+
+    private function processExternalOrder(array $orderData): void
+    {
+        $externalOrder = $this->externalOrderFactory
+            ->create(['data' => $orderData]);
+
+        $this->orderRepository->save($externalOrder);
     }
 
     private function fetchAllSubstituteOrders(): array
@@ -67,6 +73,41 @@ class MigrateSubstituteOrders extends Command
         $connection = $this->orderResourceModel->getConnection();
         $query      = $connection->select()
             ->from($this->orderResourceModel->getTable('dealer4dealer_order'));
+
+        return array_reduce(
+            $connection->fetchAll($query),
+            function (array $carry, array $entity) {
+                $carry[] = array_merge(
+                    $entity,
+                    [
+                        'items' => $this->getOrderItems($entity['order_id']),
+                        'billing_address' => $this->getOrderAddress($entity['billing_address_id']),
+                        'shipping_address' => $this->getOrderAddress($entity['shipping_address_id']),
+                    ]
+                );
+
+                return $carry;
+            },
+            []
+        );
+    }
+
+    private function getOrderItems(int $orderId): array
+    {
+        $connection = $this->orderResourceModel->getConnection();
+        $query = $connection->select()
+            ->from($this->orderResourceModel->getTable('dealer4dealer_orderitem'))
+            ->where('order_id = ?', $orderId);
+
+        return $connection->fetchAll($query);
+    }
+
+    private function getOrderAddress(int $addressId): array
+    {
+        $connection = $this->orderResourceModel->getConnection();
+        $query = $connection->select()
+            ->from($this->orderResourceModel->getTable('dealer4dealer_orderaddress'))
+            ->where('orderaddress_id = ?', $addressId);
 
         return $connection->fetchAll($query);
     }
