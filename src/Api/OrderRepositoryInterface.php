@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Api;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Sales\Api\Data\OrderInterface;
 
 interface OrderRepositoryInterface
 {

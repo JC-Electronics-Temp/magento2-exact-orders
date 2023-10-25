@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="jcelectronics" sortOrder="800" translate="label">
+            <label>JC-Electronics</label>
+        </tab>
+        <section id="exact_orders" sortOrder="10" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+            <label>Exact Orders</label>
+            <tab>jcelectronics</tab>
+            <resource>JcElectronics_ExactOrders::config_exact</resource>
+            <group id="orders" sortOrder="10" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+                <label>Orders</label>
+                <field id="external_order_increment_id" type="select" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Create new increment ID for external orders</label>
+                    <comment><![CDATA[When importing an external order, should we create a new Magento Increment ID for the order. If set to "No" , the external order ID will be set as increment ID.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="default_statuses" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Default Order Status Mapping</label>
+                    <frontend_model>JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\OrderStatuses</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

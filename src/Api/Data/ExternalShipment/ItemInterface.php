@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data\ExternalShipment;
 
+use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
+
 interface ItemInterface
 {
     public const KEY_SHIPMENT_ITEM_ID = 'shipmentitem_id',
@@ -131,12 +133,12 @@ interface ItemInterface
     public function setDescription(string $description): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]
+     * @return AdditionalDataInterface[]
      */
     public function getAdditionalData(): array;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[] $additionalData
+     * @param AdditionalDataInterface[] $additionalData
      *
      * @return self
      */

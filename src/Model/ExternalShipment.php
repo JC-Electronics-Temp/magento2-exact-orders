@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
 use Magento\Framework\DataObject;
 
@@ -98,26 +99,26 @@ class ExternalShipment extends DataObject implements ExternalShipmentInterface
         return $this;
     }
 
-    public function getShippingAddress(): ?\JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface
+    public function getShippingAddress(): ?AddressInterface
     {
         return $this->_getData(self::KEY_SHIPPING_ADDRESS);
     }
 
     public function setShippingAddress(
-        \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $shippingAddress
+        AddressInterface $shippingAddress
     ): ExternalShipmentInterface {
         $this->setData(self::KEY_SHIPPING_ADDRESS, $shippingAddress);
 
         return $this;
     }
 
-    public function getBillingAddress(): ?\JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface
+    public function getBillingAddress(): ?AddressInterface
     {
         return $this->_getData(self::KEY_BILLING_ADDRESS);
     }
 
     public function setBillingAddress(
-        \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $billingAddress
+        AddressInterface $billingAddress
     ): ExternalShipmentInterface {
         $this->setData(self::KEY_BILLING_ADDRESS, $billingAddress);
 

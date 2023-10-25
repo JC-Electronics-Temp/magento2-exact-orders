@@ -9,11 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
-use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface;
-use Magento\Framework\DataObject;
-use Magento\Sales\Model\Order;
-
 interface ExternalInvoiceInterface
 {
     public const KEY_ID          = 'id',

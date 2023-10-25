@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data\ExternalOrder;
 
+use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
+
 interface ItemInterface
 {
     public const KEY_ORDER_ITEM_ID = 'orderitem_id',
@@ -183,12 +185,12 @@ interface ItemInterface
     public function setDiscountAmount(string $discountAmount): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]
+     * @return AdditionalDataInterface[]
      */
     public function getAdditionalData(): array;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[] $additionalData
+     * @param AdditionalDataInterface[] $additionalData
      *
      * @return self
      */

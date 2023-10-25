@@ -11,8 +11,6 @@ namespace JcElectronics\ExactOrders\Api;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Model\ResourceModel\Order\Invoice\Collection;
 
 interface InvoiceRepositoryInterface
 {

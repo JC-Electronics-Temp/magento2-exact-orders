@@ -43,9 +43,9 @@ interface ShipmentRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): array;
 
     /**
-     * @param ExternalShipmentInterface $externalShipment
+     * @param ExternalShipmentInterface $shipment
      *
      * @return int
      */
-    public function save(ExternalShipmentInterface $externalShipment): int;
+    public function save(ExternalShipmentInterface $shipment): int;
 }

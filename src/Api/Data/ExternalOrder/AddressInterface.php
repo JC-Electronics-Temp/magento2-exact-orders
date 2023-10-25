@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data\ExternalOrder;
 
+use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
+
 interface AddressInterface
 {
     public const KEY_ORDER_ADDRESS_ID = 'orderaddress_id',
@@ -118,12 +120,12 @@ interface AddressInterface
     public function setCountry(string $country): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]
+     * @return AdditionalDataInterface[]
      */
     public function getAdditionalData(): array;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[] $additionalData
+     * @param AdditionalDataInterface[] $additionalData
      *
      * @return self
      */

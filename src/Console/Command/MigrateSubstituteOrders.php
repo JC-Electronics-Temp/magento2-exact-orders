@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrderFactory;
+use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
+use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Console\Cli;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
-use Magento\Sales\Model\Order\ItemFactory;
-use Magento\Sales\Model\OrderFactory;
-use Magento\Sales\Model\Order\AddressFactory;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\ResourceModel\Order as OrderResourceModel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateSubstituteOrders extends Command
@@ -29,8 +28,8 @@ class MigrateSubstituteOrders extends Command
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly ExternalOrderFactory $externalOrderFactory,
         private readonly OrderResourceModel $orderResourceModel,
-        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly MagentoOrderRepositoryInterface $magentoOrderRepository,
+        private readonly ItemFactory $externalOrderItemFactory,
+        private readonly AddressFactory $externalOrderAddressFactory,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -39,20 +38,27 @@ class MigrateSubstituteOrders extends Command
     protected function configure(): void
     {
         $this->setDescription(self::COMMAND_DESCRIPTION);
+        $this->addOption(
+            'limit',
+            'l',
+            InputOption::VALUE_OPTIONAL,
+            'Limit the number of orders to process in one run (leave empty to process all)'
+        );
     }
 
     protected function execute(
         InputInterface $input,
         OutputInterface $output
     ): int {
-        foreach ($this->fetchAllSubstituteOrders() as $orderData) {
-            if ($this->hasMagentoOrder($orderData)) {
-                $output->writeln(
-                    __('The order with ID %1 already exists', $orderData['magento_increment_id'])
-                );
+        $substituteOrders = $this->fetchAllSubstituteOrders(
+            (int) $input->getOption('limit')
+        );
+        $output->writeln(__('Found %1 orders to process', count($substituteOrders)));
 
-                continue;
-            }
+        foreach ($substituteOrders as $orderData) {
+            $output->writeln(
+                __('Processing order %1', $orderData['magento_increment_id'])
+            );
 
             $this->processExternalOrder($orderData);
         }
@@ -68,26 +74,41 @@ class MigrateSubstituteOrders extends Command
         $this->orderRepository->save($externalOrder);
     }
 
-    private function fetchAllSubstituteOrders(): array
+    private function fetchAllSubstituteOrders(int $limit): array
     {
         $connection = $this->orderResourceModel->getConnection();
         $query      = $connection->select()
-            ->from($this->orderResourceModel->getTable('dealer4dealer_order'));
+            ->from(
+                ['do' => $this->orderResourceModel->getTable('dealer4dealer_order')]
+            )
+            ->joinLeft(
+                ['so' => $this->orderResourceModel->getTable('sales_order')],
+                'so.increment_id = do.magento_increment_id OR so.entity_id = do.magento_order_id',
+                null
+            )
+        ->where('so.increment_id IS NULL AND so.entity_id IS NULL')
+            ->where('do.magento_customer_id IS NOT NULL');
+
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
 
         return array_reduce(
             $connection->fetchAll($query),
-            function (array $carry, array $entity) {
-                $carry[] = array_merge(
-                    $entity,
-                    [
-                        'items' => $this->getOrderItems($entity['order_id']),
-                        'billing_address' => $this->getOrderAddress($entity['billing_address_id']),
-                        'shipping_address' => $this->getOrderAddress($entity['shipping_address_id']),
-                    ]
-                );
-
-                return $carry;
-            },
+            fn (array $carry, array $entity) => array_merge(
+                $carry,
+                [
+                    array_merge(
+                        $entity,
+                        [
+                            'items' => $this->getOrderItems((int)$entity['order_id']),
+                            'billing_address' => $this->getOrderAddress((int)$entity['billing_address_id']),
+                            'shipping_address' => $this->getOrderAddress((int)$entity['shipping_address_id']),
+                            'payment_method' => $entity['payment_method'] ?? 'Unknown'
+                        ]
+                    )
+                ]
+            ),
             []
         );
     }
@@ -99,34 +120,38 @@ class MigrateSubstituteOrders extends Command
             ->from($this->orderResourceModel->getTable('dealer4dealer_orderitem'))
             ->where('order_id = ?', $orderId);
 
-        return $connection->fetchAll($query);
+        return array_reduce(
+            $connection->fetchAll($query),
+            fn (array $carry, array $entity) => array_merge(
+                $carry,
+                [
+                    $this->externalOrderItemFactory->create(
+                        [
+                            'data' => array_merge(
+                                $entity,
+                                [
+                                    'additional_data' => empty($entity['additional_data'])
+                                        ? []
+                                        : json_decode($entity['additional_data'])
+                                ]
+                            )
+                        ]
+                    )
+                ]
+            ),
+            []
+        );
     }
 
-    private function getOrderAddress(int $addressId): array
+    private function getOrderAddress(int $addressId): AddressInterface
     {
         $connection = $this->orderResourceModel->getConnection();
         $query = $connection->select()
             ->from($this->orderResourceModel->getTable('dealer4dealer_orderaddress'))
             ->where('orderaddress_id = ?', $addressId);
 
-        return $connection->fetchAll($query);
-    }
-
-    private function hasMagentoOrder(array $substituteOrder): bool
-    {
-        if (!$substituteOrder['magento_increment_id']) {
-            return false;
-        }
-
-        $collection = $this->magentoOrderRepository->getList(
-            $this->searchCriteriaBuilder
-                ->addFilter(
-                    OrderInterface::INCREMENT_ID,
-                    $substituteOrder['magento_increment_id']
-                )
-                ->create()
+        return $this->externalOrderAddressFactory->create(
+            ['data' => $connection->fetchAll($query)]
         );
-
-        return count($collection->getItems()) > 0;
     }
 }
