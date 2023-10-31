@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
+
 interface ExternalOrderInterface
 {
     public const KEY_ID          = 'id',
@@ -197,31 +200,31 @@ interface ExternalOrderInterface
     public function setShippingMethod(string $shippingMethod): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface|null
+     * @return AddressInterface|null
      */
-    public function getShippingAddress(): ?\JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
+    public function getShippingAddress(): ?AddressInterface;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $shippingAddress
+     * @param AddressInterface $shippingAddress
      *
      * @return self
      */
     public function setShippingAddress(
-        \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $shippingAddress
+        AddressInterface $shippingAddress
     ): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface|null
+     * @return AddressInterface|null
      */
-    public function getBillingAddress(): ?\JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
+    public function getBillingAddress(): ?AddressInterface;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $billingAddress
+     * @param AddressInterface $billingAddress
      *
      * @return self
      */
     public function setBillingAddress(
-        \JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface $billingAddress
+        AddressInterface $billingAddress
     ): self;
 
     /**
@@ -345,12 +348,12 @@ interface ExternalOrderInterface
     public function setUpdatedAt(string $updatedAt): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface[]
+     * @return ItemInterface[]
      */
     public function getItems(): array;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface[] $items
+     * @param ItemInterface[] $items
      *
      * @return self
      */
@@ -369,12 +372,12 @@ interface ExternalOrderInterface
     public function setAdditionalData(array $additionalData): self;
 
     /**
-     * @return \JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface[]
      */
     public function getAttachments(): array;
 
     /**
-     * @param \JcElectronics\ExactOrders\Api\Data\AttachmentInterface[] $attachments
+     * @param \JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface[] $attachments
      *
      * @return self
      */

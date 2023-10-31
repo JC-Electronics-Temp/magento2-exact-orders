@@ -11,40 +11,75 @@ namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
 use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
+use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
+use JcElectronics\ExactOrders\Model\ExternalShipment\ItemFactory;
+use JcElectronics\ExactOrders\Traits\FormatExternalShipmentDataTrait;
 use JcElectronics\ExactOrders\Traits\FormatShipmentDataTrait;
-use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\ShipmentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
 use Magento\Sales\Api\ShipmentRepositoryInterface as MagentoShipmentRepositoryInterface;
 
 class ShipmentRepository implements ShipmentRepositoryInterface
 {
     use FormatShipmentDataTrait;
+    use FormatExternalShipmentDataTrait;
 
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,
         private readonly MagentoShipmentRepositoryInterface $shipmentRepository,
-        private readonly ServiceInputProcessor $serviceInputProcessor
+        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
+        private readonly ServiceInputProcessor $serviceInputProcessor,
+        private readonly ExternalShipmentFactory $externalShipmentFactory,
+        private readonly AddressFactory $externalOrderAddressFactory,
+        private readonly ItemFactory $externalShipmentItemFactory,
+        private readonly Json $serializer
     ) {
     }
 
     public function getById(string $id): ExternalShipmentInterface
     {
+        return $this->formatExternalShipmentData(
+            $this->shipmentRepository->get($id)
+        );
     }
 
     public function getByIncrementId(string $incrementId): ExternalShipmentInterface
     {
+        return $this->formatExternalShipmentData(
+            current(
+                $this->shipmentRepository->getList(
+                    $this->searchCriteriaBuilder
+                        ->addFilter(ShipmentInterface::INCREMENT_ID, $incrementId)
+                        ->create()
+                )->getItems()
+            )
+        );
     }
 
     public function getByExternalId(string $id): ExternalShipmentInterface
     {
+        return $this->formatExternalShipmentData(
+            current(
+                $this->shipmentRepository->getList(
+                    $this->searchCriteriaBuilder
+                        ->addFilter('ext_shipment_id', $id)
+                        ->create()
+                )->getItems()
+            )
+        );
     }
 
     public function getList(SearchCriteriaInterface $searchCriteria): array
     {
+        return array_map(
+            fn (ShipmentInterface $item) => $this->formatExternalShipmentData($item),
+            $this->shipmentRepository->getList($searchCriteria)->getItems()
+        );
     }
 
     public function save(

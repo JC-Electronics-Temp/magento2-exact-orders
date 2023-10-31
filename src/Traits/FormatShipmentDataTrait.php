@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Traits;
 
 use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalShipment\ItemInterface;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\Data\ShipmentInterface;
 use Magento\Sales\Model\Order;
@@ -31,6 +30,7 @@ trait FormatShipmentDataTrait
                 'increment_id' => $shipmentData['increment_id'],
                 'updated_at' => $shipmentData['updated_at'],
                 'items' => $this->formatShipmentItems($shipmentData['items'], $order->getAllItems()),
+                'tracks' => $this->formatShipmentTracks($shipmentData['tracking']),
                 'billing_address_id' => $order->getBillingAddressId(),
                 'shipping_address_id' => $order->getShippingAddressId()
             ],
@@ -72,6 +72,18 @@ trait FormatShipmentDataTrait
                 return $carry;
             },
             []
+        );
+    }
+
+    private function formatShipmentTracks(array $shipment): array
+    {
+        return array_map(
+            fn (array $track) => [
+                'weight' => $shipment['weight'],
+                'track_number' => $track['code'],
+                'carrier_code' => $track['name']
+            ],
+            $this->serializer->unserialize($shipment['tracking'] ?? '[]')
         );
     }
 

@@ -20,7 +20,13 @@
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Address" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Item" />
     <preference for="JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface" type="JcElectronics\ExactOrders\Model\AdditionalData" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface" type="JcElectronics\ExactOrders\Model\ExternalAttachment" />
+
     <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\Invoice\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Invoice\Attachment" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\Order\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Order\Attachment" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\Shipment\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Shipment\Attachment" />
+    <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
 
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
@@ -29,6 +35,17 @@
                 <item name="migrateInvoices" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteInvoices</item>
                 <item name="migrateOrders" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteOrders</item>
                 <item name="migrateShipments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteShipments</item>
+                <item name="migrateAttachments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateAttachments</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="JcElectronics\ExactOrders\Console\Command\MigrateAttachments">
+        <arguments>
+            <argument name="entityTypes" xsi:type="array">
+                <item name="invoice" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Invoice\AttachmentInterface</item>
+                <item name="order" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Order\AttachmentInterface</item>
+                <item name="shipment" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Shipment\AttachmentInterface</item>
             </argument>
         </arguments>
     </type>

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright JC-Electronics. All rights reserved.
- * https://www.jc-electronics.nl
+ * Copyright Youwe. All rights reserved.
+ * https://www.youweagency.com
  */
 
 declare(strict_types=1);
@@ -10,30 +10,24 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use Magento\Framework\DataObject;
+use Magento\Framework\DataObject\IdentityInterface;
+use Magento\Framework\Model\AbstractModel;
 
-class Attachment extends DataObject implements AttachmentInterface
+class Attachment extends AbstractModel implements AttachmentInterface, IdentityInterface
 {
-    public function getFileData(): string
+    public function getIdentities(): array
     {
-        return $this->_getData(self::KEY_FILE_DATA);
+        return [$this->_cacheTag . '_' . $this->getId()];
     }
 
-    public function setFileData(string $fileData): AttachmentInterface
+    public function getFileName(): string
     {
-        $this->setData(self::KEY_FILE_DATA, $fileData);
-
-        return $this;
+        return $this->_getData(self::KEY_FILE_NAME);
     }
 
-    public function getName(): string
+    public function setFileName(string $fileName): AttachmentInterface
     {
-        return $this->_getData(self::KEY_NAME);
-    }
-
-    public function setName(string $name): AttachmentInterface
-    {
-        $this->setData(self::KEY_NAME, $name);
+        $this->setData(self::KEY_FILE_NAME, $fileName);
 
         return $this;
     }

@@ -9,7 +9,6 @@ use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalInvoiceFactory;
 use JcElectronics\ExactOrders\Model\ExternalInvoice\ItemFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Console\Cli;
 use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResourceModel;
 use Symfony\Component\Console\Command\Command;

@@ -9,7 +9,7 @@ use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalShipmentFactory;
 use JcElectronics\ExactOrders\Model\ExternalShipment\ItemFactory;
-use Magento\Framework\Api\SearchCriteriaBuilder;
+use JcElectronics\ExactOrders\Model\ExternalShipment\TrackFactory;
 use Magento\Framework\Console\Cli;
 use Magento\Sales\Model\ResourceModel\Order\Shipment as ShipmentResourceModel;
 use Symfony\Component\Console\Command\Command;

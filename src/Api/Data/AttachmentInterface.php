@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright JC-Electronics. All rights reserved.
- * https://www.jc-electronics.nl
+ * Copyright Youwe. All rights reserved.
+ * https://www.youweagency.com
  */
 
 declare(strict_types=1);
@@ -11,30 +11,22 @@ namespace JcElectronics\ExactOrders\Api\Data;
 
 interface AttachmentInterface
 {
-    public const KEY_FILE_DATA = 'file_data',
-        KEY_NAME = 'name';
+    public const KEY_ID = 'attachment_id',
+        KEY_FILE_NAME   = 'file';
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getFileData(): string;
+    public function getId();
 
     /**
-     * @param string $fileData
+     * @param mixed $value
      *
-     * @return self
+     * @return $this
      */
-    public function setFileData(string $fileData): self;
+    public function setId($value);
 
-    /**
-     * @return string
-     */
-    public function getName(): string;
+    public function getFileName(): string;
 
-    /**
-     * @param string $name
-     *
-     * @return self
-     */
-    public function setName(string $name): self;
+    public function setFileName(string $fileName): self;
 }
