@@ -17,9 +17,7 @@ interface AttachmentRepositoryInterface
 {
     public function get(int $id): AttachmentInterface;
 
-    public function getByEntity(int $id): AttachmentInterface;
-
-    public function delete(int $id): void;
+    public function delete(AttachmentInterface $attachment): void;
 
     public function save(AttachmentInterface $attachment): AttachmentInterface;
 

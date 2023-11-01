@@ -19,7 +19,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Result\PageFactory;
 
-class Invoice implements HttpGetActionInterface
+class Order implements HttpGetActionInterface
 {
     public function __construct(
         private readonly PageFactory $pageFactory,
@@ -41,7 +41,7 @@ class Invoice implements HttpGetActionInterface
                 ->setPath('noroute');
         }
 
-        if (!$this->customerIsAllowed($attachment)) {
+        if (!$this->canView($attachment)) {
             return $this->redirectFactory->create()
                 ->setPath('noroute');
         }
@@ -49,7 +49,7 @@ class Invoice implements HttpGetActionInterface
         return $this->pageFactory->create();
     }
 
-    private function customerIsAllowed(
+    private function canView(
         AttachmentInterface $attachment
     ): bool {
         $customer = $this->customerSession->getCustomer();

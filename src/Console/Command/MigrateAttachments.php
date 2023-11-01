@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
-use JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Console\Cli;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +19,8 @@ class MigrateAttachments extends Command
         COMMAND_DESCRIPTION    = 'Migrate all attachments from the original Dealer4Dealer substitute module.';
 
     public function __construct(
-        private readonly Attachment $attachmentResourceModel,
-        private readonly array $entityTypes,
+        private readonly ResourceConnection $resourceConnection,
+        private readonly array $processors,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -49,7 +50,9 @@ class MigrateAttachments extends Command
     ): int {
         $attachments = $this->fetchAttachments(
             (int) $input->getOption('limit'),
-            explode(',', $input->getOption('entity-type'))
+            $input->getOption('entity-type')
+                ? explode(',', $input->getOption('entity-type'))
+                : null
         );
         $output->writeln(__('Found %1 attachments to process', count($attachments)));
 
@@ -62,6 +65,10 @@ class MigrateAttachments extends Command
                 )
             );
 
+            if (!isset($this->factories[$attachment['entity_type']])) {
+                throw new LocalizedException(__('No factory defined for entity type %1', $attachment['entity_type']));
+            }
+
             $this->processAttachment($attachment);
         }
 
@@ -73,19 +80,19 @@ class MigrateAttachments extends Command
         $entityId = $this->getEntityIdByType($attachment);
     }
 
-    private function fetchAttachments(int $limit, array $entityTypes): array
+    private function fetchAttachments(int $limit, ?array $entityTypes): array
     {
-        $connection = $this->attachmentResourceModel->getConnection();
+        $connection = $this->resourceConnection->getConnection();
         $query      = $connection->select()
             ->from(
-                ['di' => $this->attachmentResourceModel->getTable('dealer4dealer_substituteorders_attachment')]
+                ['di' => $connection->getTableName('dealer4dealer_substituteorders_attachment')]
             );
 
         if ($limit > 0) {
             $query->limit($limit);
         }
 
-        if (!empty($entityTypes)) {
+        if (is_array($entityTypes) && count($entityTypes)) {
             $query->where('entity_type IN (?)', $entityTypes);
         }
 
@@ -95,14 +102,14 @@ class MigrateAttachments extends Command
     /**
      * @throws LocalizedException
      */
-    private function getEntityIdByType(array $attachment): string
+    private function getEntityIdByType(array $attachment): int
     {
         switch ($attachment['entity_type']) {
             case 'invoice':
                 $entityTable     = 'sales_invoice';
                 $d4dTable        = 'dealer4dealer_invoice';
                 $idColumn        = 'invoice_id';
-                $incrementColumn = 'magento_order_id';
+                $incrementColumn = 'magento_increment_id';
 
                 break;
 
@@ -110,7 +117,7 @@ class MigrateAttachments extends Command
                 $entityTable     = 'sales_order';
                 $d4dTable        = 'dealer4dealer_order';
                 $idColumn        = 'order_id';
-                $incrementColumn = 'magento_order_id';
+                $incrementColumn = 'magento_increment_id';
 
                 break;
 
@@ -126,15 +133,15 @@ class MigrateAttachments extends Command
                 throw new LocalizedException(__('Undefined entity type %1', $attachment['entity_type']));
         }
 
-        $connection = $this->attachmentResourceModel->getConnection();
+        $connection = $this->resourceConnection->getConnection();
         $query      = $connection->select()
-            ->from(['d4d' => $d4dTable], null)
-            ->joinLeft(['et' => $entityTable], sprintf('et.increment_id = d4d.%d', $incrementColumn), 'entity_id')
+            ->from(['d4d' => $connection->getTableName($d4dTable)], null)
+            ->joinLeft(['et' => $connection->getTableName($entityTable)], sprintf('et.increment_id = d4d.%s', $incrementColumn), 'entity_id')
             ->where(
                 sprintf('d4d.%s = ?', $idColumn),
                 $attachment['entity_type_identifier']
             );
 
-        return $connection->fetchOne($query);
+        return (int) $connection->fetchOne($query);
     }
 }

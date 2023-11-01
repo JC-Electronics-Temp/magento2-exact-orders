@@ -22,11 +22,8 @@
     <preference for="JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface" type="JcElectronics\ExactOrders\Model\AdditionalData" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface" type="JcElectronics\ExactOrders\Model\ExternalAttachment" />
 
-    <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
-    <preference for="JcElectronics\ExactOrders\Api\Data\Invoice\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Invoice\Attachment" />
-    <preference for="JcElectronics\ExactOrders\Api\Data\Order\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Order\Attachment" />
-    <preference for="JcElectronics\ExactOrders\Api\Data\Shipment\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Shipment\Attachment" />
     <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
 
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
@@ -40,13 +37,208 @@
         </arguments>
     </type>
 
+    <!-- Attachment Processors -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Console\Command\Attachment\InvoiceProcessor"
+            type="JcElectronics\ExactOrders\Console\Command\Attachment\EntityProcessor"
+    >
+        <arguments>
+            <argument name="attachmentFactory" xsi:type="object">JcElectronics\ExactOrders\Model\Invoice\AttachmentFactory</argument>
+            <argument name="attachmentRepository" xsi:type="object">JcElectronics\ExactOrders\Model\Invoice\AttachmentRepository</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Console\Command\Attachment\OrderProcessor"
+            type="JcElectronics\ExactOrders\Console\Command\Attachment\EntityProcessor"
+    >
+        <arguments>
+            <argument name="attachmentFactory" xsi:type="object">JcElectronics\ExactOrders\Model\Order\AttachmentFactory</argument>
+            <argument name="attachmentRepository" xsi:type="object">JcElectronics\ExactOrders\Model\Order\AttachmentRepository</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Console\Command\Attachment\ShipmentProcessor"
+            type="JcElectronics\ExactOrders\Console\Command\Attachment\EntityProcessor"
+    >
+        <arguments>
+            <argument name="attachmentFactory" xsi:type="object">JcElectronics\ExactOrders\Model\Shipment\AttachmentFactory</argument>
+            <argument name="attachmentRepository" xsi:type="object">JcElectronics\ExactOrders\Model\Shipment\AttachmentRepository</argument>
+        </arguments>
+    </virtualType>
+
     <type name="JcElectronics\ExactOrders\Console\Command\MigrateAttachments">
         <arguments>
-            <argument name="entityTypes" xsi:type="array">
-                <item name="invoice" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Invoice\AttachmentInterface</item>
-                <item name="order" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Order\AttachmentInterface</item>
-                <item name="shipment" xsi:type="object">JcElectronics\ExactOrders\Api\Data\Shipment\AttachmentInterface</item>
+            <argument name="processors" xsi:type="array">
+                <item name="invoice" xsi:type="object">JcElectronics\ExactOrders\Console\Command\Attachment\InvoiceProcessor</item>
+                <item name="order" xsi:type="object">JcElectronics\ExactOrders\Console\Command\Attachment\OrderProcessor</item>
+                <item name="shipment" xsi:type="object">JcElectronics\ExactOrders\Console\Command\Attachment\ShipmentProcessor</item>
             </argument>
         </arguments>
     </type>
+
+    <!-- Attachment Resource Models -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment"
+    >
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sales_invoice_attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment"
+    >
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sales_order_attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment"
+    >
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sales_shipment_attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Attachment Collections -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment\Collection"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\Collection"
+    >
+        <arguments>
+            <argument name="_eventPrefix" xsi:type="string">sales_invoice_attachment_collection</argument>
+            <argument name="_eventObject" xsi:type="string">sales_invoice_attachment_collection</argument>
+            <argument name="modelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\Invoice\Attachment</argument>
+            <argument name="resourceModelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment\Collection"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\Collection"
+    >
+        <arguments>
+            <argument name="_eventPrefix" xsi:type="string">sales_order_attachment_collection</argument>
+            <argument name="_eventObject" xsi:type="string">sales_order_attachment_collection</argument>
+            <argument name="modelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\Order\Attachment</argument>
+            <argument name="resourceModelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment\Collection"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\Collection"
+    >
+        <arguments>
+            <argument name="_eventPrefix" xsi:type="string">sales_shipment_attachment_collection</argument>
+            <argument name="_eventObject" xsi:type="string">sales_shipment_attachment_collection</argument>
+            <argument name="modelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\Shipment\Attachment</argument>
+            <argument name="resourceModelClassName" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Attachment Collection Factories -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment\CollectionFactory"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\CollectionFactory"
+    >
+        <arguments>
+            <argument name="objectFactory" xsi:type="object">Magento\Framework\ObjectManagerInterface</argument>
+            <argument name="object" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment\Collection</argument>
+            <argument name="dataObjectProcessor" xsi:type="object">Magento\Framework\Reflection\DataObjectProcessor</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment\CollectionFactory"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\CollectionFactory"
+    >
+        <arguments>
+            <argument name="objectFactory" xsi:type="object">Magento\Framework\ObjectManagerInterface</argument>
+            <argument name="object" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment\Collection</argument>
+            <argument name="dataObjectProcessor" xsi:type="object">Magento\Framework\Reflection\DataObjectProcessor</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment\CollectionFactory"
+            type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\CollectionFactory"
+    >
+        <arguments>
+            <argument name="objectFactory" xsi:type="object">Magento\Framework\ObjectManagerInterface</argument>
+            <argument name="object" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment\Collection</argument>
+            <argument name="dataObjectProcessor" xsi:type="object">Magento\Framework\Reflection\DataObjectProcessor</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Attachment Models -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Invoice\Attachment"
+            type="JcElectronics\ExactOrders\Model\Attachment"
+    >
+        <arguments>
+            <argument name="cacheTag" xsi:type="string">sales_invoice_attachment</argument>
+            <argument name="eventPrefix" xsi:type="string">sales_invoice_attachment</argument>
+            <argument name="resourceModelClass" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Order\Attachment"
+            type="JcElectronics\ExactOrders\Model\Attachment"
+    >
+        <arguments>
+            <argument name="cacheTag" xsi:type="string">sales_order_attachment</argument>
+            <argument name="eventPrefix" xsi:type="string">sales_order_attachment</argument>
+            <argument name="resourceModelClass" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Shipment\Attachment"
+            type="JcElectronics\ExactOrders\Model\Attachment"
+    >
+        <arguments>
+            <argument name="cacheTag" xsi:type="string">sales_shipment_attachment</argument>
+            <argument name="eventPrefix" xsi:type="string">sales_shipment_attachment</argument>
+            <argument name="resourceModelClass" xsi:type="string">JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Attachment Repositories -->
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Invoice\AttachmentRepository"
+            type="JcElectronics\ExactOrders\Model\AttachmentRepository"
+    >
+        <arguments>
+            <argument name="collectionFactory" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment\CollectionFactory</argument>
+            <argument name="resourceModel" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Invoice\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Order\AttachmentRepository"
+            type="JcElectronics\ExactOrders\Model\AttachmentRepository"
+    >
+        <arguments>
+            <argument name="collectionFactory" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment\CollectionFactory</argument>
+            <argument name="resourceModel" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Order\Attachment</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType
+            name="JcElectronics\ExactOrders\Model\Shipment\AttachmentRepository"
+            type="JcElectronics\ExactOrders\Model\AttachmentRepository"
+    >
+        <arguments>
+            <argument name="collectionFactory" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment\CollectionFactory</argument>
+            <argument name="resourceModel" xsi:type="object">JcElectronics\ExactOrders\Model\ResourceModel\Shipment\Attachment</argument>
+        </arguments>
+    </virtualType>
 </config>
