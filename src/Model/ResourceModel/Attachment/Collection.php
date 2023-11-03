@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model\ResourceModel\Attachment;
 
-use JcElectronics\ExactOrders\Model\Attachment;
-use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as AttachmentResourceModel;
+use JcElectronics\ExactOrders\Api\AttachmentCollectionInterface;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Magento\Framework\DB\Adapter\AdapterInterface;
@@ -19,7 +18,7 @@ use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Psr\Log\LoggerInterface;
 
-class Collection extends AbstractCollection
+class Collection extends AbstractCollection implements AttachmentCollectionInterface
 {
     protected $_idFieldName = 'attachment_id';
 
@@ -48,7 +47,7 @@ class Collection extends AbstractCollection
         $this->_eventObject = $eventObject;
     }
 
-    protected function _construct(): void
+    public function _construct(): void
     {
         $this->_init(
             $this->modelClassName,

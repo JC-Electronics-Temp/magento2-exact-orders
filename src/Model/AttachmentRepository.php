@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
+use JcElectronics\ExactOrders\Api\AttachmentCollectionInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as ResourceModel;
-use JcElectronics\ExactOrders\Model\ResourceModel\Attachment\Collection;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResultsInterfaceFactory;
@@ -22,7 +22,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 class AttachmentRepository implements AttachmentRepositoryInterface
 {
     public function __construct(
-        private readonly Collection $collection,
+        private readonly AttachmentCollectionInterface $collection,
         private readonly CollectionProcessorInterface $collectionProcessor,
         private readonly ResourceModel $resourceModel,
         private readonly AttachmentFactory $attachmentFactory,

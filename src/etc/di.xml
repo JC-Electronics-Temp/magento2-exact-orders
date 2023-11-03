@@ -23,7 +23,12 @@
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface" type="JcElectronics\ExactOrders\Model\ExternalAttachment" />
 
     <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\AttachmentCollectionInterface" type="JcElectronics\ExactOrders\Model\ResourceModel\Attachment\Collection" />
     <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
+
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
+    </type>
 
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
