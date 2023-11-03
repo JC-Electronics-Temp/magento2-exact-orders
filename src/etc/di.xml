@@ -29,6 +29,10 @@
         <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
     </type>
 
+    <type name="Magento\Sales\Model\Order\Invoice">
+        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
+    </type>
+
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
@@ -40,4 +44,22 @@
             </argument>
         </arguments>
     </type>
+
+    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
+        <arguments>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_ORDER</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
+        <arguments>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_INVOICE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
+        <arguments>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_SHIPMENT</argument>
+        </arguments>
+    </virtualType>
 </config>

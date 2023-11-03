@@ -98,6 +98,11 @@ class InvoiceRepository implements InvoiceRepositoryInterface
                 $this->getOrderFromInvoice($invoice)
             )
         );
+        
+        // Store attachments
+         if ($invoice->getAttachments()) {
+             
+         }
 
         return (int) $result->getEntityId();
     }

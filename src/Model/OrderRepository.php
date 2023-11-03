@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
@@ -41,6 +42,7 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly ExternalOrderFactory $externalOrderFactory,
         private readonly AddressFactory $externalOrderAddressFactory,
         private readonly ItemFactory $externalOrderItemFactory,
+        private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly Config $config
     ) {
     }
@@ -91,6 +93,10 @@ class OrderRepository implements OrderRepositoryInterface
         $result = $this->orderRepository->save(
             $this->formatOrderData($order->getData())
         );
+
+        foreach ($order->getAttachments() as $attachment) {
+            var_dump($attachment);
+        }
 
         return (int) $result->getEntityId();
     }

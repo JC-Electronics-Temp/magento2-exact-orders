@@ -10,14 +10,14 @@
     <table name="sales_exact_attachment" resource="default" engine="innodb" comment="Sales Exact Attachments">
         <column xsi:type="int" name="attachment_id" unsigned="true" nullable="false" identity="true" comment="Attachment ID"/>
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
-        <column xsi:type="int" name="entity_type_id" unsigned="true" nullable="false" comment="Entity Type ID"/>
+        <column xsi:type="varchar" name="entity_type_id" length="20" nullable="false" comment="Entity Type ID"/>
         <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="attachment_id"/>
         </constraint>
         <constraint xsi:type="unique" referenceId="SALES_ORDER_ATTACHMENT_PARENT_ID_FILE">
             <column name="entity_id"/>
-            <column name="entity_type"/>
+            <column name="entity_type_id"/>
             <column name="file"/>
         </constraint>
     </table>

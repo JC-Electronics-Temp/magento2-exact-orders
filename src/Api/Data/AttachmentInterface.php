@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
+use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\ShipmentInterface;
+
 interface AttachmentInterface
 {
     public const KEY_ID    = 'attachment_id',
@@ -28,15 +32,17 @@ interface AttachmentInterface
      */
     public function setId($value);
 
-    public function getEntityId(): int;
+    public function getParentId(): int;
 
-    public function setEntityId(int $entityId): self;
+    public function setParentId(int $parentId): self;
 
-    public function getEntityTypeId(): int;
+    public function getEntityTypeId(): string;
 
     public function setEntityTypeId(string $entityTypeId): self;
 
     public function getFileName(): string;
 
     public function setFileName(string $fileName): self;
+
+    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface;
 }

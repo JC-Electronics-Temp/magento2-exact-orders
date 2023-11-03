@@ -7,9 +7,11 @@ namespace JcElectronics\ExactOrders\Console\Command;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\AttachmentFactory;
 use JcElectronics\ExactOrders\Model\AttachmentRepository;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Console\Cli;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,6 +26,7 @@ class MigrateAttachments extends Command
         private readonly ResourceConnection $resourceConnection,
         private readonly AttachmentFactory $attachmentFactory,
         private readonly AttachmentRepository $attachmentRepository,
+        private readonly Filesystem $filesystem,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -40,10 +43,10 @@ class MigrateAttachments extends Command
         );
 
         $this->addOption(
-            'entity-type',
-            null,
-            InputOption::VALUE_OPTIONAL,
-            'Entity types (comma separated) for the attachments to be migrated (leave empty to process for all)'
+            'type',
+            't',
+            InputOption::VALUE_REQUIRED,
+            'Entity type for the attachments to be migrated'
         );
     }
 
@@ -53,13 +56,22 @@ class MigrateAttachments extends Command
     ): int {
         $attachments = $this->fetchAttachments(
             (int) $input->getOption('limit'),
-            $input->getOption('entity-type')
-                ? explode(',', $input->getOption('entity-type'))
-                : null
+            $input->getOption('type')
         );
         $output->writeln(__('Found %1 attachments to process', count($attachments)));
 
         foreach ($attachments as $attachment) {
+            if (!$this->getSourceFilePath($attachment)) {
+                $output->writeln(
+                    __(
+                        'No source file found for attachment %1',
+                        $attachment['attachment_id']
+                    )
+                );
+
+                continue;
+            }
+
             $output->writeln(
                 __(
                     'Processing attachment %1 for entity type %2',
@@ -76,83 +88,117 @@ class MigrateAttachments extends Command
 
     private function processAttachment(array $attachment): void
     {
-        $entityId = $this->getEntityIdByType($attachment['entity_type']);
-
-        /** @var AttachmentInterface $entity */
+                /** @var AttachmentInterface $entity */
         $entity = $this->attachmentFactory->create();
-        $entity->setEntityId($entityId)
+        $entity->setParentId((int) $attachment['magento_entity_id'])
             ->setEntityTypeId($attachment['entity_type'])
             ->setFileName($attachment['file']);
 
         $this->attachmentRepository->save($entity);
+
+        $this->moveAttachmentToSecureFolder($entity);
     }
 
-    private function fetchAttachments(int $limit, ?array $entityTypes): array
+    private function fetchAttachments(int $limit, string $entityType): array
     {
         $connection = $this->resourceConnection->getConnection();
         $query      = $connection->select()
             ->from(
-                ['di' => $connection->getTableName('dealer4dealer_substituteorders_attachment')]
+                ['dsa' => $connection->getTableName('dealer4dealer_substituteorders_attachment')]
             );
+
+        switch ($entityType) {
+            case 'order':
+                $query
+                    ->joinInner(
+                        ['do' => $connection->getTableName('dealer4dealer_order')],
+                        'do.order_id = dsa.entity_type_identifier',
+                        null
+                    )
+                    ->joinInner(
+                        ['se' => $connection->getTableName('sales_order')],
+                        'se.entity_id = do.magento_order_id OR se.increment_id = do.magento_increment_id',
+                        ['magento_entity_id' => 'entity_id']
+                    );
+                break;
+
+            case 'invoice':
+                $query
+                    ->joinLeft(
+                        ['di' => $connection->getTableName('dealer4dealer_invoice')],
+                        'di.invoice_id = dsa.entity_type_identifier',
+                        null
+                    )
+                    ->joinLeft(
+                        ['se' => $connection->getTableName('sales_invoice')],
+                        'se.entity_id = di.magento_invoice_id OR se.increment_id = di.magento_increment_id',
+                        null
+                    );
+                break;
+
+            case 'shipment':
+                $query
+                    ->joinLeft(
+                        ['ds' => $connection->getTableName('dealer4dealer_shipment')],
+                        'ds.shipment_id = dsa.entity_type_identifier'
+                    )
+                    ->joinLeft(
+                        ['se' => $connection->getTableName('sales_shipment')],
+                        'se.increment_id = ds.increment_id',
+                        null
+                    );
+                break;
+        }
+
+        $query->joinLeft(
+            ['sea' => $connection->getTableName('sales_exact_attachment')],
+            'sea.entity_id = se.entity_id',
+            null
+        )
+        ->where('se.entity_id IS NOT NULL')
+        ->where('sea.entity_id IS NULL')
+            ->where('dsa.entity_type = ?', $entityType);
 
         if ($limit > 0) {
             $query->limit($limit);
         }
 
-        if (is_array($entityTypes) && count($entityTypes)) {
-            $query->where('entity_type IN (?)', $entityTypes);
-        }
-
         return $connection->fetchAll($query);
     }
 
-    /**
-     * @throws LocalizedException
-     */
-    private function getEntityIdByType(array $attachment): int
+   private function moveAttachmentToSecureFolder(
+       AttachmentInterface $attachment
+   ): void {
+        $destinationFile = $this->filesystem
+           ->getDirectoryRead(DirectoryList::VAR_DIR)
+           ->getAbsolutePath(
+               sprintf(
+                   'customer/substitute_order/files/%d/%s/%s',
+                   $attachment->getParentEntity()->getCustomerId(),
+                   $attachment->getEntityTypeId(),
+                   $attachment->getFileName()
+               )
+           );
+
+        rename(
+            $this->getSourceFilePath($attachment),
+            $destinationFile
+        );
+    }
+
+    private function getSourceFilePath(array $attachment): ?string
     {
-        switch ($attachment['entity_type']) {
-            case 'invoice':
-                $entityTable     = 'sales_invoice';
-                $d4dTable        = 'dealer4dealer_invoice';
-                $idColumn        = 'invoice_id';
-                $incrementColumn = 'magento_increment_id';
-
-                break;
-
-            case 'order':
-                $entityTable     = 'sales_order';
-                $d4dTable        = 'dealer4dealer_order';
-                $idColumn        = 'order_id';
-                $incrementColumn = 'magento_increment_id';
-
-                break;
-
-            case 'shipment':
-                $entityTable     = 'sales_shipment';
-                $d4dTable        = 'dealer4dealer_shipment';
-                $idColumn        = 'shipment_id';
-                $incrementColumn = 'increment_id';
-
-                break;
-
-            default:
-                throw new LocalizedException(__('Undefined entity type %1', $attachment['entity_type']));
-        }
-
-        $connection = $this->resourceConnection->getConnection();
-        $query      = $connection->select()
-            ->from(['d4d' => $connection->getTableName($d4dTable)], null)
-            ->joinLeft(
-                ['et' => $connection->getTableName($entityTable)],
-                sprintf('et.increment_id = d4d.%s', $incrementColumn),
-                'entity_id'
-            )
-            ->where(
-                sprintf('d4d.%s = ?', $idColumn),
-                $attachment['entity_type_identifier']
+        $sourceFile = $this->filesystem
+            ->getDirectoryRead(DirectoryList::MEDIA)
+            ->getAbsolutePath(
+                sprintf(
+                    'customer/substitute_order/files/%d/%s/%s',
+                    $attachment['magento_customer_identifier'],
+                    $attachment['entity_type'],
+                    $attachment['file']
+                )
             );
 
-        return (int) $connection->fetchOne($query);
+        return file_exists($sourceFile) ? $sourceFile : null;
     }
 }
