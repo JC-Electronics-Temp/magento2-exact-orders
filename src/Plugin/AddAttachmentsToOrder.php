@@ -39,7 +39,7 @@ class AddAttachmentsToOrder
             ->getList(
                 $this->searchCriteriaBuilder
                     ->addFilter(
-                        AttachmentInterface::KEY_PARENT_ID,
+                        AttachmentInterface::KEY_ENTITY_ID,
                         $subject->getId()
                     )
                     ->create()

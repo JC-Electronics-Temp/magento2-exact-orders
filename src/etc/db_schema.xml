@@ -7,68 +7,17 @@
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="sales_order_attachment" resource="default" engine="innodb" comment="Sales Order Attachments">
+    <table name="sales_exact_attachment" resource="default" engine="innodb" comment="Sales Exact Attachments">
         <column xsi:type="int" name="attachment_id" unsigned="true" nullable="false" identity="true" comment="Attachment ID"/>
-        <column xsi:type="int" name="parent_id" unsigned="true" nullable="false" comment="Order ID"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="int" name="entity_type_id" unsigned="true" nullable="false" comment="Entity Type ID"/>
         <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="attachment_id"/>
         </constraint>
-        <constraint
-                xsi:type="foreign"
-                referenceId="SALES_ORDER_ATTACHMENT_PARENT_ID_SALES_ORDER_ENTITY_ID"
-                table="sales_order_attachment"
-                column="parent_id"
-                referenceTable="sales_order"
-                referenceColumn="entity_id"
-                onDelete="CASCADE"
-        />
         <constraint xsi:type="unique" referenceId="SALES_ORDER_ATTACHMENT_PARENT_ID_FILE">
-            <column name="parent_id"/>
-            <column name="file"/>
-        </constraint>
-    </table>
-
-    <table name="sales_invoice_attachment" resource="default" engine="innodb" comment="Sales Invoice Attachments">
-        <column xsi:type="int" name="attachment_id" unsigned="true" nullable="false" identity="true" comment="Attachment ID"/>
-        <column xsi:type="int" name="parent_id" unsigned="true" nullable="false" comment="Invoice ID"/>
-        <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="attachment_id"/>
-        </constraint>
-        <constraint
-                xsi:type="foreign"
-                referenceId="SALES_INVOICE_ATTACHMENT_PARENT_ID_SALES_INVOICE_ENTITY_ID"
-                table="sales_invoice_attachment"
-                column="parent_id"
-                referenceTable="sales_invoice"
-                referenceColumn="entity_id"
-                onDelete="CASCADE"
-        />
-        <constraint xsi:type="unique" referenceId="SALES_INVOICE_ATTACHMENT_PARENT_ID_FILE">
-            <column name="parent_id"/>
-            <column name="file"/>
-        </constraint>
-    </table>
-
-    <table name="sales_shipment_attachment" resource="default" engine="innodb" comment="Sales Shipment Attachments">
-        <column xsi:type="int" name="attachment_id" unsigned="true" nullable="false" identity="true" comment="Attachment ID"/>
-        <column xsi:type="int" name="parent_id" unsigned="true" nullable="false" comment="Shipment ID"/>
-        <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="attachment_id"/>
-        </constraint>
-        <constraint
-                xsi:type="foreign"
-                referenceId="SALES_SHIPMENT_ATTACHMENT_PARENT_ID_SALES_SHIPMENT_ENTITY_ID"
-                table="sales_shipment_attachment"
-                column="parent_id"
-                referenceTable="sales_shipment"
-                referenceColumn="entity_id"
-                onDelete="CASCADE"
-        />
-        <constraint xsi:type="unique" referenceId="SALES_SHIPMENT_ATTACHMENT_PARENT_ID_FILE">
-            <column name="parent_id"/>
+            <column name="entity_id"/>
+            <column name="entity_type"/>
             <column name="file"/>
         </constraint>
     </table>

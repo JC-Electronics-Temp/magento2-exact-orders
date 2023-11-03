@@ -15,16 +15,8 @@ use Magento\Framework\Model\ResourceModel\Db\Context;
 
 class Attachment extends AbstractDb
 {
-    public function __construct(
-        Context $context,
-        private readonly string $mainTable,
-        $connectionName = null
-    ) {
-        parent::__construct($context, $connectionName);
-    }
-
     protected function _construct(): void
     {
-        $this->_init($this->mainTable, AttachmentInterface::KEY_ID);
+        $this->_init('sales_exact_attachment', AttachmentInterface::KEY_ID);
     }
 }

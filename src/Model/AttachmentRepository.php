@@ -10,19 +10,19 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
-use JcElectronics\ExactOrders\Api\AttachmentCollectionInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as ResourceModel;
+use JcElectronics\ExactOrders\Model\ResourceModel\Attachment\CollectionFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResultsInterfaceFactory;
-use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\SearchResultsInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class AttachmentRepository implements AttachmentRepositoryInterface
 {
     public function __construct(
-        private readonly AttachmentCollectionInterface $collection,
+        private readonly CollectionFactory $collectionFactory,
         private readonly CollectionProcessorInterface $collectionProcessor,
         private readonly ResourceModel $resourceModel,
         private readonly AttachmentFactory $attachmentFactory,
@@ -60,8 +60,8 @@ class AttachmentRepository implements AttachmentRepositoryInterface
 
     public function getList(
         SearchCriteriaInterface $searchCriteria
-    ): SearchResultInterface {
-        $collection = $this->collection;
+    ): SearchResultsInterface {
+        $collection = $this->collectionFactory->create();
         $this->collectionProcessor->process($searchCriteria, $collection);
 
         $searchResults = $this->searchResultsFactory->create();

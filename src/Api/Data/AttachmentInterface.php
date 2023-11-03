@@ -11,9 +11,10 @@ namespace JcElectronics\ExactOrders\Api\Data;
 
 interface AttachmentInterface
 {
-    public const KEY_ID = 'attachment_id',
-        KEY_FILE_NAME   = 'file',
-        KEY_PARENT_ID   = 'parent_id';
+    public const KEY_ID    = 'attachment_id',
+        KEY_FILE_NAME      = 'file',
+        KEY_ENTITY_ID      = 'entity_id',
+        KEY_ENTITY_TYPE_ID = 'entity_type_id';
 
     /**
      * @return mixed
@@ -27,9 +28,13 @@ interface AttachmentInterface
      */
     public function setId($value);
 
-    public function getParentId(): int;
+    public function getEntityId(): int;
 
-    public function setParentId(int $parentId): self;
+    public function setEntityId(int $entityId): self;
+
+    public function getEntityTypeId(): int;
+
+    public function setEntityTypeId(string $entityTypeId): self;
 
     public function getFileName(): string;
 

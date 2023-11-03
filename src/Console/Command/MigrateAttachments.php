@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
+use JcElectronics\ExactOrders\Model\AttachmentFactory;
+use JcElectronics\ExactOrders\Model\AttachmentRepository;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Console\Cli;
-use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +22,8 @@ class MigrateAttachments extends Command
 
     public function __construct(
         private readonly ResourceConnection $resourceConnection,
-        private readonly array $processors,
+        private readonly AttachmentFactory $attachmentFactory,
+        private readonly AttachmentRepository $attachmentRepository,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -65,10 +68,6 @@ class MigrateAttachments extends Command
                 )
             );
 
-            if (!isset($this->factories[$attachment['entity_type']])) {
-                throw new LocalizedException(__('No factory defined for entity type %1', $attachment['entity_type']));
-            }
-
             $this->processAttachment($attachment);
         }
 
@@ -77,7 +76,15 @@ class MigrateAttachments extends Command
 
     private function processAttachment(array $attachment): void
     {
-        $entityId = $this->getEntityIdByType($attachment);
+        $entityId = $this->getEntityIdByType($attachment['entity_type']);
+
+        /** @var AttachmentInterface $entity */
+        $entity = $this->attachmentFactory->create();
+        $entity->setEntityId($entityId)
+            ->setEntityTypeId($attachment['entity_type'])
+            ->setFileName($attachment['file']);
+
+        $this->attachmentRepository->save($entity);
     }
 
     private function fetchAttachments(int $limit, ?array $entityTypes): array
@@ -136,7 +143,11 @@ class MigrateAttachments extends Command
         $connection = $this->resourceConnection->getConnection();
         $query      = $connection->select()
             ->from(['d4d' => $connection->getTableName($d4dTable)], null)
-            ->joinLeft(['et' => $connection->getTableName($entityTable)], sprintf('et.increment_id = d4d.%s', $incrementColumn), 'entity_id')
+            ->joinLeft(
+                ['et' => $connection->getTableName($entityTable)],
+                sprintf('et.increment_id = d4d.%s', $incrementColumn),
+                'entity_id'
+            )
             ->where(
                 sprintf('d4d.%s = ?', $idColumn),
                 $attachment['entity_type_identifier']

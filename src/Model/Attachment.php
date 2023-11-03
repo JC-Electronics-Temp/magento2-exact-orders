@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
+use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as AttachmentResourceModel;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Model\AbstractModel;
@@ -19,31 +20,13 @@ use Magento\Framework\Registry;
 
 class Attachment extends AbstractModel implements AttachmentInterface, IdentityInterface
 {
-    public function __construct(
-        Context $context,
-        Registry $registry,
-        string $cacheTag,
-        string $eventPrefix,
-        private readonly string $resourceModelClass,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $resource,
-            $resourceCollection,
-            $data
-        );
-        
-        $this->_cacheTag = $cacheTag;
-        $this->_eventPrefix = $eventPrefix;
-    }
+    private const CACHE_TAG = '';
+
+    protected $_cacheTag = self::CACHE_TAG;
 
     protected function _construct(): void
     {
-        $this->_init($this->resourceModelClass);
+        $this->_init(AttachmentResourceModel::class);
     }
 
     public function getIdentities(): array
@@ -51,14 +34,26 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return [$this->_cacheTag . '_' . $this->getId()];
     }
 
-    public function getParentId(): int
+    public function getEntityId(): int
     {
-        return (int) $this->_getData(static::KEY_PARENT_ID);
+        return (int) $this->_getData(static::KEY_ENTITY_ID);
     }
 
-    public function setParentId(int $parentId): self
+    public function setEntityId(int $entityId): self
     {
-        $this->setData(static::KEY_PARENT_ID, $parentId);
+        $this->setData(static::KEY_ENTITY_ID, $entityId);
+
+        return $this;
+    }
+
+    public function getEntityTypeId(): int
+    {
+        return (int) $this->_getData(static::KEY_ENTITY_TYPE_ID);
+    }
+
+    public function setEntityTypeId(string $entityTypeId): self
+    {
+        $this->setData(static::KEY_ENTITY_TYPE_ID, $entityTypeId);
 
         return $this;
     }

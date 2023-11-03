@@ -11,7 +11,7 @@ namespace JcElectronics\ExactOrders\Api;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Data\SearchResultInterface;
+use Magento\Framework\Api\SearchResultsInterface;
 
 interface AttachmentRepositoryInterface
 {
@@ -21,5 +21,5 @@ interface AttachmentRepositoryInterface
 
     public function save(AttachmentInterface $attachment): AttachmentInterface;
 
-    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultInterface;
+    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 }
