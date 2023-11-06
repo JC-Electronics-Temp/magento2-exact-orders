@@ -6,6 +6,10 @@
         <attribute code="expected_delivery_date" type="string" />
     </extension_attributes>
 
+    <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
+        <attribute code="ext_invoice_id" type="string" />
+    </extension_attributes>
+
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="attachments" type="JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]" />
     </extension_attributes>

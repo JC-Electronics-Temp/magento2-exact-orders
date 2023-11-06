@@ -19,7 +19,7 @@ trait CustomerInformationTrait
         return $this->customerRepository->getById($customerId);
     }
 
-    public function getCompanyByCustomerId(int $customerId): CompanyInterface
+    public function getCompanyByCustomerId(int $customerId): ?CompanyInterface
     {
         return $this->companyManagement->getByCustomerId($customerId);
     }

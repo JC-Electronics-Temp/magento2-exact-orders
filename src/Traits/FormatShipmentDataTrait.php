@@ -30,7 +30,7 @@ trait FormatShipmentDataTrait
                 'increment_id' => $shipmentData['increment_id'],
                 'updated_at' => $shipmentData['updated_at'],
                 'items' => $this->formatShipmentItems($shipmentData['items'], $order->getAllItems()),
-                'tracks' => $this->formatShipmentTracks($shipmentData['tracking']),
+                'tracks' => $this->formatShipmentTracks($shipmentData),
                 'billing_address_id' => $order->getBillingAddressId(),
                 'shipping_address_id' => $order->getShippingAddressId()
             ],
@@ -79,7 +79,7 @@ trait FormatShipmentDataTrait
     {
         return array_map(
             fn (array $track) => [
-                'weight' => $shipment['weight'],
+                'weight' => $shipment['weight'] ?? 0,
                 'track_number' => $track['code'],
                 'carrier_code' => $track['name']
             ],

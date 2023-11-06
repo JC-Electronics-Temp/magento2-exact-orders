@@ -7,6 +7,14 @@
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="sales_order">
+        <column xsi:type="boolean" name="is_external_order" nullable="false" default="0" comment="Is External Order"/>
+    </table>
+
+    <table name="sales_invoice">
+        <column xsi:type="varchar" length="32" name="ext_invoice_id" nullable="true" comment="External Invoice ID"/>
+    </table>
+
     <table name="sales_exact_attachment" resource="default" engine="innodb" comment="Sales Exact Attachments">
         <column xsi:type="int" name="attachment_id" unsigned="true" nullable="false" identity="true" comment="Attachment ID"/>
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>

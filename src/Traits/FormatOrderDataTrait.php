@@ -12,6 +12,7 @@ namespace JcElectronics\ExactOrders\Traits;
 use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
+use Magento\Company\Api\Data\CompanyInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -47,23 +48,29 @@ trait FormatOrderDataTrait
             [Order::STATE_PENDING_PAYMENT, Order::STATE_NEW]
         );
 
+        $grandTotal = (float)($orderData['base_grandtotal'] ?? $orderData['grandtotal']);
+        $baseDiscount = (float)($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0);
+        $baseShippingAmount = (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0);
+        $baseSubtotal = (float)($orderData['base_subtotal'] ?? $orderData['subtotal']);
+        $baseTaxAmount = (float)($orderData['base_tax_amount'] ?? $orderData['tax_amount']);
+
         return $this->serviceInputProcessor->convertValue(
             [
-                'base_discount_amount' => (float) ($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0),
-                'base_discount_invoiced' => $orderInvoiced ? (float) ($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0) : 0,
-                'base_grand_total' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
-                'base_shipping_amount' => (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
-                'base_shipping_incl_tax' => $orderInclTax ? (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0) : 0,
-                'base_shipping_invoiced' => $orderInvoiced ? (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0) : 0,
+                'base_discount_amount' => $baseDiscount,
+                'base_discount_invoiced' => $orderInvoiced ? $baseDiscount : 0,
+                'base_grand_total' => $grandTotal,
+                'base_shipping_amount' => $baseShippingAmount,
+                'base_shipping_incl_tax' => $orderInclTax ? $baseShippingAmount : 0,
+                'base_shipping_invoiced' => $orderInvoiced ? $baseShippingAmount : 0,
                 'base_shipping_tax_amount' => 0,
-                'base_subtotal' => (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']),
-                'base_subtotal_incl_tax' => $orderInclTax ? (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']) : 0,
-                'base_subtotal_invoiced' => $orderInvoiced ? (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']) : 0,
-                'base_tax_amount' => (float) ($orderData['base_tax_amount'] ?? $orderData['tax_amount']),
-                'base_tax_invoiced' => $orderInvoiced ? (float) ($orderData['base_tax_amount'] ?? $orderData['tax_amount']) : 0,
+                'base_subtotal' => $baseSubtotal,
+                'base_subtotal_incl_tax' => $orderInclTax ? $baseSubtotal : 0,
+                'base_subtotal_invoiced' => $orderInvoiced ? $baseSubtotal : 0,
+                'base_tax_amount' => $baseTaxAmount,
+                'base_tax_invoiced' => $orderInvoiced ? $baseTaxAmount : 0,
                 'base_total_due' => 0,
-                'base_total_invoiced' => $orderInvoiced ? (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']) : 0,
-                'base_total_paid' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
+                'base_total_invoiced' => $orderInvoiced ? $grandTotal : 0,
+                'base_total_paid' => $grandTotal,
                 'base_total_qty_ordered' => array_sum(
                     array_column($orderData['items'], 'qty')
                 ),
@@ -112,9 +119,9 @@ trait FormatOrderDataTrait
                     'amount_ordered' => $orderData['grandtotal'],
                     'amount_paid' => $orderData['grandtotal'],
                     'method' => $orderData['payment_method'] ?? 'unknown',
-                    'base_amount_ordered' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
-                    'base_amount_paid' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
-                    'base_shipping_amount' => (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
+                    'base_amount_ordered' => $grandTotal,
+                    'base_amount_paid' => $grandTotal,
+                    'base_shipping_amount' => $baseShippingAmount,
                     'shipping_amount' => (float)($orderData['shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
                 ],
                 'extension_attributes' => [
@@ -129,10 +136,7 @@ trait FormatOrderDataTrait
                             ]
                         ]
                     ],
-                    'company_order_attributes' => [
-                        'company_id' => $company->getId(),
-                        'company_name' => $company->getCompanyName()
-                    ]
+                    'company_order_attributes' => $this->getCompanyOrderData($company)
                 ]
             ],
             OrderInterface::class
@@ -213,7 +217,7 @@ trait FormatOrderDataTrait
                 __(
                     'Unknown order state "%1". Possible states: %2',
                     $state,
-                    array_keys($orderStatuses)
+                    implode(', ', array_keys($orderStatuses))
                 )
             );
         }
@@ -228,5 +232,15 @@ trait FormatOrderDataTrait
         } catch (NoSuchEntityException) {
             return null;
         }
+    }
+
+    private function getCompanyOrderData(?CompanyInterface $company): array
+    {
+                return !$company instanceof CompanyInterface
+                    ? []
+                    : [
+            'company_id' => $company->getId(),
+            'company_name' => $company->getCompanyName()
+        ];
     }
 }

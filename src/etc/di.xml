@@ -37,6 +37,7 @@
         </arguments>
     </type>
 
+    <!-- Add attachments on load -->
     <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
         <arguments>
             <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_ORDER</argument>
@@ -65,5 +66,18 @@
 
     <type name="Magento\Sales\Model\Order\Shipment">
         <plugin name="loadAttachmentsWithShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment"/>
+    </type>
+
+    <!-- Save Attachments on model save -->
+    <type name="Magento\Sales\Model\ResourceModel\Order">
+        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
+    </type>
+
+    <type name="Magento\Sales\Model\ResourceModel\Order\Invoice">
+        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
+    </type>
+
+    <type name="Magento\Sales\Model\ResourceModel\Order\Shipment">
+        <plugin name="loadAttachmentsWithShipment" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
     </type>
 </config>

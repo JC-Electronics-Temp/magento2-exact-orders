@@ -57,7 +57,10 @@ trait FormatInvoiceDataTrait
                 'global_currency_code' => $order->getGlobalCurrencyCode(),
                 'store_to_order_rate' => $order->getStoreToOrderRate(),
                 'store_to_base_rate' => $order->getStoreToBaseRate(),
-                'base_to_global_rate' => $order->getBaseToGlobalRate()
+                'base_to_global_rate' => $order->getBaseToGlobalRate(),
+                'extension_attributes' => [
+                    'ext_invoice_id' => $invoiceData['ext_invoice_id']
+                ]
             ],
             InvoiceInterface::class
         );
@@ -90,7 +93,7 @@ trait FormatInvoiceDataTrait
                     'qty' => (float) $item->getQty(),
                     'row_total' => (float) $item->getRowTotal(),
                     'row_total_incl_tax' => (float) $item->getRowTotal(),
-                    'order_item_id' => $orderItem->getEntityId(),
+                    'order_item_id' => $orderItem->getItemId(),
                     'product_id' => $orderItem->getProductId() ?? null,
                     'sku' => $item->getSku(),
                     'tax_amount' => (float) $item->getTaxAmount(),

@@ -25,6 +25,7 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Store\Api\StoreRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface

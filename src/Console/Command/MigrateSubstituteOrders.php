@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
+use Exception;
+use Generator;
+use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
-use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
+use JcElectronics\ExactOrders\Api\OrderRepositoryInterface as ExternalOrderRepositoryInterface;
+use JcElectronics\ExactOrders\Model\AttachmentFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrderFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Console\Cli;
 use Magento\Framework\Filesystem;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order as OrderResourceModel;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class MigrateSubstituteOrders extends Command
 {
@@ -26,11 +36,14 @@ class MigrateSubstituteOrders extends Command
             'substitute module that do not exist in Magento.';
 
     public function __construct(
-        private readonly OrderRepositoryInterface $orderRepository,
+        private readonly ExternalOrderRepositoryInterface $externalOrderRepository,
         private readonly ExternalOrderFactory $externalOrderFactory,
-        private readonly OrderResourceModel $orderResourceModel,
         private readonly ItemFactory $externalOrderItemFactory,
+        private readonly AttachmentFactory $attachmentFactory,
+        private readonly OrderResourceModel $orderResourceModel,
+        private readonly OrderRepositoryInterface $orderRepository,
         private readonly AddressFactory $externalOrderAddressFactory,
+        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly Filesystem $filesystem,
         string $name = null
     ) {
@@ -52,18 +65,40 @@ class MigrateSubstituteOrders extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
+        $counter          = 0;
+        $errors = [];
+        $progressBar = new ProgressBar($output);
+
         $substituteOrders = $this->fetchAllSubstituteOrders(
             (int) $input->getOption('limit')
         );
-        $output->writeln(__('Found %1 orders to process', count($substituteOrders)));
 
         foreach ($substituteOrders as $orderData) {
-            $output->writeln(
-                __('Processing order %1', $orderData['magento_increment_id'])
-            );
+            try {
+                $magentoOrder = $this->getMagentoOrder($orderData['magento_increment_id']);
 
-            $this->processExternalOrder($orderData);
+                if (!$magentoOrder instanceof OrderInterface) {
+                    $this->processExternalOrder($orderData);
+                } else if ($magentoOrder->getExtOrderId() === null) {
+                    $this->updateExistingOrder($magentoOrder, $orderData);
+                }
+            } catch (Throwable $e) {
+                $errors[] = $e->getMessage();
+            }
+
+            $counter++;
+            $progressBar->advance();
         }
+
+        $progressBar->finish();
+
+        $output->writeln("\n");
+        $output->writeln($errors);
+        $output->writeln(
+            __(
+                "\n%1 of %2 order imports failed", count($errors), $counter
+            )
+        );
 
         return Cli::RETURN_SUCCESS;
     }
@@ -73,10 +108,22 @@ class MigrateSubstituteOrders extends Command
         $externalOrder = $this->externalOrderFactory
             ->create(['data' => $orderData]);
 
-        $this->orderRepository->save($externalOrder);
+        $this->externalOrderRepository->save($externalOrder);
     }
 
-    private function fetchAllSubstituteOrders(int $limit): array
+    private function getMagentoOrder(string $incrementId): ?OrderInterface
+    {
+        $collection = $this->orderRepository
+            ->getList(
+                $this->searchCriteriaBuilder
+                    ->addFilter('increment_id', $incrementId)
+                    ->create()
+            );
+
+        return $collection->getTotalCount() > 0 ? current($collection->getItems()) : null;
+    }
+
+    private function fetchAllSubstituteOrders(int $limit): Generator
     {
         $connection = $this->orderResourceModel->getConnection();
         $query      = $connection->select()
@@ -84,18 +131,18 @@ class MigrateSubstituteOrders extends Command
                 ['do' => $this->orderResourceModel->getTable('dealer4dealer_order')]
             )
             ->joinLeft(
-                ['so' => $this->orderResourceModel->getTable('sales_order')],
-                'so.increment_id = do.magento_increment_id OR so.entity_id = do.magento_order_id',
+                ['so' => $connection->getTableName('sales_order')],
+                'so.increment_id = do.magento_increment_id',
                 null
             )
-        ->where('so.increment_id IS NULL AND so.entity_id IS NULL')
-            ->where('do.magento_customer_id IS NOT NULL');
+            ->where('do.magento_customer_id IS NOT NULL')
+            ->where('so.ext_order_id IS NULL');
 
         if ($limit > 0) {
             $query->limit($limit);
         }
 
-        return array_reduce(
+        yield from array_reduce(
             $connection->fetchAll($query),
             fn (array $carry, array $entity) => array_merge(
                 $carry,
@@ -166,31 +213,71 @@ class MigrateSubstituteOrders extends Command
             ->where('entity_type_identifier = ?', $entityId)
             ->where('entity_type = ?', AttachmentInterface::ENTITY_TYPE_ORDER);
 
-        return array_map(
-            function (array $attachment) {
-                return [
-                    'file_data' => $this->getFileContent($attachment['file']),
-                    'name' => $attachment['file']
-                ];
+        return array_reduce(
+            $connection->fetchAll($query),
+            function (array $carry, array $attachment) {
+                $fileContent = $this->getFileContent(
+                    $attachment['file'],
+                    (int) $attachment['magento_customer_identifier']
+                );
+
+                if ($fileContent !== null) {
+                    $carry[] = [
+                        'file_data' => $fileContent,
+                        'name' => basename($attachment['file'])
+                    ];
+                }
+
+                return $carry;
             },
-            $connection->fetchAll($query)
+            []
         );
     }
 
-    private function getFileContent(string $fileName): string
+    private function getFileContent(string $fileName, int $customerId): ?string
     {
-        $content = file_get_contents(
-            $this->filesystem
-                ->getDirectoryRead(DirectoryList::MEDIA)
-                ->getAbsolutePath(
-                    sprintf(
-                        'substitute_order/%s/%s',
-                        AttachmentInterface::ENTITY_TYPE_ORDER,
-                        $fileName
+        try {
+            $content = file_get_contents(
+                $this->filesystem
+                    ->getDirectoryRead(DirectoryList::MEDIA)
+                    ->getAbsolutePath(
+                        sprintf(
+                            'customer/substitute_order/files/%d/%s/%s',
+                            $customerId,
+                            AttachmentInterface::ENTITY_TYPE_ORDER,
+                            $fileName
+                        )
                     )
-                )
-        );
+            );
+        } catch (Exception) {
+            return null;
+        }
 
         return base64_encode($content);
+    }
+
+    private function updateExistingOrder(
+        Order $magentoOrder,
+        array $orderData
+    ): Order {
+        /** @var AttachmentInterface[] $attachments */
+        $attachments = [];
+        $magentoOrder->setExtOrderId($orderData['ext_order_id'])
+            ->setExtCustomerId($orderData['ext_customer_id'] ?? null);
+
+        /** @var array $attachmentData */
+        foreach ($orderData['attachments'] as $attachmentData) {
+            $attachments[] = $this->attachmentFactory->create()
+                ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_ORDER)
+                ->setParentId((int) $magentoOrder->getEntityId())
+                ->setFileName($attachmentData['name'])
+                ->setFileContent($attachmentData['file_data']);
+        }
+
+        $magentoOrder->setData('attachments', $attachments);
+
+        $this->orderRepository->save($magentoOrder);
+
+        return $magentoOrder;
     }
 }
