@@ -16,10 +16,6 @@ use Magento\Sales\Model\AbstractModel;
 
 class AddAttachmentsToEntity
 {
-    public const ENTITY_TYPE_INVOICE = 'invoice',
-        ENTITY_TYPE_ORDER = 'order',
-        ENTITY_TYPE_SHIPMENT = 'shipment';
-
     public function __construct(
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,

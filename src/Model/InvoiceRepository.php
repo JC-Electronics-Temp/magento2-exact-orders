@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalInvoice\ItemFactory;
@@ -36,6 +38,8 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         private readonly ExternalInvoiceFactory $externalInvoiceFactory,
         private readonly AddressFactory $externalOrderAddressFactory,
         private readonly ItemFactory $externalInvoiceItemFactory,
+        private readonly AttachmentRepositoryInterface $attachmentRepository,
+        private readonly AttachmentFactory $attachmentFactory,
     ) {
     }
 
@@ -98,11 +102,17 @@ class InvoiceRepository implements InvoiceRepositoryInterface
                 $this->getOrderFromInvoice($invoice)
             )
         );
-        
-        // Store attachments
-         if ($invoice->getAttachments()) {
-             
-         }
+
+        foreach ($invoice->getAttachments() as $attachment) {
+            /** @var AttachmentInterface $attachmentObject */
+            $attachmentObject = $this->attachmentFactory->create();
+            $attachmentObject->setParentId((int) $result->getEntityId())
+                ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_INVOICE)
+                ->setFileName($attachment['name'])
+                ->setFileContent($attachment['file_data']);
+
+            $this->attachmentRepository->save($attachmentObject);
+        }
 
         return (int) $result->getEntityId();
     }

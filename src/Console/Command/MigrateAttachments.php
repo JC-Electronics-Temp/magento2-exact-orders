@@ -96,7 +96,7 @@ class MigrateAttachments extends Command
 
         $this->attachmentRepository->save($entity);
 
-        $this->moveAttachmentToSecureFolder($entity);
+        $this->moveAttachmentToSecureFolder($attachment);
     }
 
     private function fetchAttachments(int $limit, string $entityType): array
@@ -157,7 +157,7 @@ class MigrateAttachments extends Command
         )
         ->where('se.entity_id IS NOT NULL')
         ->where('sea.entity_id IS NULL')
-            ->where('dsa.entity_type = ?', $entityType);
+        ->where('dsa.entity_type = ?', $entityType);
 
         if ($limit > 0) {
             $query->limit($limit);
@@ -166,17 +166,16 @@ class MigrateAttachments extends Command
         return $connection->fetchAll($query);
     }
 
-   private function moveAttachmentToSecureFolder(
-       AttachmentInterface $attachment
-   ): void {
+    private function moveAttachmentToSecureFolder(
+        array $attachment
+    ): void {
         $destinationFile = $this->filesystem
-           ->getDirectoryRead(DirectoryList::VAR_DIR)
+           ->getDirectoryWrite(DirectoryList::VAR_DIR)
            ->getAbsolutePath(
                sprintf(
-                   'customer/substitute_order/files/%d/%s/%s',
-                   $attachment->getParentEntity()->getCustomerId(),
-                   $attachment->getEntityTypeId(),
-                   $attachment->getFileName()
+                   'substitute_order/%s/%s',
+                   $attachment['entity_type'],
+                   $attachment['file']
                )
            );
 
@@ -192,8 +191,7 @@ class MigrateAttachments extends Command
             ->getDirectoryRead(DirectoryList::MEDIA)
             ->getAbsolutePath(
                 sprintf(
-                    'customer/substitute_order/files/%d/%s/%s',
-                    $attachment['magento_customer_identifier'],
+                    'substitute_order/%s/%s',
                     $attachment['entity_type'],
                     $attachment['file']
                 )

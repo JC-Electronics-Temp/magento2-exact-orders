@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as AttachmentResourceModel;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DataObject\IdentityInterface;
@@ -23,6 +22,8 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\ShipmentInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\ShipmentRepositoryInterface;
+use UnhandledMatchError;
 
 class Attachment extends AbstractModel implements AttachmentInterface, IdentityInterface
 {
@@ -32,12 +33,12 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
 
     public function __construct(
         Context $context,
-        \Magento\Framework\Registry $registry,
+        Registry $registry,
         private readonly InvoiceRepositoryInterface $invoiceRepository,
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly ShipmentRepositoryInterface $shipmentRepository,
         AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct(
@@ -61,7 +62,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
 
     public function getParentId(): int
     {
-        return (int) $this->_getData(static::KEY_ENTITY_ID);
+        return (int)$this->_getData(static::KEY_ENTITY_ID);
     }
 
     public function setParentId(int $parentId): self
@@ -90,7 +91,19 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
 
     public function setFileName(string $fileName): AttachmentInterface
     {
-        $this->setData(self::KEY_FILE_NAME, $fileName);
+        $this->setData(self::KEY_FILE_NAME, $this->normalizeFilename($fileName));
+
+        return $this;
+    }
+
+    public function getFileContent(): string
+    {
+        return $this->_getData(self::KEY_FILE_CONTENT);
+    }
+
+    public function setFileContent(string $fileContent): self
+    {
+        $this->setData(self::KEY_FILE_CONTENT, $fileContent);
 
         return $this;
     }
@@ -101,6 +114,33 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
             'invoice' => $this->invoiceRepository->get($this->getParentId()),
             'order' => $this->orderRepository->get($this->getParentId()),
             'shipment' => $this->shipmentRepository->get($this->getParentId()),
+            default => throw new UnhandledMatchError($this->getEntityTypeId()),
         };
+    }
+
+    private function normalizeFilename(string $fileName): string
+    {
+        $pathInfo = pathinfo($fileName);
+        $fileExtension = strtolower($pathInfo['extension']);
+        $fileName = strtolower(
+            trim(
+                preg_replace(
+                    '/_+/',
+                    '_',
+                    preg_replace(
+                        '/[^a-zA-Z0-9]/',
+                        '_',
+                        $pathInfo['filename']
+                    )
+                ),
+                '_'
+            )
+        );
+
+        return  sprintf(
+            '%s.%s',
+            $fileName,
+            $fileExtension
+        );
     }
 }

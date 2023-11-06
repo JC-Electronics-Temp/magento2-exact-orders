@@ -25,14 +25,6 @@
     <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
     <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
 
-    <type name="Magento\Sales\Model\Order">
-        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
-    </type>
-
-    <type name="Magento\Sales\Model\Order\Invoice">
-        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
-    </type>
-
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
@@ -47,19 +39,31 @@
 
     <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
         <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_ORDER</argument>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_ORDER</argument>
         </arguments>
     </virtualType>
 
     <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
         <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_INVOICE</argument>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_INVOICE</argument>
         </arguments>
     </virtualType>
 
     <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
         <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity::ENTITY_TYPE_SHIPMENT</argument>
+            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_SHIPMENT</argument>
         </arguments>
     </virtualType>
+
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
+    </type>
+
+    <type name="Magento\Sales\Model\Order\Invoice">
+        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToInvoice"/>
+    </type>
+
+    <type name="Magento\Sales\Model\Order\Shipment">
+        <plugin name="loadAttachmentsWithShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment"/>
+    </type>
 </config>

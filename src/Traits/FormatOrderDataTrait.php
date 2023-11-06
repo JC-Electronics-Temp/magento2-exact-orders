@@ -28,6 +28,7 @@ trait FormatOrderDataTrait
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
     public function formatOrderData(array $orderData): OrderInterface
     {
         $customer         = $this->getCustomerById((int) $orderData['magento_customer_id']);
@@ -48,21 +49,21 @@ trait FormatOrderDataTrait
 
         return $this->serviceInputProcessor->convertValue(
             [
-                'base_discount_amount' => (float) $orderData['base_discount_amount'],
-                'base_discount_invoiced' => $orderInvoiced ? (float) $orderData['base_discount_amount'] : 0,
-                'base_grand_total' => (float) $orderData['base_grandtotal'],
-                'base_shipping_amount' => (float) $orderData['base_shipping_amount'],
-                'base_shipping_incl_tax' => $orderInclTax ? (float) $orderData['base_shipping_amount'] : 0,
-                'base_shipping_invoiced' => $orderInvoiced ? (float) $orderData['base_shipping_amount'] : 0,
+                'base_discount_amount' => (float) ($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0),
+                'base_discount_invoiced' => $orderInvoiced ? (float) ($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0) : 0,
+                'base_grand_total' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
+                'base_shipping_amount' => (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
+                'base_shipping_incl_tax' => $orderInclTax ? (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0) : 0,
+                'base_shipping_invoiced' => $orderInvoiced ? (float) ($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0) : 0,
                 'base_shipping_tax_amount' => 0,
-                'base_subtotal' => (float) $orderData['base_subtotal'],
-                'base_subtotal_incl_tax' => $orderInclTax ? (float) $orderData['base_subtotal'] : 0,
-                'base_subtotal_invoiced' => $orderInvoiced ? (float) $orderData['base_subtotal'] : 0,
-                'base_tax_amount' => (float) $orderData['base_tax_amount'],
-                'base_tax_invoiced' => $orderInvoiced ? (float) $orderData['base_tax_amount'] : 0,
+                'base_subtotal' => (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']),
+                'base_subtotal_incl_tax' => $orderInclTax ? (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']) : 0,
+                'base_subtotal_invoiced' => $orderInvoiced ? (float) ($orderData['base_subtotal'] ?? $orderData['subtotal']) : 0,
+                'base_tax_amount' => (float) ($orderData['base_tax_amount'] ?? $orderData['tax_amount']),
+                'base_tax_invoiced' => $orderInvoiced ? (float) ($orderData['base_tax_amount'] ?? $orderData['tax_amount']) : 0,
                 'base_total_due' => 0,
-                'base_total_invoiced' => $orderInvoiced ? (float) $orderData['base_grandtotal'] : 0,
-                'base_total_paid' => (float) $orderData['base_grandtotal'],
+                'base_total_invoiced' => $orderInvoiced ? (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']) : 0,
+                'base_total_paid' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
                 'base_total_qty_ordered' => array_sum(
                     array_column($orderData['items'], 'qty')
                 ),
@@ -75,15 +76,15 @@ trait FormatOrderDataTrait
                 'customer_middlename' => $customer->getMiddlename(),
                 'customer_prefix' => $customer->getPrefix(),
                 'customer_suffix' => $customer->getSuffix(),
-                'discount_amount' => (float) $orderData['discount_amount'],
-                'discount_invoiced' => $orderInvoiced ? (float) $orderData['discount_amount'] : 0,
+                'discount_amount' => (float) ($orderData['discount_amount'] ?? 0),
+                'discount_invoiced' => $orderInvoiced ? (float) ($orderData['discount_amount'] ?? 0) : 0,
                 'ext_customer_id' => $orderData['external_customer_id'] ?? null,
                 'ext_order_id' => $orderData['external_order_id'] ?? null,
                 'grand_total' => (float) $orderData['grandtotal'],
                 'increment_id' => $orderIncrementId,
-                'shipping_amount' => (float) $orderData['shipping_amount'],
-                'shipping_incl_tax' => (float) $orderData['shipping_amount'],
-                'shipping_invoiced' => $orderInvoiced ? (float) $orderData['shipping_amount'] : 0,
+                'shipping_amount' => (float) ($orderData['shipping_amount'] ?? 0),
+                'shipping_incl_tax' => (float) ($orderData['shipping_amount'] ?? 0),
+                'shipping_invoiced' => $orderInvoiced ? (float) ($orderData['shipping_amount'] ?? 0) : 0,
                 'state' => strtolower($orderData['state']),
                 'status' => $this->getOrderStatusByState($orderData['state']),
                 'store_id' => $customer->getStoreId(),
@@ -110,11 +111,11 @@ trait FormatOrderDataTrait
                 'payment' => [
                     'amount_ordered' => $orderData['grandtotal'],
                     'amount_paid' => $orderData['grandtotal'],
-                    'method' => $orderData['payment_method'],
-                    'base_amount_ordered' => $orderData['base_grandtotal'],
-                    'base_amount_paid' => $orderData['base_grandtotal'],
-                    'base_shipping_amount' => $orderData['base_shipping_amount'],
-                    'shipping_amount' => $orderData['shipping_amount'],
+                    'method' => $orderData['payment_method'] ?? 'unknown',
+                    'base_amount_ordered' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
+                    'base_amount_paid' => (float) ($orderData['base_grandtotal'] ?? $orderData['grandtotal']),
+                    'base_shipping_amount' => (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
+                    'shipping_amount' => (float)($orderData['shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
                 ],
                 'extension_attributes' => [
                     'shipping_assignments' => [
@@ -124,7 +125,7 @@ trait FormatOrderDataTrait
                                     $orderData['shipping_address'],
                                     AbstractAddress::TYPE_SHIPPING
                                 ),
-                                'method' => $orderData['shipping_method']
+                                'method' => $orderData['shipping_method'] ?? 'unknown'
                             ]
                         ]
                     ],
@@ -208,7 +209,13 @@ trait FormatOrderDataTrait
         $state         = strtolower($state);
 
         if (!isset($orderStatuses[$state])) {
-            throw new LocalizedException(__('Unknown order state. Please check the data'));
+            throw new LocalizedException(
+                __(
+                    'Unknown order state "%1". Possible states: %2',
+                    $state,
+                    array_keys($orderStatuses)
+                )
+            );
         }
 
         return $orderStatuses[$state];
@@ -217,7 +224,7 @@ trait FormatOrderDataTrait
     private function getProductIdBySku(string $sku): ?int
     {
         try {
-            return $this->productRepository->get($sku)->getId();
+            return (int) $this->productRepository->get($sku)->getId();
         } catch (NoSuchEntityException) {
             return null;
         }

@@ -54,6 +54,6 @@ class Invoice implements HttpGetActionInterface
     ): bool {
         $customer = $this->customerSession->getCustomer();
 
-        return $attachment->getOrder()->getCustomerId() === $customer->getId();
+        return $attachment->getParentEntity()->getCustomerId() === $customer->getId();
     }
 }

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrderFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Console\Cli;
+use Magento\Framework\Filesystem;
 use Magento\Sales\Model\ResourceModel\Order as OrderResourceModel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,6 +31,7 @@ class MigrateSubstituteOrders extends Command
         private readonly OrderResourceModel $orderResourceModel,
         private readonly ItemFactory $externalOrderItemFactory,
         private readonly AddressFactory $externalOrderAddressFactory,
+        private readonly Filesystem $filesystem,
         string $name = null
     ) {
         parent::__construct($name ?? self::COMMAND_NAME);
@@ -102,7 +106,8 @@ class MigrateSubstituteOrders extends Command
                             'items' => $this->getOrderItems((int)$entity['order_id']),
                             'billing_address' => $this->getOrderAddress((int)$entity['billing_address_id']),
                             'shipping_address' => $this->getOrderAddress((int)$entity['shipping_address_id']),
-                            'payment_method' => $entity['payment_method'] ?? 'Unknown'
+                            'payment_method' => $entity['payment_method'] ?? 'Unknown',
+                            'attachments' => $this->getOrderAttachments((int)$entity['order_id'])
                         ]
                     )
                 ]
@@ -151,5 +156,41 @@ class MigrateSubstituteOrders extends Command
         return $this->externalOrderAddressFactory->create(
             ['data' => $connection->fetchAll($query)]
         );
+    }
+
+    private function getOrderAttachments(int $entityId): array
+    {
+        $connection = $this->orderResourceModel->getConnection();
+        $query = $connection->select()
+            ->from($this->orderResourceModel->getTable('dealer4dealer_substituteorders_attachment'))
+            ->where('entity_type_identifier = ?', $entityId)
+            ->where('entity_type = ?', AttachmentInterface::ENTITY_TYPE_ORDER);
+
+        return array_map(
+            function (array $attachment) {
+                return [
+                    'file_data' => $this->getFileContent($attachment['file']),
+                    'name' => $attachment['file']
+                ];
+            },
+            $connection->fetchAll($query)
+        );
+    }
+
+    private function getFileContent(string $fileName): string
+    {
+        $content = file_get_contents(
+            $this->filesystem
+                ->getDirectoryRead(DirectoryList::MEDIA)
+                ->getAbsolutePath(
+                    sprintf(
+                        'substitute_order/%s/%s',
+                        AttachmentInterface::ENTITY_TYPE_ORDER,
+                        $fileName
+                    )
+                )
+        );
+
+        return base64_encode($content);
     }
 }

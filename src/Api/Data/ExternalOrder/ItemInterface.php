@@ -185,12 +185,12 @@ interface ItemInterface
     public function setDiscountAmount(string $discountAmount): self;
 
     /**
-     * @return AdditionalDataInterface[]
+     * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]
      */
     public function getAdditionalData(): array;
 
     /**
-     * @param AdditionalDataInterface[] $additionalData
+     * @param \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[] $additionalData
      *
      * @return self
      */

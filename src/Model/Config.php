@@ -28,11 +28,15 @@ class Config
 
     public function getOrderStatuses(): array
     {
-        return $this->serializer->unserialize(
-            $this->scopeConfig->getValue(
-                self::XML_PATH_ORDER_STATUS_MAPPING,
-                ScopeInterface::SCOPE_STORE
-            ) ?? '{}'
+        return array_column(
+            $this->serializer->unserialize(
+                $this->scopeConfig->getValue(
+                    self::XML_PATH_ORDER_STATUS_MAPPING,
+                    ScopeInterface::SCOPE_STORE
+                ) ?? '{}'
+            ),
+                'status',
+                'state'
         );
     }
 

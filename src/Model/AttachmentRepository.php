@@ -26,7 +26,8 @@ class AttachmentRepository implements AttachmentRepositoryInterface
         private readonly CollectionProcessorInterface $collectionProcessor,
         private readonly ResourceModel $resourceModel,
         private readonly AttachmentFactory $attachmentFactory,
-        private readonly SearchResultsInterfaceFactory $searchResultsFactory
+        private readonly SearchResultsInterfaceFactory $searchResultsFactory,
+        private readonly Uploader $uploader
     ) {
     }
 
@@ -54,6 +55,9 @@ class AttachmentRepository implements AttachmentRepositoryInterface
     public function save(AttachmentInterface $attachment): AttachmentInterface
     {
         $this->resourceModel->save($attachment);
+
+        // Save the file to the server
+        $this->uploader->upload($attachment);
 
         return $attachment;
     }

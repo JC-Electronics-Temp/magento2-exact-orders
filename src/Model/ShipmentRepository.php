@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
 use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
@@ -37,7 +39,9 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         private readonly ExternalShipmentFactory $externalShipmentFactory,
         private readonly AddressFactory $externalOrderAddressFactory,
         private readonly ItemFactory $externalShipmentItemFactory,
-        private readonly Json $serializer
+        private readonly Json $serializer,
+        private readonly AttachmentRepositoryInterface $attachmentRepository,
+        private readonly AttachmentFactory $attachmentFactory,
     ) {
     }
 
@@ -91,6 +95,17 @@ class ShipmentRepository implements ShipmentRepositoryInterface
                 $this->getOrderFromShipment($shipment)
             )
         );
+
+        foreach ($shipment->getAttachments() as $attachment) {
+            /** @var AttachmentInterface $attachmentObject */
+            $attachmentObject = $this->attachmentFactory->create();
+            $attachmentObject->setParentId((int) $result->getEntityId())
+                ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_SHIPMENT)
+                ->setFileName($attachment['name'])
+                ->setFileContent($attachment['file_data']);
+
+            $this->attachmentRepository->save($attachmentObject);
+        }
 
         return (int) $result->getEntityId();
     }
