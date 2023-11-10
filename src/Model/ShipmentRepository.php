@@ -15,33 +15,30 @@ use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
 use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalShipment\ItemFactory;
+use JcElectronics\ExactOrders\Traits\FormatExternalOrderAddressTrait;
 use JcElectronics\ExactOrders\Traits\FormatExternalShipmentDataTrait;
-use JcElectronics\ExactOrders\Traits\FormatShipmentDataTrait;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Framework\Webapi\ServiceInputProcessor;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\ShipmentInterface;
-use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
 use Magento\Sales\Api\ShipmentRepositoryInterface as MagentoShipmentRepositoryInterface;
+use Magento\Sales\Api\ShipOrderInterface;
 
 class ShipmentRepository implements ShipmentRepositoryInterface
 {
-    use FormatShipmentDataTrait;
     use FormatExternalShipmentDataTrait;
+    use FormatExternalOrderAddressTrait;
 
     public function __construct(
-        private readonly MagentoOrderRepositoryInterface $orderRepository,
         private readonly MagentoShipmentRepositoryInterface $shipmentRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly ServiceInputProcessor $serviceInputProcessor,
         private readonly ExternalShipmentFactory $externalShipmentFactory,
         private readonly AddressFactory $externalOrderAddressFactory,
         private readonly ItemFactory $externalShipmentItemFactory,
         private readonly Json $serializer,
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly AttachmentFactory $attachmentFactory,
+        private readonly ShipOrderInterface $shipOrder
     ) {
     }
 
@@ -89,17 +86,14 @@ class ShipmentRepository implements ShipmentRepositoryInterface
     public function save(
         ExternalShipmentInterface $shipment
     ): int {
-        $result = $this->shipmentRepository->save(
-            $this->formatShipmentData(
-                $shipment->getData(),
-                $this->getOrderFromShipment($shipment)
-            )
+        $shipmentId = $this->shipOrder->execute(
+            $shipment->getOrderId()
         );
 
         foreach ($shipment->getAttachments() as $attachment) {
             /** @var AttachmentInterface $attachmentObject */
             $attachmentObject = $this->attachmentFactory->create();
-            $attachmentObject->setParentId((int) $result->getEntityId())
+            $attachmentObject->setParentId($shipmentId)
                 ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_SHIPMENT)
                 ->setFileName($attachment['name'])
                 ->setFileContent($attachment['file_data']);
@@ -107,11 +101,6 @@ class ShipmentRepository implements ShipmentRepositoryInterface
             $this->attachmentRepository->save($attachmentObject);
         }
 
-        return (int) $result->getEntityId();
-    }
-
-    private function getOrderFromShipment(ExternalShipmentInterface $shipment): OrderInterface
-    {
-        return $this->orderRepository->get($shipment->getOrderId());
+        return $shipmentId;
     }
 }

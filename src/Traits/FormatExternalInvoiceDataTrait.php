@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Traits;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
-use Magento\Sales\Api\Data\InvoiceItemInterface;
 use Magento\Sales\Model\Order\Invoice;
 
 trait FormatExternalInvoiceDataTrait
@@ -22,7 +21,7 @@ trait FormatExternalInvoiceDataTrait
         return $this->externalInvoiceFactory->create(
             [
                 'data' => [
-                    'order_id' => $invoice->getEntityId(),
+                    'invoice_id' => $invoice->getEntityId(),
                     'order_ids' => [$invoice->getOrderId()],
                     'magento_invoice_id' => $invoice->getEntityId(),
                     'ext_invoice_id' => $invoice->getData('ext_invoice_id'),

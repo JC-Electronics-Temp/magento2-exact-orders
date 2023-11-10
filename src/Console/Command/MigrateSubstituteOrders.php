@@ -6,7 +6,6 @@ namespace JcElectronics\ExactOrders\Console\Command;
 
 use Exception;
 use Generator;
-use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface as ExternalOrderRepositoryInterface;
@@ -259,7 +258,7 @@ class MigrateSubstituteOrders extends Command
     private function updateExistingOrder(
         Order $magentoOrder,
         array $orderData
-    ): Order {
+    ): void {
         /** @var AttachmentInterface[] $attachments */
         $attachments = [];
         $magentoOrder->setExtOrderId($orderData['ext_order_id'])
@@ -277,7 +276,5 @@ class MigrateSubstituteOrders extends Command
         $magentoOrder->setData('attachments', $attachments);
 
         $this->orderRepository->save($magentoOrder);
-
-        return $magentoOrder;
     }
 }

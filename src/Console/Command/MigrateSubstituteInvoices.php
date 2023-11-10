@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
+use Exception;
+use Generator;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface as ExternalInvoiceRepositoryInterface;
@@ -16,7 +18,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Console\Cli;
 use Magento\Framework\Filesystem;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResourceModel;
@@ -25,6 +27,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class MigrateSubstituteInvoices extends Command
 {
@@ -72,14 +75,17 @@ class MigrateSubstituteInvoices extends Command
 
         foreach ($substituteInvoices as $invoiceData) {
             try {
+                /** @var Invoice $magentoInvoice */
                 $magentoInvoice = $this->getMagentoInvoice($invoiceData['magento_increment_id']);
 
                 if (!$magentoInvoice instanceof InvoiceInterface) {
-                    $this->processExternalInvoice($invoiceData);
-                }  else if ($magentoInvoice->getData('ext_invoice_id') === null) {
+                    $magentoInvoice = $this->processExternalInvoice($invoiceData);
+                }
+
+                if ($magentoInvoice->getData('ext_invoice_id') === null) {
                     $this->updateExistingInvoice($magentoInvoice, $invoiceData);
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $errors[] =  $e->getMessage();
             }
 
@@ -100,12 +106,14 @@ class MigrateSubstituteInvoices extends Command
         return Cli::RETURN_SUCCESS;
     }
 
-    private function processExternalInvoice(array $invoiceData): void
+    private function processExternalInvoice(array $invoiceData): Invoice
     {
         $externalInvoice = $this->externalInvoiceFactory
             ->create(['data' => $invoiceData]);
 
-        $this->externalInvoiceRepository->save($externalInvoice);
+        return $this->invoiceRepository->get(
+            $this->externalInvoiceRepository->save($externalInvoice)
+        );
     }
 
     private function getMagentoInvoice(string $incrementId): ?InvoiceInterface
@@ -120,7 +128,7 @@ class MigrateSubstituteInvoices extends Command
         return $collection->getTotalCount() > 0 ? current($collection->getItems()) : null;
     }
 
-    private function fetchAllSubstituteInvoices(int $limit): \Generator
+    private function fetchAllSubstituteInvoices(int $limit): Generator
     {
         $connection = $this->invoiceResourceModel->getConnection();
         $query      = $connection->select()
@@ -246,7 +254,7 @@ class MigrateSubstituteInvoices extends Command
                         )
                     )
             );
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
 
@@ -256,7 +264,7 @@ class MigrateSubstituteInvoices extends Command
     private function updateExistingInvoice(
         Invoice $magentoInvoice,
         array $invoiceData
-    ): Invoice {
+    ): void {
         /** @var AttachmentInterface[] $attachments */
         $attachments = [];
         $magentoInvoice->setData('ext_invoice_id', $invoiceData['ext_invoice_id']);
@@ -273,8 +281,6 @@ class MigrateSubstituteInvoices extends Command
         $magentoInvoice->setData('attachments', $attachments);
 
         $this->invoiceRepository->save($magentoInvoice);
-
-        return $magentoInvoice;
     }
 
     private function getOrderIdsByInvoice(int $invoiceId): array

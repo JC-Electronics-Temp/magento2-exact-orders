@@ -11,13 +11,14 @@ namespace JcElectronics\ExactOrders\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Sales\Model\Order\Invoice;
 
 class AddExternalInvoiceIdToInvoice implements ObserverInterface
 {
     public function execute(
         Observer $observer
     ): void {
-        /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+        /** @var Invoice $invoice */
         $invoice = $observer->getData('invoice');
 
         $extensionAttributes = $invoice->getExtensionAttributes();

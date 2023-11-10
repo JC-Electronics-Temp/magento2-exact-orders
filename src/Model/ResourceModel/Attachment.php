@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Model\ResourceModel;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
-use Magento\Framework\Model\ResourceModel\Db\Context;
 
 class Attachment extends AbstractDb
 {

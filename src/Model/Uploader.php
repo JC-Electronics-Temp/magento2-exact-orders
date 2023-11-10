@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem;
 use Magento\MediaStorage\Model\File\UploaderFactory;
 

@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Traits;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface;
-use Magento\Sales\Api\Data\ShipmentItemInterface;
 use Magento\Sales\Api\Data\TrackInterface;
 use Magento\Sales\Model\Order\Shipment;
 

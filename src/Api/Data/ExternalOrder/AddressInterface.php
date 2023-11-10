@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data\ExternalOrder;
 
-use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
-
 interface AddressInterface
 {
     public const KEY_ORDER_ADDRESS_ID = 'orderaddress_id',

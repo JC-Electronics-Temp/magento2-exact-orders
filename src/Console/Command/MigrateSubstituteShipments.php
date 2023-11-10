@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Console\Command;
 
+use Exception;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface;
@@ -20,6 +21,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 class MigrateSubstituteShipments extends Command
 {
@@ -63,7 +65,7 @@ class MigrateSubstituteShipments extends Command
         foreach ($substituteShipments as $shipmentData) {
             try {
                 $this->processExternalShipment($shipmentData);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $errors[] = __(
                     'An error occured while processing shipment %1: %2',
                     $shipmentData['increment_id'],
@@ -223,7 +225,7 @@ class MigrateSubstituteShipments extends Command
                         )
                     )
             );
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
 

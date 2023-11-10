@@ -15,8 +15,11 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
+use JcElectronics\ExactOrders\Traits\CustomerInformationTrait;
+use JcElectronics\ExactOrders\Traits\FormatExternalOrderAddressTrait;
 use JcElectronics\ExactOrders\Traits\FormatExternalOrderDataTrait;
 use JcElectronics\ExactOrders\Traits\FormatOrderDataTrait;
+use JcElectronics\ExactOrders\Traits\StoreInformationTrait;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -25,13 +28,15 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
-use Magento\Sales\Model\Order;
 use Magento\Store\Api\StoreRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    use CustomerInformationTrait;
     use FormatOrderDataTrait;
+    use FormatExternalOrderAddressTrait;
     use FormatExternalOrderDataTrait;
+    use StoreInformationTrait;
 
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,

@@ -10,13 +10,12 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Traits;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 
 trait FormatExternalOrderDataTrait
 {
     use FormatExternalOrderAddressTrait;
-
+    
     private function formatExternalOrderData(Order $order): ExternalOrderInterface
     {
         return $this->externalOrderFactory->create(

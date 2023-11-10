@@ -43,11 +43,6 @@ trait FormatOrderDataTrait
                     : null
             );
 
-        $orderInvoiced = !in_array(
-            strtolower($orderData['state']),
-            [Order::STATE_PENDING_PAYMENT, Order::STATE_NEW]
-        );
-
         $grandTotal = (float)($orderData['base_grandtotal'] ?? $orderData['grandtotal']);
         $baseDiscount = (float)($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0);
         $baseShippingAmount = (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0);
@@ -57,24 +52,20 @@ trait FormatOrderDataTrait
         return $this->serviceInputProcessor->convertValue(
             [
                 'base_discount_amount' => $baseDiscount,
-                'base_discount_invoiced' => $orderInvoiced ? $baseDiscount : 0,
                 'base_grand_total' => $grandTotal,
                 'base_shipping_amount' => $baseShippingAmount,
                 'base_shipping_incl_tax' => $orderInclTax ? $baseShippingAmount : 0,
-                'base_shipping_invoiced' => $orderInvoiced ? $baseShippingAmount : 0,
                 'base_shipping_tax_amount' => 0,
                 'base_subtotal' => $baseSubtotal,
                 'base_subtotal_incl_tax' => $orderInclTax ? $baseSubtotal : 0,
-                'base_subtotal_invoiced' => $orderInvoiced ? $baseSubtotal : 0,
                 'base_tax_amount' => $baseTaxAmount,
-                'base_tax_invoiced' => $orderInvoiced ? $baseTaxAmount : 0,
                 'base_total_due' => 0,
-                'base_total_invoiced' => $orderInvoiced ? $grandTotal : 0,
                 'base_total_paid' => $grandTotal,
                 'base_total_qty_ordered' => array_sum(
                     array_column($orderData['items'], 'qty')
                 ),
                 'created_at' => $orderData['order_date'],
+                'customer_id' => $customer->getId(),
                 'customer_email' => $customer->getEmail(),
                 'customer_firstname' => $customer->getFirstname(),
                 'customer_group_id' => $customer->getGroupId(),
@@ -84,23 +75,18 @@ trait FormatOrderDataTrait
                 'customer_prefix' => $customer->getPrefix(),
                 'customer_suffix' => $customer->getSuffix(),
                 'discount_amount' => (float) ($orderData['discount_amount'] ?? 0),
-                'discount_invoiced' => $orderInvoiced ? (float) ($orderData['discount_amount'] ?? 0) : 0,
                 'ext_customer_id' => $orderData['external_customer_id'] ?? null,
                 'ext_order_id' => $orderData['external_order_id'] ?? null,
                 'grand_total' => (float) $orderData['grandtotal'],
                 'increment_id' => $orderIncrementId,
                 'shipping_amount' => (float) ($orderData['shipping_amount'] ?? 0),
                 'shipping_incl_tax' => (float) ($orderData['shipping_amount'] ?? 0),
-                'shipping_invoiced' => $orderInvoiced ? (float) ($orderData['shipping_amount'] ?? 0) : 0,
                 'state' => strtolower($orderData['state']),
                 'status' => $this->getOrderStatusByState($orderData['state']),
                 'store_id' => $customer->getStoreId(),
                 'subtotal' => (float) $orderData['subtotal'],
                 'subtotal_incl_tax' => (float) $orderData['subtotal'],
-                'subtotal_invoiced' => $orderInvoiced ? (float) $orderData['subtotal'] : 0,
                 'tax_amount' => (float) $orderData['tax_amount'],
-                'tax_invoiced' => $orderInvoiced ? (float) $orderData['tax_amount'] : 0,
-                'total_invoiced' => $orderInvoiced ? (float) $orderData['grandtotal'] : 0,
                 'total_item_count' => count($orderData['items']),
                 'total_paid' => (float) $orderData['grandtotal'],
                 'total_qty_ordered' => array_sum(
@@ -122,7 +108,7 @@ trait FormatOrderDataTrait
                     'base_amount_ordered' => $grandTotal,
                     'base_amount_paid' => $grandTotal,
                     'base_shipping_amount' => $baseShippingAmount,
-                    'shipping_amount' => (float)($orderData['shipping_amount'] ?? $orderData['shipping_amount'] ?? 0),
+                    'shipping_amount' => (float)($orderData['shipping_amount'] ?? 0),
                 ],
                 'extension_attributes' => [
                     'shipping_assignments' => [
