@@ -13,6 +13,7 @@ use JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\Renderer\OrderState;
 use JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\Renderer\OrderStatus;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\BlockInterface;
 
 class OrderStatuses extends AbstractFieldArray
@@ -71,6 +72,9 @@ class OrderStatuses extends AbstractFieldArray
         );
     }
 
+    /**
+     * @throws LocalizedException
+     */
     private function getOrderStatusRenderer(): BlockInterface
     {
         return $this->orderStatusRenderer ??= $this->getLayout()->createBlock(

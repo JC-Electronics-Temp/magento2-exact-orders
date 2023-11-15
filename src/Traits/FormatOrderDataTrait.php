@@ -17,7 +17,6 @@ use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Model\Order;
 
 trait FormatOrderDataTrait
 {

@@ -17,8 +17,8 @@ use Magento\Sales\Model\ResourceModel\Order\Status as StatusResource;
 
 class AddImportedProcessingOrderStatus implements DataPatchInterface
 {
-    private const ORDER_STATUS_IMPORTED = 'imported',
-        ORDER_STATUS_IMPORTED_LABEL = 'Imported';
+    private const ORDER_STATUS_IMPORTED = 'external',
+        ORDER_STATUS_IMPORTED_LABEL = 'External Order';
 
     public function __construct(
         private readonly StatusFactory $statusFactory,
@@ -31,7 +31,7 @@ class AddImportedProcessingOrderStatus implements DataPatchInterface
         /** @var Status $status */
         $status = $this->statusFactory->create();
         $status->setStatus(self::ORDER_STATUS_IMPORTED)
-            ->setLabel(self::ORDER_STATUS_IMPORTED_LABEL);
+            ->setData('label', self::ORDER_STATUS_IMPORTED_LABEL);
         $this->statusResource->save($status);
 
         $status->assignState(

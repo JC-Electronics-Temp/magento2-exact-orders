@@ -11,6 +11,8 @@ namespace JcElectronics\ExactOrders\Traits;
 
 use Magento\Company\Api\Data\CompanyInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 trait CustomerInformationTrait
 {

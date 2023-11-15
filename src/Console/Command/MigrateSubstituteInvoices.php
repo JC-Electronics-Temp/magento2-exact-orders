@@ -18,7 +18,6 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Console\Cli;
 use Magento\Framework\Filesystem;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\ResourceModel\Order\Invoice as InvoiceResourceModel;
@@ -106,7 +105,7 @@ class MigrateSubstituteInvoices extends Command
         return Cli::RETURN_SUCCESS;
     }
 
-    private function processExternalInvoice(array $invoiceData): Invoice
+    private function processExternalInvoice(array $invoiceData): InvoiceInterface
     {
         $externalInvoice = $this->externalInvoiceFactory
             ->create(['data' => $invoiceData]);

@@ -10,6 +10,7 @@ use JcElectronics\ExactOrders\Model\AttachmentRepository;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Console\Cli;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
