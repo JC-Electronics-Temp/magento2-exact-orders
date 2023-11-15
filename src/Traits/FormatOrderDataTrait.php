@@ -156,7 +156,7 @@ trait FormatOrderDataTrait
                         'row_total_incl_tax' => (float) $item->getRowTotal(),
                         'sku' => $item->getSku(),
                         'tax_amount' => (float) $item->getTaxAmount(),
-                        'extension_attributes' => array_reduce(
+                        'additional_data' => array_reduce(
                             $item->getAdditionalData(),
                             static fn (array $carry, AdditionalDataInterface $attribute) => array_replace(
                                 $carry,
