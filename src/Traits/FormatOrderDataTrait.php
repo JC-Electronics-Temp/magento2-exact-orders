@@ -121,6 +121,7 @@ trait FormatOrderDataTrait
                             ]
                         ]
                     ],
+                    'is_external_order' => true,
                     'company_order_attributes' => $this->getCompanyOrderData($company)
                 ]
             ],

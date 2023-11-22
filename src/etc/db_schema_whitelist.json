@@ -1,0 +1,24 @@
+{
+    "sales_order": {
+        "column": {
+            "is_external_order": true
+        }
+    },
+    "sales_invoice": {
+        "column": {
+            "ext_invoice_id": true
+        }
+    },
+    "sales_exact_attachment": {
+        "column": {
+            "attachment_id": true,
+            "entity_id": true,
+            "entity_type_id": true,
+            "file": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "SALES_EXACT_ATTACHMENT_ENTITY_ID_ENTITY_TYPE_ID_FILE": true
+        }
+    }
+}

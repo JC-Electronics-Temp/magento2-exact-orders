@@ -1,21 +1,19 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+    <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
+        <attribute code="attachments" type="JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]" />
+        <attribute code="is_external_order" type="boolean"/>
+    </extension_attributes>
+
     <extension_attributes for="Magento\Sales\Api\Data\OrderItemInterface">
         <attribute code="serial_number" type="string" />
         <attribute code="expected_delivery_date" type="string" />
     </extension_attributes>
 
     <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
+        <attribute code="attachments" type="JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]" />
         <attribute code="ext_invoice_id" type="string" />
-    </extension_attributes>
-
-    <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
-        <attribute code="attachments" type="JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]" />
-    </extension_attributes>
-
-    <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
-        <attribute code="attachments" type="JcElectronics\ExactOrders\Api\Data\AttachmentInterface[]" />
     </extension_attributes>
 
     <extension_attributes for="Magento\Sales\Api\Data\ShipmentInterface">

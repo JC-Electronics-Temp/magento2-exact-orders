@@ -37,47 +37,16 @@
         </arguments>
     </type>
 
-    <!-- Add attachments on load -->
-    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
-        <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_ORDER</argument>
-        </arguments>
-    </virtualType>
-
-    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
-        <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_INVOICE</argument>
-        </arguments>
-    </virtualType>
-
-    <virtualType name="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToEntity">
-        <arguments>
-            <argument name="entityTypeId" xsi:type="const">JcElectronics\ExactOrders\Api\Data\AttachmentInterface::ENTITY_TYPE_SHIPMENT</argument>
-        </arguments>
-    </virtualType>
-
-    <type name="Magento\Sales\Model\Order">
-        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToOrder"/>
+    <!-- Store attachments on sales entities -->
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="addAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\Sales\Order\AddOrderAttachments"/>
     </type>
 
-    <type name="Magento\Sales\Model\Order\Invoice">
-        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToInvoice"/>
+    <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
+        <plugin name="addAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\AddInvoiceAttachments"/>
     </type>
 
-    <type name="Magento\Sales\Model\Order\Shipment">
-        <plugin name="loadAttachmentsWithShipment" type="JcElectronics\ExactOrders\Plugin\AddAttachmentsToShipment"/>
-    </type>
-
-    <!-- Save Attachments on model save -->
-    <type name="Magento\Sales\Model\ResourceModel\Order">
-        <plugin name="loadAttachmentsWithOrder" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
-    </type>
-
-    <type name="Magento\Sales\Model\ResourceModel\Order\Invoice">
-        <plugin name="loadAttachmentsWithInvoice" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
-    </type>
-
-    <type name="Magento\Sales\Model\ResourceModel\Order\Shipment">
-        <plugin name="loadAttachmentsWithShipment" type="JcElectronics\ExactOrders\Plugin\UploadAttachmentsOnEntity"/>
+    <type name="Magento\Sales\Api\ShipmentRepositoryInterface">
+        <plugin name="addAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\Sales\Shipment\AddShipmentAttachments"/>
     </type>
 </config>
