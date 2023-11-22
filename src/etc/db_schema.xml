@@ -7,12 +7,74 @@
 -->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="sales_order">
+    <table name="jcelectronics_exact_orders_sales_order">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" comment="Order ID"/>
         <column xsi:type="boolean" name="is_external_order" nullable="false" default="0" comment="Is External Order"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+
+        <constraint xsi:type="unique" referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_ORDER_ORDER_ID">
+            <column name="order_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign"
+                    referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID"
+                    table="jcelectronics_exact_orders_sales_order"
+                    column="order_id"
+                    referenceTable="sales_order"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"
+        />
     </table>
 
-    <table name="sales_invoice">
+    <table name="jcelectronics_exact_orders_sales_order_item">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="order_item_id" padding="10" unsigned="true" nullable="false" comment="Order Item ID"/>
+        <column xsi:type="varchar" length="200" name="serial_number" nullable="true" comment="Serial Number"/>
+        <column xsi:type="datetime" name="expected_delivery_date" nullable="true" comment="Expected Delivery Date"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+
+        <constraint xsi:type="unique" referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_ORDER_ITEM_ORDER_ITEM_ID">
+            <column name="order_item_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign"
+                    referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_ORDER_ITEM_ORDER_ITEM_ID_SALES_ORDER_ITEM_ITEM_ID"
+                    table="jcelectronics_exact_orders_sales_order_item"
+                    column="order_item_id"
+                    referenceTable="sales_order_item"
+                    referenceColumn="item_id"
+                    onDelete="CASCADE"
+        />
+    </table>
+
+    <table name="jcelectronics_exact_orders_sales_invoice">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="int" name="invoice_id" padding="10" unsigned="true" nullable="false" comment="Invoice ID"/>
         <column xsi:type="varchar" length="32" name="ext_invoice_id" nullable="true" comment="External Invoice ID"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+
+        <constraint xsi:type="unique" referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_INVOICE_INVOICE_ID">
+            <column name="invoice_id"/>
+        </constraint>
+
+        <constraint xsi:type="foreign"
+                    referenceId="JCELECTRONICS_EXACT_ORDERS_SALES_INVOICE_INVOICE_ID_SALES_INVOICE_ENTITY_ID"
+                    table="jcelectronics_exact_orders_sales_invoice"
+                    column="invoice_id"
+                    referenceTable="sales_invoice"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"
+        />
     </table>
 
     <table name="sales_exact_attachment" resource="default" engine="innodb" comment="Sales Exact Attachments">
@@ -20,9 +82,11 @@
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
         <column xsi:type="varchar" name="entity_type_id" length="20" nullable="false" comment="Entity Type ID"/>
         <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
+
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="attachment_id"/>
         </constraint>
+
         <constraint xsi:type="unique" referenceId="SALES_ORDER_ATTACHMENT_PARENT_ID_FILE">
             <column name="entity_id"/>
             <column name="entity_type_id"/>

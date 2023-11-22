@@ -27,6 +27,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderItemRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 
@@ -40,6 +41,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,
+        private readonly OrderItemRepositoryInterface $orderItemRepository,
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly CompanyManagementInterface $companyManagement,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,

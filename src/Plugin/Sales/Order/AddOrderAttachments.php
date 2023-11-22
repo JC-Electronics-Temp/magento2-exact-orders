@@ -56,10 +56,10 @@ class AddOrderAttachments extends AbstractAddAttachment
 
     public function afterSave(
         OrderRepositoryInterface $subject,
-        $result,
+        OrderInterface $result,
         OrderInterface $order
-    ): void {
-        $attachments = $order->getExtensionAttributes()->getAttachments();
+    ): OrderInterface {
+        $attachments = $order->getExtensionAttributes()->getAttachments() ?? [];
 
         foreach ($attachments as $attachment) {
             if ($attachment->getId()) {
@@ -68,5 +68,7 @@ class AddOrderAttachments extends AbstractAddAttachment
 
             $this->attachmentRepository->save($attachment);
         }
+
+        return $result;
     }
 }

@@ -43,9 +43,9 @@ class AddInvoiceAttachments extends AbstractAddAttachment
 
     public function afterSave(
         InvoiceRepositoryInterface $subject,
-        $result,
+        InvoiceInterface $result,
         InvoiceInterface $invoice
-    ): void {
+    ): InvoiceInterface {
         $attachments = $invoice->getExtensionAttributes()->getAttachments();
 
         foreach ($attachments as $attachment) {
@@ -55,5 +55,7 @@ class AddInvoiceAttachments extends AbstractAddAttachment
 
             $this->attachmentRepository->save($attachment);
         }
+
+        return $result;
     }
 }

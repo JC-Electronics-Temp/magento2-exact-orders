@@ -25,6 +25,15 @@
     <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
     <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
 
+    <!-- Extended Sales Data -->
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedOrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedOrderItemRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderItemRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedInvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedInvoiceRepository" />
+
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedOrderInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrder" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedOrderItemInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderItem" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExtendedInvoice" />
+
     <!-- Commands -->
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
@@ -40,10 +49,16 @@
     <!-- Store attachments on sales entities -->
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="addAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\Sales\Order\AddOrderAttachments"/>
+        <plugin name="updateAdditionalOrderData" type="JcElectronics\ExactOrders\Plugin\Sales\Order\UpdateAdditionalOrderData"/>
+    </type>
+
+    <type name="Magento\Sales\Api\OrderItemRepositoryInterface">
+        <plugin name="updateAdditionalOrderItemData" type="JcElectronics\ExactOrders\Plugin\Sales\Order\Item\UpdateAdditionalOrderItemData"/>
     </type>
 
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
         <plugin name="addAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\AddInvoiceAttachments"/>
+        <plugin name="updateAdditionalInvoiceData" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\UpdateAdditionalInvoiceData"/>
     </type>
 
     <type name="Magento\Sales\Api\ShipmentRepositoryInterface">

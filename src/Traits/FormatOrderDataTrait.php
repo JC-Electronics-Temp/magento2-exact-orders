@@ -17,6 +17,7 @@ use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 
 trait FormatOrderDataTrait
 {
@@ -47,9 +48,11 @@ trait FormatOrderDataTrait
         $baseShippingAmount = (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0);
         $baseSubtotal = (float)($orderData['base_subtotal'] ?? $orderData['subtotal']);
         $baseTaxAmount = (float)($orderData['base_tax_amount'] ?? $orderData['tax_amount']);
+        $magentoOrderId = $this->getMagentoOrderId($orderData['magento_increment_id']);
 
         return $this->serviceInputProcessor->convertValue(
             [
+                'entity_id' => $magentoOrderId,
                 'base_discount_amount' => $baseDiscount,
                 'base_grand_total' => $grandTotal,
                 'base_shipping_amount' => $baseShippingAmount,
@@ -95,7 +98,7 @@ trait FormatOrderDataTrait
                 'global_currency_code' => $this->config->getGlobalCurrencyCode(),
                 'order_currency_code' => $this->config->getBaseCurrencyCode($store),
                 'updated_at' => $orderData['updated_at'],
-                'items' => $this->formatOrderItems($orderData['items']),
+                'items' => $this->formatOrderItems($orderData['items'], $magentoOrderId),
                 'billing_address' => $this->formatOrderAddress(
                     $orderData['billing_address'],
                     AbstractAddress::TYPE_BILLING
@@ -131,7 +134,7 @@ trait FormatOrderDataTrait
 
     //phpcs:enable
 
-    private function formatOrderItems(array $items): array
+    private function formatOrderItems(array $items, ?int $orderId): array
     {
         return array_reduce(
             $items,
@@ -139,6 +142,7 @@ trait FormatOrderDataTrait
                 $carry,
                 [
                     [
+                        'item_id' => $this->getMagentoOrderItemId($item, $orderId),
                         'base_discount_amount' => (float) $item->getBaseDiscountAmount(),
                         'base_original_price' => (float) $item->getBasePrice(),
                         'base_price' => (float) $item->getBasePrice(),
@@ -156,12 +160,13 @@ trait FormatOrderDataTrait
                         'row_total_incl_tax' => (float) $item->getRowTotal(),
                         'sku' => $item->getSku(),
                         'tax_amount' => (float) $item->getTaxAmount(),
-                        'additional_data' => array_reduce(
+                        'extension_attributes' => array_reduce(
                             $item->getAdditionalData(),
-                            static fn (array $carry, AdditionalDataInterface $attribute) => array_replace(
-                                $carry,
-                                [$attribute->getKey() => $attribute->getValue()]
-                            ),
+                            function (array $carry, AdditionalDataInterface $item) {
+                                $carry[$item->getKey()] = $item->getValue();
+
+                                return $carry;
+                            },
                             []
                         )
                     ]
@@ -228,5 +233,38 @@ trait FormatOrderDataTrait
             'company_id' => $company->getId(),
             'company_name' => $company->getCompanyName()
         ];
+    }
+
+    private function getMagentoOrderId(string $incrementId): ?int
+    {
+        /** @var OrderInterface $order */
+        $order = current(
+            $this->orderRepository->getList(
+                $this->searchCriteriaBuilder
+                    ->addFilter(OrderInterface::INCREMENT_ID, $incrementId)
+                    ->create()
+            )->getItems()
+        );
+
+        return $order ? (int) $order->getEntityId() : null;
+    }
+
+    private function getMagentoOrderItemId(ItemInterface $item, ?int $orderId): ?int
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter(OrderItemInterface::SKU, $item->getSku())
+            ->addFilter(OrderItemInterface::QTY_ORDERED, $item->getQty());
+
+        if ($orderId !== null) {
+            $searchCriteria->addFilter(OrderItemInterface::ORDER_ID, $orderId);
+        }
+
+        $orderItem      = current(
+            $this->orderItemRepository->getList(
+                $searchCriteria->create()
+            )->getItems()
+        );
+
+        return $orderItem ? (int) $orderItem->getItemId() : null;
     }
 }
