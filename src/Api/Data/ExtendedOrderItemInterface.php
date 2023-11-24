@@ -20,9 +20,9 @@ interface ExtendedOrderItemInterface
 
     public function getSerialNumber(): ?string;
 
-    public function setSerialNumber(string $serialNumber): self;
+    public function setSerialNumber(?string $serialNumber): self;
 
     public function getExpectedDeliveryDate(): ?string;
 
-    public function setExpectedDeliveryDate(string $expectedDeliveryDate): self;
+    public function setExpectedDeliveryDate(?string $expectedDeliveryDate): self;
 }

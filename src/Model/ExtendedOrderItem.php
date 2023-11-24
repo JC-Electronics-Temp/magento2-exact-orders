@@ -35,7 +35,7 @@ class ExtendedOrderItem extends AbstractModel implements ExtendedOrderItemInterf
         return $this->_getData(self::KEY_SERIAL_NUMBER);
     }
 
-    public function setSerialNumber(string $serialNumber): self
+    public function setSerialNumber(?string $serialNumber): self
     {
         return $this->setData(self::KEY_SERIAL_NUMBER, $serialNumber);
     }
@@ -45,7 +45,7 @@ class ExtendedOrderItem extends AbstractModel implements ExtendedOrderItemInterf
         return $this->_getData(self::KEY_EXPECTED_DELIVERY_DATE);
     }
 
-    public function setExpectedDeliveryDate(string $expectedDeliveryDate): self
+    public function setExpectedDeliveryDate(?string $expectedDeliveryDate): self
     {
         return $this->setData(self::KEY_EXPECTED_DELIVERY_DATE, $expectedDeliveryDate);
     }
