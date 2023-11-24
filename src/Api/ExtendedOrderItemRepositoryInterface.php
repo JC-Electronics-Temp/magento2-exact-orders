@@ -2,7 +2,6 @@
 
 namespace JcElectronics\ExactOrders\Api;
 
-use JcElectronics\ExactOrders\Api\Data\ExtendedOrderInterface;
 use JcElectronics\ExactOrders\Api\Data\ExtendedOrderItemInterface;
 
 interface ExtendedOrderItemRepositoryInterface

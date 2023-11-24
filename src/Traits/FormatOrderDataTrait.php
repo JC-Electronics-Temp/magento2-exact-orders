@@ -13,17 +13,16 @@ use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
 use Magento\Company\Api\Data\CompanyInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
+use Magento\Store\Api\Data\StoreInterface;
 
 trait FormatOrderDataTrait
 {
-    use CustomerInformationTrait;
-    use StoreInformationTrait;
-
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -66,6 +65,7 @@ trait FormatOrderDataTrait
                 'base_total_qty_ordered' => array_sum(
                     array_column($orderData['items'], 'qty')
                 ),
+                'is_virtual' => 0,
                 'created_at' => $orderData['order_date'],
                 'customer_id' => $customer->getId(),
                 'customer_email' => $customer->getEmail(),
@@ -112,6 +112,7 @@ trait FormatOrderDataTrait
                     'base_shipping_amount' => $baseShippingAmount,
                     'shipping_amount' => (float)($orderData['shipping_amount'] ?? 0),
                 ],
+                'shipping_description' => $orderData['shipping_method'] ?? null,
                 'extension_attributes' => [
                     'shipping_assignments' => [
                         [
@@ -126,7 +127,7 @@ trait FormatOrderDataTrait
                     ],
                     'is_external_order' => true,
                     'company_order_attributes' => $this->getCompanyOrderData($company)
-                ]
+                ],
             ],
             OrderInterface::class
         );
@@ -184,6 +185,7 @@ trait FormatOrderDataTrait
             'address_type' => $type,
             'city' => $address['city'],
             'country_id' => $address['country'],
+            'company' => $address['company'],
             'firstname' => $address['firstname'],
             'lastname' => $address['lastname'],
             'postcode' => $address['postcode'],
@@ -227,17 +229,17 @@ trait FormatOrderDataTrait
 
     private function getCompanyOrderData(?CompanyInterface $company): array
     {
-                return !$company instanceof CompanyInterface
-                    ? []
-                    : [
-            'company_id' => $company->getId(),
-            'company_name' => $company->getCompanyName()
-        ];
+        return !$company instanceof CompanyInterface
+            ? []
+            : [
+                'company_id' => $company->getId(),
+                'company_name' => $company->getCompanyName()
+            ];
     }
 
     private function getMagentoOrderId(string $incrementId): ?int
     {
-        /** @var OrderInterface $order */
+        /** @var OrderInterface|false $order */
         $order = current(
             $this->orderRepository->getList(
                 $this->searchCriteriaBuilder
@@ -259,12 +261,30 @@ trait FormatOrderDataTrait
             $searchCriteria->addFilter(OrderItemInterface::ORDER_ID, $orderId);
         }
 
-        $orderItem      = current(
+        $orderItem  = current(
             $this->orderItemRepository->getList(
                 $searchCriteria->create()
             )->getItems()
         );
 
         return $orderItem ? (int) $orderItem->getItemId() : null;
+    }
+
+    private function getStoreById(int $storeId): StoreInterface
+    {
+        return $this->storeRepository->getById($storeId);
+    }
+
+    private function getCustomerById(int $customerId): CustomerInterface
+    {
+        return $this->customerRepository->getById($customerId);
+    }
+
+    private function getCompanyByCustomerId(int $customerId): ?CompanyInterface
+    {
+        /** @var CompanyInterface|null $company */
+        $company = $this->companyManagement->getByCustomerId($customerId);
+
+        return $company;
     }
 }

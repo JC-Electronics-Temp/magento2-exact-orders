@@ -13,10 +13,8 @@ use JcElectronics\ExactOrders\Api\Data\ExtendedOrderItemInterface;
 use JcElectronics\ExactOrders\Api\ExtendedOrderItemRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExtendedOrderItemFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\Data\OrderItemSearchResultInterface;
-use Magento\Sales\Api\Data\OrderSearchResultInterface;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
 
 class UpdateAdditionalOrderItemData

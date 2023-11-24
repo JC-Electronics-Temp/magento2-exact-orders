@@ -28,16 +28,15 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
+use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\OrderRepositoryInterface as MagentoOrderRepositoryInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    use CustomerInformationTrait;
     use FormatOrderDataTrait;
     use FormatExternalOrderAddressTrait;
     use FormatExternalOrderDataTrait;
-    use StoreInformationTrait;
 
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,
@@ -48,12 +47,13 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly ServiceInputProcessor $serviceInputProcessor,
         private readonly StoreRepositoryInterface $storeRepository,
         private readonly ProductRepositoryInterface $productRepository,
-        private readonly ExternalOrderFactory $externalOrderFactory,
-        private readonly AddressFactory $externalOrderAddressFactory,
-        private readonly ItemFactory $externalOrderItemFactory,
+        protected readonly ExternalOrderFactory $externalOrderFactory,
+        protected readonly AddressFactory $externalOrderAddressFactory,
+        protected readonly ItemFactory $externalOrderItemFactory,
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly AttachmentFactory $attachmentFactory,
-        private readonly Config $config
+        private readonly Config $config,
+        private readonly OrderManagementInterface $orderManagement
     ) {
     }
 
@@ -100,9 +100,8 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function save(ExternalOrderInterface $order): int
     {
-        $result = $this->orderRepository->save(
-            $this->formatOrderData($order->getData())
-        );
+        $orderEntity = $this->formatOrderData($order->getData());
+        $result      = $this->orderManagement->place($orderEntity);
 
         foreach ($order->getAttachments() as $attachment) {
             /** @var AttachmentInterface $attachmentObject */
