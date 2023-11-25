@@ -12,6 +12,7 @@ namespace JcElectronics\ExactOrders\Traits;
 use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Company\Api\Data\CompanyInterface;
@@ -31,24 +32,24 @@ trait FormatOrderDataTrait
      */
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
-    public function formatOrderData(array $orderData, ?int $magentoOrderId): OrderInterface
+    public function formatOrderData(ExternalOrderInterface $order, ?int $magentoOrderId): OrderInterface
     {
-        $customer         = $this->getCustomerById((int) $orderData['magento_customer_id']);
+        $customer         = $this->getCustomerById((int) $order->getMagentoCustomerId());
         $company          = $this->getCompanyByCustomerId((int) $customer->getId());
         $store            = $this->getStoreById((int) $customer->getStoreId());
-        $orderInclTax     = ((float) $orderData['tax_amount']) > 0;
-        $orderIncrementId = $orderData['magento_increment_id']
+        $orderInclTax     = ((float) $order->getTaxAmount()) > 0;
+        $orderIncrementId = $order->getMagentoIncrementId()
             ?? (
                 $this->config->useExternalIncrementId()
-                    ? $orderData['external_order_id']
+                    ? $order->getExtOrderId()
                     : null
             );
 
-        $grandTotal = (float)($orderData['base_grandtotal'] ?? $orderData['grandtotal']);
-        $baseDiscount = (float)($orderData['base_discount_amount'] ?? $orderData['discount_amount'] ?? 0);
-        $baseShippingAmount = (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0);
-        $baseSubtotal = (float)($orderData['base_subtotal'] ?? $orderData['subtotal']);
-        $baseTaxAmount = (float)($orderData['base_tax_amount'] ?? $orderData['tax_amount']);
+        $grandTotal = (float)($order->getBaseGrandtotal() ?? $order->getGrandtotal());
+        $baseDiscount = (float)($order->getBaseDiscountAmount() ?? $order->getDiscountAmount());
+        $baseShippingAmount = (float)($order->getBaseShippingAmount() ?? $order->getShippingAmount());
+        $baseSubtotal = (float)($order->getBaseSubtotal() ?? $order->getSubtotal());
+        $baseTaxAmount = (float)($order->getBaseTaxAmount() ?? $order->getTaxAmount());
 
         return $this->serviceInputProcessor->convertValue(
             [
@@ -64,10 +65,10 @@ trait FormatOrderDataTrait
                 'base_total_due' => 0,
                 'base_total_paid' => $grandTotal,
                 'base_total_qty_ordered' => array_sum(
-                    array_column($orderData['items'], 'qty')
+                    array_column($order->getItems(), 'qty')
                 ),
                 'is_virtual' => 0,
-                'created_at' => $orderData['order_date'],
+                'created_at' => $order->getOrderDate(),
                 'customer_id' => $customer->getId(),
                 'customer_email' => $customer->getEmail(),
                 'customer_firstname' => $customer->getFirstname(),
@@ -77,52 +78,52 @@ trait FormatOrderDataTrait
                 'customer_middlename' => $customer->getMiddlename(),
                 'customer_prefix' => $customer->getPrefix(),
                 'customer_suffix' => $customer->getSuffix(),
-                'discount_amount' => (float) ($orderData['discount_amount'] ?? 0),
-                'ext_customer_id' => $orderData['external_customer_id'] ?? null,
-                'ext_order_id' => $orderData['external_order_id'] ?? null,
-                'grand_total' => (float) $orderData['grandtotal'],
+                'discount_amount' => (float) $order->getDiscountAmount(),
+                'ext_customer_id' => $order->getExternalCustomerId(),
+                'ext_order_id' => $order->getExtOrderId(),
+                'grand_total' => (float) $order->getGrandtotal(),
                 'increment_id' => $orderIncrementId,
-                'shipping_amount' => (float) ($orderData['shipping_amount'] ?? 0),
-                'shipping_incl_tax' => (float) ($orderData['shipping_amount'] ?? 0),
-                'state' => strtolower($orderData['state']),
-                'status' => $this->getOrderStatusByState($orderData['state']),
+                'shipping_amount' => (float) $order->getShippingAmount(),
+                'shipping_incl_tax' => (float) $order->getShippingAmount(),
+                'state' => strtolower($order->getState()),
+                'status' => $this->getOrderStatusByState($order->getState()),
                 'store_id' => $customer->getStoreId(),
-                'subtotal' => (float) $orderData['subtotal'],
-                'subtotal_incl_tax' => (float) $orderData['subtotal'],
-                'tax_amount' => (float) $orderData['tax_amount'],
-                'total_item_count' => count($orderData['items']),
-                'total_paid' => (float) $orderData['grandtotal'],
+                'subtotal' => (float) $order->getSubtotal(),
+                'subtotal_incl_tax' => (float) $order->getSubtotal(),
+                'tax_amount' => (float) $order->getTaxAmount(),
+                'total_item_count' => count($order->getItems()),
+                'total_paid' => (float) $order->getGrandtotal(),
                 'total_qty_ordered' => array_sum(
-                    array_column($orderData['items'], 'qty')
+                    array_column($order->getItems(), 'qty')
                 ),
                 'base_currency_code' => $this->config->getBaseCurrencyCode($store),
                 'global_currency_code' => $this->config->getGlobalCurrencyCode(),
                 'order_currency_code' => $this->config->getBaseCurrencyCode($store),
-                'updated_at' => $orderData['updated_at'],
-                'items' => $this->formatOrderItems($orderData['items'], $magentoOrderId),
+                'updated_at' => $order->getUpdatedAt(),
+                'items' => $this->formatOrderItems($order->getItems(), $magentoOrderId),
                 'billing_address' => $this->formatOrderAddress(
-                    $orderData['billing_address'],
+                    $order->getBillingAddress(),
                     AbstractAddress::TYPE_BILLING
                 ),
                 'payment' => [
-                    'amount_ordered' => $orderData['grandtotal'],
-                    'amount_paid' => $orderData['grandtotal'],
-                    'method' => $this->getPaymentMethod($orderData['payment_method']),
+                    'amount_ordered' => $order->getGrandtotal(),
+                    'amount_paid' => $order->getGrandtotal(),
+                    'method' => $this->getPaymentMethod($order->getPaymentMethod() ?? null),
                     'base_amount_ordered' => $grandTotal,
                     'base_amount_paid' => $grandTotal,
                     'base_shipping_amount' => $baseShippingAmount,
-                    'shipping_amount' => (float)($orderData['shipping_amount'] ?? 0),
+                    'shipping_amount' => (float)($order->getShippingAmount() ?? 0),
                 ],
-                'shipping_description' => $orderData['shipping_method'] ?? null,
+                'shipping_description' => $order->getShippingMethod() ?? null,
                 'extension_attributes' => [
                     'shipping_assignments' => [
                         [
                             'shipping' => [
                                 'address' => $this->formatOrderAddress(
-                                    $orderData['shipping_address'],
+                                    $order->getShippingAddress(),
                                     AbstractAddress::TYPE_SHIPPING
                                 ),
-                                'method' => $orderData['shipping_method'] ?? 'unknown'
+                                'method' => $order->getShippingMethod()
                             ]
                         ]
                     ],
@@ -185,17 +186,17 @@ trait FormatOrderDataTrait
     ): array {
         return [
             'address_type' => $type,
-            'city' => $address['city'],
-            'country_id' => $address['country'],
-            'company' => $address['company'],
-            'firstname' => $address['firstname'],
-            'lastname' => $address['lastname'],
-            'postcode' => $address['postcode'],
+            'city' => $address->getCity(),
+            'country_id' => $address->getCountry(),
+            'company' => $address->getCompany(),
+            'firstname' => $address->getFirstname(),
+            'lastname' => $address->getLastname(),
+            'postcode' => $address->getPostcode(),
             'street' => explode(
                 "\n",
-                $address['street'] ?? ''
+                $address->getStreet() ?? ''
             ),
-            'telephone' => $address['telephone'] ?? '-'
+            'telephone' => $address->getTelephone() ?? '-'
         ];
     }
 
@@ -229,7 +230,7 @@ trait FormatOrderDataTrait
         }
     }
 
-    private function getPaymentMethod(string $code): string
+    private function getPaymentMethod(?string $code): string
     {
         return array_key_exists($code, $this->paymentHelper->getPaymentMethodList())
             ? $code

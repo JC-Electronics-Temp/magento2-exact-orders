@@ -19,6 +19,7 @@ interface AddressInterface
         KEY_POSTCODE                  = 'postcode',
         KEY_CITY                      = 'city',
         KEY_COUNTRY                   = 'country',
+        KEY_TELEPHONE                 = 'telephone',
         KEY_ADDITIONAL_DATA           = 'additional_data';
 
     /**
@@ -116,6 +117,18 @@ interface AddressInterface
      * @return self
      */
     public function setCountry(string $country): self;
+
+    /**
+     * @return string|null
+     */
+    public function getTelephone(): ?string;
+
+    /**
+     * @param string $telephone
+     *
+     * @return self
+     */
+    public function setTelephone(string $telephone): self;
 
     /**
      * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]

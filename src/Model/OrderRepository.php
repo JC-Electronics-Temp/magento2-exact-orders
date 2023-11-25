@@ -104,7 +104,7 @@ class OrderRepository implements OrderRepositoryInterface
     public function save(ExternalOrderInterface $order): int
     {
         $orderId     = $this->getMagentoOrderId($order->getMagentoIncrementId());
-        $orderEntity = $this->formatOrderData($order->getData(), $orderId);
+        $orderEntity = $this->formatOrderData($order, $orderId);
         $result      = $orderId === null
             ? $this->orderManagement->place($orderEntity)
             : $this->orderRepository->save($orderEntity);

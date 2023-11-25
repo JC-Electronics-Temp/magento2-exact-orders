@@ -112,6 +112,18 @@ class Address extends DataObject implements AddressInterface
         return $this;
     }
 
+    public function getTelephone(): ?string
+    {
+        return $this->_getData(self::KEY_TELEPHONE);
+    }
+
+    public function setTelephone(string $telephone): self
+    {
+        $this->setData(self::KEY_TELEPHONE, $telephone);
+
+        return $this;
+    }
+
     public function getAdditionalData(): array
     {
         return $this->_getData(self::KEY_ADDITIONAL_DATA);
