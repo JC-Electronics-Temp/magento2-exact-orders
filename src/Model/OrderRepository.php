@@ -25,6 +25,7 @@ use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Payment\Helper\Data;
@@ -56,7 +57,8 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly AttachmentFactory $attachmentFactory,
         private readonly Config $config,
         private readonly OrderManagementInterface $orderManagement,
-        private readonly Data $paymentHelper
+        private readonly Data $paymentHelper,
+        protected readonly ScopeConfigInterface $scopeConfig
     ) {
     }
 

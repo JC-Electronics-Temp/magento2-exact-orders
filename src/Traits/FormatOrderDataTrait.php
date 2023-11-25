@@ -23,6 +23,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\ScopeInterface;
 
 trait FormatOrderDataTrait
 {
@@ -50,6 +51,7 @@ trait FormatOrderDataTrait
         $baseShippingAmount = (float)($order->getBaseShippingAmount() ?? $order->getShippingAmount());
         $baseSubtotal = (float)($order->getBaseSubtotal() ?? $order->getSubtotal());
         $baseTaxAmount = (float)($order->getBaseTaxAmount() ?? $order->getTaxAmount());
+        $shippingMethod = $this->getShippingMethod($order->getShippingMethod(), (int) $store->getId());
 
         return $this->serviceInputProcessor->convertValue(
             [
@@ -85,6 +87,7 @@ trait FormatOrderDataTrait
                 'increment_id' => $orderIncrementId,
                 'shipping_amount' => (float) $order->getShippingAmount(),
                 'shipping_incl_tax' => (float) $order->getShippingAmount(),
+                'shipping_tax_amount' => 0,
                 'state' => strtolower($order->getState()),
                 'status' => $this->getOrderStatusByState($order->getState()),
                 'store_id' => $customer->getStoreId(),
@@ -108,13 +111,13 @@ trait FormatOrderDataTrait
                 'payment' => [
                     'amount_ordered' => $order->getGrandtotal(),
                     'amount_paid' => $order->getGrandtotal(),
-                    'method' => $this->getPaymentMethod($order->getPaymentMethod() ?? null),
+                    'method' => $this->getPaymentMethod($order->getPaymentMethod()),
                     'base_amount_ordered' => $grandTotal,
                     'base_amount_paid' => $grandTotal,
                     'base_shipping_amount' => $baseShippingAmount,
-                    'shipping_amount' => (float)($order->getShippingAmount() ?? 0),
+                    'shipping_amount' => (float) $order->getShippingAmount(),
                 ],
-                'shipping_description' => $order->getShippingMethod() ?? null,
+                'shipping_description' => $shippingMethod['title'],
                 'extension_attributes' => [
                     'shipping_assignments' => [
                         [
@@ -123,7 +126,15 @@ trait FormatOrderDataTrait
                                     $order->getShippingAddress(),
                                     AbstractAddress::TYPE_SHIPPING
                                 ),
-                                'method' => $order->getShippingMethod()
+                                'method' => $shippingMethod['code'],
+                                'total' => [
+                                    'base_shipping_amount' => $baseShippingAmount,
+                                    'base_shipping_incl_tax' => $orderInclTax ? $baseShippingAmount : 0,
+                                    'base_shipping_tax_amount' => 0,
+                                    'shipping_amount' => (float) $order->getShippingAmount(),
+                                    'shipping_incl_tax' => (float) $order->getShippingAmount(),
+                                    'shipping_tax_amount' => 0,
+                                ]
                             ]
                         ]
                     ],
@@ -235,6 +246,32 @@ trait FormatOrderDataTrait
         return array_key_exists($code, $this->paymentHelper->getPaymentMethodList())
             ? $code
             : ExternalPayment::PAYMENT_METHOD_CODE;
+    }
+
+    private function getShippingMethod(?string $code, int $storeId): array
+    {
+        $shippingMethod = current(
+            array_filter(
+                $this->config->getShippingMethodMapping($storeId),
+                static fn (array $option) => $option['value'] === $code
+            )
+        );
+
+        return $shippingMethod === false
+            ? $this->config->getDefaultShippingMethod($storeId)
+            : [
+                'code' => $shippingMethod['shipping_method'],
+                'title' => $this->scopeConfig->getValue(
+                    sprintf(
+                        'carriers/%s/title',
+                        current(
+                            explode('_', $shippingMethod['shipping_method'])
+                        )
+                    ),
+                    ScopeInterface::SCOPE_STORE,
+                    $storeId
+                ) ?? $shippingMethod['shipping_method']
+            ];
     }
 
     private function getCompanyOrderData(?CompanyInterface $company): array
