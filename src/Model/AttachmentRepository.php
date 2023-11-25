@@ -14,6 +14,7 @@ use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as ResourceModel;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment\CollectionFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResultsInterfaceFactory;
 use Magento\Framework\Api\SearchResultsInterface;
@@ -27,6 +28,7 @@ class AttachmentRepository implements AttachmentRepositoryInterface
         private readonly ResourceModel $resourceModel,
         private readonly AttachmentFactory $attachmentFactory,
         private readonly SearchResultsInterfaceFactory $searchResultsFactory,
+        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly Uploader $uploader
     ) {
     }
@@ -41,10 +43,39 @@ class AttachmentRepository implements AttachmentRepositoryInterface
         $this->resourceModel->load($attachment, $id);
 
         if (!$attachment->getId()) {
-            throw NoSuchEntityException::singleField('attachment_id', $id);
+            throw NoSuchEntityException::singleField(AttachmentInterface::KEY_ID, $id);
         }
 
         return $attachment;
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    public function getByEntity(
+        int $entityId,
+        string $entityType
+    ): AttachmentInterface {
+        $items = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(AttachmentInterface::KEY_ENTITY_ID, $entityId)
+                ->addFilter(AttachmentInterface::KEY_ENTITY_TYPE_ID, $entityType)
+                ->create()
+        )->getItems();
+
+        if (count($items) === 0) {
+            throw NoSuchEntityException::doubleField(
+                AttachmentInterface::KEY_ENTITY_ID,
+                $entityId,
+                AttachmentInterface::KEY_ENTITY_TYPE_ID,
+                $entityType
+            );
+        }
+
+        /** @var AttachmentInterface $item */
+        $item = current($items);
+
+        return $item;
     }
 
     public function delete(AttachmentInterface $attachment): void

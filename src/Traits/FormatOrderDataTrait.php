@@ -12,6 +12,8 @@ namespace JcElectronics\ExactOrders\Traits;
 use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
+use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Company\Api\Data\CompanyInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
@@ -29,7 +31,7 @@ trait FormatOrderDataTrait
      */
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
-    public function formatOrderData(array $orderData): OrderInterface
+    public function formatOrderData(array $orderData, ?int $magentoOrderId): OrderInterface
     {
         $customer         = $this->getCustomerById((int) $orderData['magento_customer_id']);
         $company          = $this->getCompanyByCustomerId((int) $customer->getId());
@@ -47,7 +49,6 @@ trait FormatOrderDataTrait
         $baseShippingAmount = (float)($orderData['base_shipping_amount'] ?? $orderData['shipping_amount'] ?? 0);
         $baseSubtotal = (float)($orderData['base_subtotal'] ?? $orderData['subtotal']);
         $baseTaxAmount = (float)($orderData['base_tax_amount'] ?? $orderData['tax_amount']);
-        $magentoOrderId = $this->getMagentoOrderId($orderData['magento_increment_id']);
 
         return $this->serviceInputProcessor->convertValue(
             [
@@ -106,7 +107,7 @@ trait FormatOrderDataTrait
                 'payment' => [
                     'amount_ordered' => $orderData['grandtotal'],
                     'amount_paid' => $orderData['grandtotal'],
-                    'method' => $orderData['payment_method'] ?? 'unknown',
+                    'method' => $this->getPaymentMethod($orderData['payment_method']),
                     'base_amount_ordered' => $grandTotal,
                     'base_amount_paid' => $grandTotal,
                     'base_shipping_amount' => $baseShippingAmount,
@@ -139,40 +140,41 @@ trait FormatOrderDataTrait
     {
         return array_reduce(
             $items,
-            fn (array $carry, ItemInterface $item) => array_merge(
-                $carry,
-                [
-                    [
-                        'item_id' => $this->getMagentoOrderItemId($item, $orderId),
-                        'base_discount_amount' => (float) $item->getBaseDiscountAmount(),
-                        'base_original_price' => (float) $item->getBasePrice(),
-                        'base_price' => (float) $item->getBasePrice(),
-                        'base_price_incl_tax' => (float) $item->getBasePrice(),
-                        'base_row_total' => (float) $item->getRowTotal(),
-                        'base_tax_amount' => (float) $item->getBaseTaxAmount(),
-                        'discount_amount' => (float) $item->getDiscountAmount(),
-                        'name' => $item->getName(),
-                        'original_price' => (float) $item->getPrice(),
-                        'price' => (float) $item->getPrice(),
-                        'product_id' => $this->getProductIdBySku($item->getSku()),
-                        'price_incl_tax' => (float) $item->getPrice(),
-                        'qty_ordered' => (float) $item->getQty(),
-                        'row_total' => (float) $item->getRowTotal(),
-                        'row_total_incl_tax' => (float) $item->getRowTotal(),
-                        'sku' => $item->getSku(),
-                        'tax_amount' => (float) $item->getTaxAmount(),
-                        'extension_attributes' => array_reduce(
-                            $item->getAdditionalData(),
-                            function (array $carry, AdditionalDataInterface $item) {
-                                $carry[$item->getKey()] = $item->getValue();
+            function (array $carry, ItemInterface $item) use ($orderId) {
+                $product = $this->getProductBySku($item->getSku());
+                $carry[] = [
+                    'item_id' => $this->getMagentoOrderItemId($item, $orderId),
+                    'base_discount_amount' => (float) $item->getBaseDiscountAmount(),
+                    'base_original_price' => (float) $item->getBasePrice(),
+                    'base_price' => (float) $item->getBasePrice(),
+                    'base_price_incl_tax' => (float) $item->getBasePrice(),
+                    'base_row_total' => (float) $item->getRowTotal(),
+                    'base_tax_amount' => (float) $item->getBaseTaxAmount(),
+                    'discount_amount' => (float) $item->getDiscountAmount(),
+                    'name' => $item->getName(),
+                    'original_price' => (float) $item->getPrice(),
+                    'price' => (float) $item->getPrice(),
+                    'product_id' => $product?->getId(),
+                    'product_type' => $product?->getTypeId(),
+                    'price_incl_tax' => (float) $item->getPrice(),
+                    'qty_ordered' => (float) $item->getQty(),
+                    'row_total' => (float) $item->getRowTotal(),
+                    'row_total_incl_tax' => (float) $item->getRowTotal(),
+                    'sku' => $item->getSku(),
+                    'tax_amount' => (float) $item->getTaxAmount(),
+                    'extension_attributes' => array_reduce(
+                        $item->getAdditionalData(),
+                        function (array $carry, AdditionalDataInterface $item) {
+                            $carry[$item->getKey()] = $item->getValue();
 
-                                return $carry;
-                            },
-                            []
-                        )
-                    ]
-                ]
-            ),
+                            return $carry;
+                        },
+                        []
+                    )
+                ];
+
+                return $carry;
+            },
             []
         );
     }
@@ -218,13 +220,20 @@ trait FormatOrderDataTrait
         return $orderStatuses[$state];
     }
 
-    private function getProductIdBySku(string $sku): ?int
+    private function getProductBySku(string $sku): ?ProductInterface
     {
         try {
-            return (int) $this->productRepository->get($sku)->getId();
+            return $this->productRepository->get($sku);
         } catch (NoSuchEntityException) {
             return null;
         }
+    }
+
+    private function getPaymentMethod(string $code): string
+    {
+        return array_key_exists($code, $this->paymentHelper->getPaymentMethodList())
+            ? $code
+            : ExternalPayment::PAYMENT_METHOD_CODE;
     }
 
     private function getCompanyOrderData(?CompanyInterface $company): array

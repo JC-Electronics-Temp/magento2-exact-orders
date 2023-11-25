@@ -46,7 +46,7 @@ class AddInvoiceAttachments extends AbstractAddAttachment
         InvoiceInterface $result,
         InvoiceInterface $invoice
     ): InvoiceInterface {
-        $attachments = $invoice->getExtensionAttributes()->getAttachments();
+        $attachments = $invoice->getExtensionAttributes()->getAttachments() ?? [];
 
         foreach ($attachments as $attachment) {
             if ($attachment->getId()) {

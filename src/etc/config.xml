@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Youwe. All rights reserved.
+ * https://www.youweagency.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <exact_orders>
+            <orders>
+                <external_order_increment_id>0</external_order_increment_id>
+                <default_statuses/>
+            </orders>
+        </exact_orders>
+        <payment>
+            <external>
+                <active>1</active>
+                <model>JcElectronics\ExactOrders\Model\Payment\ExternalPayment</model>
+                <payment_action>order</payment_action>
+                <title>External Payment</title>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+            </external>
+        </payment>
+    </default>
+</config>

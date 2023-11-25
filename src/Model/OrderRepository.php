@@ -25,7 +25,9 @@ use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Webapi\ServiceInputProcessor;
+use Magento\Payment\Helper\Data;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
 use Magento\Sales\Api\OrderManagementInterface;
@@ -53,7 +55,8 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly AttachmentFactory $attachmentFactory,
         private readonly Config $config,
-        private readonly OrderManagementInterface $orderManagement
+        private readonly OrderManagementInterface $orderManagement,
+        private readonly Data $paymentHelper
     ) {
     }
 
@@ -100,12 +103,23 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function save(ExternalOrderInterface $order): int
     {
-        $orderEntity = $this->formatOrderData($order->getData());
-        $result      = $this->orderManagement->place($orderEntity);
+        $orderId     = $this->getMagentoOrderId($order->getMagentoIncrementId());
+        $orderEntity = $this->formatOrderData($order->getData(), $orderId);
+        $result      = $orderId === null
+            ? $this->orderManagement->place($orderEntity)
+            : $this->orderRepository->save($orderEntity);
 
         foreach ($order->getAttachments() as $attachment) {
-            /** @var AttachmentInterface $attachmentObject */
-            $attachmentObject = $this->attachmentFactory->create();
+            try {
+                $attachmentObject = $this->attachmentRepository->getByEntity(
+                    (int) $result->getEntityId(),
+                    AttachmentInterface::ENTITY_TYPE_ORDER
+                );
+            } catch (NoSuchEntityException) {
+                /** @var AttachmentInterface $attachmentObject */
+                $attachmentObject = $this->attachmentFactory->create();
+            }
+
             $attachmentObject->setParentId((int) $result->getEntityId())
                 ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_ORDER)
                 ->setFileName($attachment['name'])

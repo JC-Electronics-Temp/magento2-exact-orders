@@ -21,5 +21,7 @@ interface AttachmentRepositoryInterface
 
     public function save(AttachmentInterface $attachment): AttachmentInterface;
 
+    public function getByEntity(int $entityId, string $entityType): AttachmentInterface;
+
     public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 }
