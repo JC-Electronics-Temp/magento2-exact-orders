@@ -58,7 +58,7 @@ class UpdateAdditionalOrderData
         OrderInterface $result,
         OrderInterface $order
     ): OrderInterface {
-        $isExternalOrder = $order->getExtensionAttributes()->getIsExternalOrder();
+        $isExternalOrder = (bool) $order->getExtensionAttributes()->getIsExternalOrder();
 
         try {
             $extendedOrder = $this->repository->getByOrderId((int) $order->getEntityId());
