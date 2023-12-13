@@ -69,30 +69,38 @@ class OrderRepository implements OrderRepositoryInterface
         );
     }
 
-    public function getByIncrementId(string $incrementId): ExternalOrderInterface
+    public function getByIncrementId(string $id): ExternalOrderInterface
     {
-        return $this->formatExternalOrderData(
-            current(
-                $this->orderRepository->getList(
-                    $this->searchCriteriaBuilder
-                        ->addFilter(OrderInterface::INCREMENT_ID, $incrementId)
-                        ->create()
-                )->getItems()
+        $collection = $this->orderRepository
+            ->getList(
+                $this->searchCriteriaBuilder
+                    ->addFilter(OrderInterface::INCREMENT_ID, $id)
+                    ->create()
             )
-        );
+            ->getItems();
+
+        if (count($collection) === 0) {
+            throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
+        }
+
+        return $this->formatExternalOrderData(current($collection));
     }
 
     public function getByExternalId(string $id): ExternalOrderInterface
     {
-        return $this->formatExternalOrderData(
-            current(
-                $this->orderRepository->getList(
-                    $this->searchCriteriaBuilder
-                        ->addFilter(OrderInterface::EXT_ORDER_ID, $id)
-                        ->create()
-                )->getItems()
+        $collection = $this->orderRepository
+            ->getList(
+                $this->searchCriteriaBuilder
+                    ->addFilter(OrderInterface::EXT_ORDER_ID, $id)
+                    ->create()
             )
-        );
+            ->getItems();
+
+        if (count($collection) === 0) {
+            throw NoSuchEntityException::singleField(OrderInterface::EXT_ORDER_ID, $id);
+        }
+
+        return $this->formatExternalOrderData(current($collection));
     }
 
     public function getList(SearchCriteriaInterface $searchCriteria): array

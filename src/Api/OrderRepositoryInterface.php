@@ -22,11 +22,11 @@ interface OrderRepositoryInterface
     public function getById(string $id): ExternalOrderInterface;
 
     /**
-     * @param string $incrementId
+     * @param string $id
      *
      * @return ExternalOrderInterface
      */
-    public function getByIncrementId(string $incrementId): ExternalOrderInterface;
+    public function getByIncrementId(string $id): ExternalOrderInterface;
 
     /**
      * @param string $id
