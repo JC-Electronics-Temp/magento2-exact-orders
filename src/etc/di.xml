@@ -64,4 +64,8 @@
     <type name="Magento\Sales\Api\ShipmentRepositoryInterface">
         <plugin name="addAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\Sales\Shipment\AddShipmentAttachments"/>
     </type>
+
+    <type name="Magento\InventorySales\Model\AppendReservations">
+        <plugin name="disableStockCheckForExactOrders" type="JcElectronics\ExactOrders\Plugin\InventorySales\DisableStockCheckForExactOrders"/>
+    </type>
 </config>
