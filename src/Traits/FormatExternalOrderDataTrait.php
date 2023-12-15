@@ -10,19 +10,23 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Traits;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Model\Order;
 
 trait FormatExternalOrderDataTrait
 {
     use FormatExternalOrderAddressTrait;
-    
+
     private function formatExternalOrderData(Order $order): ExternalOrderInterface
     {
         return $this->externalOrderFactory->create(
             [
                 'data' => [
                     'order_id' => $order->getEntityId(),
-                    'invoice_ids' => [],
+                    'invoice_ids' => array_map(
+                        static fn (InvoiceInterface $invoice) => $invoice->getEntityId(),
+                        $order->getInvoiceCollection()->getItems()
+                    ),
                     'magento_order_id' => $order->getEntityId(),
                     'magento_customer_id' => $order->getCustomerId(),
                     'external_customer_id' => $order->getData('external_customer_id'),
@@ -34,7 +38,7 @@ trait FormatExternalOrderDataTrait
                     'po_number' => $order->getData('custom_order_reference'),
                     'state' => $order->getState(),
                     'shipping_method' => $order->getShippingMethod(),
-                    'shipping_address' => $this->formatExternalOrderAddress($order->getShippingAddres()),
+                    'shipping_address' => $this->formatExternalOrderAddress($order->getShippingAddress()),
                     'billing_address' => $this->formatExternalOrderAddress($order->getBillingAddress()),
                     'payment_method' => $order->getPayment()->getMethod(),
                     'base_discount_amount' => $order->getBaseDiscountAmount(),
@@ -68,7 +72,7 @@ trait FormatExternalOrderDataTrait
                                 'name' => $item->getName(),
                                 'sku' => $item->getSku(),
                                 'base_price' => $item->getBasePrice(),
-                                'price' => $item->getPrice(),
+                                'price' => (string) $item->getPrice(),
                                 'base_row_total' => $item->getBaseRowTotal(),
                                 'row_total' => $item->getRowTotal(),
                                 'base_tax_amount' => $item->getBaseTaxAmount(),
