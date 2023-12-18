@@ -9,12 +9,9 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Block\Adminhtml\Form\Field;
 
-use JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\Renderer\OrderState;
-use JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\Renderer\OrderStatus;
 use JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\Renderer\ShippingMethod;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\DataObject;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\BlockInterface;
 
 class ShippingMapping extends AbstractFieldArray

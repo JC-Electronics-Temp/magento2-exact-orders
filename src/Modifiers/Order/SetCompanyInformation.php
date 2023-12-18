@@ -10,29 +10,22 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use JcElectronics\ExactOrders\Model\Config;
-use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Company\Api\Data\CompanyInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\DataObject;
+use Magento\Company\Api\Data\CompanyOrderInterfaceFactory;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderExtension;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderPaymentInterface;
-use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
-use Magento\Store\Model\ScopeInterface;
 
-class SetCompanyInformation implements ModifierInterface
+class SetCompanyInformation extends AbstractModifier
 {
     public function __construct(
         private readonly OrderExtensionFactory $extensionFactory,
         private readonly CompanyManagementInterface $companyManagement,
-        private readonly \Magento\Company\Api\Data\CompanyOrderInterfaceFactory $companyOrderFactory
+        private readonly CompanyOrderInterfaceFactory $companyOrderFactory
     ) {
     }
 
@@ -42,7 +35,7 @@ class SetCompanyInformation implements ModifierInterface
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         $company  = $this->companyManagement->getByCustomerId($result->getCustomerId());
 
@@ -61,10 +54,5 @@ class SetCompanyInformation implements ModifierInterface
         $result->setExtensionAttributes($extensionAttributes);
 
         return $result;
-    }
-
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 }

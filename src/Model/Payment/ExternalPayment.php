@@ -38,7 +38,7 @@ class ExternalPayment extends AbstractMethod
     public function initialize(
         $paymentAction,
         $stateObject
-    ) {
+    ): self {
         $paymentInfo = $this->getInfoInstance();
 
         if (!$paymentInfo instanceof Payment) {

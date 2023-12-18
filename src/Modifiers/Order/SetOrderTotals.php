@@ -11,36 +11,27 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
-use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\DataObject;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderPaymentInterface;
-use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
-use Magento\Store\Model\ScopeInterface;
+use Magento\Sales\Model\Order;
 
-class SetOrderTotals implements ModifierInterface
+class SetOrderTotals extends AbstractModifier
 {
     public function __construct(
-        private readonly Config $config,
-        private readonly OrderExtensionFactory $extensionFactory,
-        private readonly ShippingAssignmentInterfaceFactory $shippingAssignmentFactory,
-        private readonly ShippingInterfaceFactory $shippingFactory
+        private readonly Config $config
     ) {
     }
 
     /**
      * @param ExternalOrderInterface $model
-     * @param OrderInterface         $result
+     * @param OrderInterface&Order   $result
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         $numberOfItems =  array_sum(
             array_column($model->getItems(), 'qty')
@@ -73,10 +64,5 @@ class SetOrderTotals implements ModifierInterface
             ->setOrderCurrencyCode($this->config->getBaseCurrencyCode($result->getStore()));
 
         return $result;
-    }
-
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 }

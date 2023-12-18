@@ -11,35 +11,32 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderFactory;
 
-class SetBaseOrderData implements ModifierInterface
+class SetBaseOrderData extends AbstractModifier
 {
     public function __construct(
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly Config $config,
         private readonly OrderRepositoryInterface $orderRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly OrderFactory $orderFactory,
         private readonly OrderExtensionFactory $extensionFactory
     ) {
     }
 
     /**
      * @param ExternalOrderInterface $model
-     * @param OrderInterface|null    $result
+     * @param OrderInterface         $result
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         $customer = $this->customerRepository->getById($model->getMagentoCustomerId());
 
@@ -59,11 +56,6 @@ class SetBaseOrderData implements ModifierInterface
         $result->setExtensionAttributes($extensionAttributes);
 
         return $result;
-    }
-
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 
     private function getOrderEntityId(ExternalOrderInterface $order): ?int
@@ -100,6 +92,9 @@ class SetBaseOrderData implements ModifierInterface
         return $orderState === 'completed' ? 'complete' : $orderState;
     }
 
+    /**
+     * @throws LocalizedException
+     */
     private function getOrderStatus(ExternalOrderInterface $order): string
     {
         $orderStatuses = $this->config->getOrderStatuses();

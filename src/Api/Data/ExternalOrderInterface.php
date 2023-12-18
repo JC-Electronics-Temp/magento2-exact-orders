@@ -41,28 +41,28 @@ interface ExternalOrderInterface
         KEY_ATTACHMENTS          = 'attachments';
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getId(): ?string;
+    public function getId(): string|int|null;
 
     /**
-     * @param string $id
+     * @param string|int $id
      *
      * @return self
      */
-    public function setId(string $id): self;
+    public function setId(string|int $id): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getOrderId(): ?string;
+    public function getOrderId(): string|int|null;
 
     /**
-     * @param string $orderId
+     * @param string|int $orderId
      *
      * @return self
      */
-    public function setOrderId(string $orderId): self;
+    public function setOrderId(string|int $orderId): self;
 
     /**
      * @return int[]
@@ -70,7 +70,7 @@ interface ExternalOrderInterface
     public function getInvoiceIds(): array;
 
     /**
-     * @param array $invoiceIds
+     * @param int[] $invoiceIds
      *
      * @return self
      */
@@ -82,95 +82,95 @@ interface ExternalOrderInterface
     public function getMagentoOrderId(): ?string;
 
     /**
-     * @param string $orderId
+     * @param string|int $orderId
      *
      * @return self
      */
-    public function setMagentoOrderId(string $orderId): self;
+    public function setMagentoOrderId(string|int $orderId): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getMagentoCustomerId(): ?string;
+    public function getMagentoCustomerId(): string|int|null;
 
     /**
-     * @param string $magentoCustomerId
+     * @param string|int $magentoCustomerId
      *
      * @return self
      */
-    public function setMagentoCustomerId(string $magentoCustomerId): self;
+    public function setMagentoCustomerId(string|int $magentoCustomerId): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getExternalCustomerId(): ?string;
+    public function getExternalCustomerId(): string|int|null;
 
     /**
-     * @param string $externalCustomerId
+     * @param string|int $externalCustomerId
      *
      * @return self
      */
-    public function setExternalCustomerId(string $externalCustomerId): self;
+    public function setExternalCustomerId(string|int $externalCustomerId): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getExtOrderId(): ?string;
+    public function getExtOrderId(): string|int|null;
 
     /**
-     * @param string $extOrderId
+     * @param string|int $extOrderId
      *
      * @return self
      */
-    public function setExtOrderId(string $extOrderId): self;
+    public function setExtOrderId(string|int $extOrderId): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseGrandtotal(): ?string;
+    public function getBaseGrandtotal(): string|float|null;
 
     /**
-     * @param string $grandTotal
+     * @param string|float $grandTotal
      *
      * @return self
      */
-    public function setBaseGrandtotal(string $grandTotal): self;
+    public function setBaseGrandtotal(string|float $grandTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseSubtotal(): ?string;
+    public function getBaseSubtotal(): string|float|null;
 
     /**
-     * @param string $subtotal
+     * @param string|float $subtotal
      *
      * @return self
      */
-    public function setBaseSubtotal(string $subtotal): self;
+    public function setBaseSubtotal(string|float $subtotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getGrandtotal(): ?string;
+    public function getGrandtotal(): string|float|null;
 
     /**
-     * @param string $grandTotal
+     * @param string|float $grandTotal
      *
      * @return self
      */
-    public function setGrandtotal(string $grandTotal): self;
+    public function setGrandtotal(string|float $grandTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getSubtotal(): ?string;
+    public function getSubtotal(): string|float|null;
 
     /**
-     * @param string $subtotal
+     * @param string|float $subtotal
      *
      * @return self
      */
-    public function setSubtotal(string $subtotal): self;
+    public function setSubtotal(string|float $subtotal): self;
 
     /**
      * @return string|null
@@ -237,28 +237,28 @@ interface ExternalOrderInterface
     public function setPaymentMethod(string $paymentMethod): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseDiscountAmount(): ?string;
+    public function getBaseDiscountAmount(): string|float|null;
 
     /**
-     * @param string $discountAmount
+     * @param string|float $discountAmount
      *
      * @return self
      */
-    public function setBaseDiscountAmount(string $discountAmount): self;
+    public function setBaseDiscountAmount(string|float $discountAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getDiscountAmount(): ?string;
+    public function getDiscountAmount(): string|float|null;
 
     /**
-     * @param string $discountAmount
+     * @param string|float $discountAmount
      *
      * @return self
      */
-    public function setDiscountAmount(string $discountAmount): self;
+    public function setDiscountAmount(string|float $discountAmount): self;
 
     /**
      * @return string|null
@@ -273,52 +273,52 @@ interface ExternalOrderInterface
     public function setOrderDate(string $orderDate): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseTaxAmount(): ?string;
+    public function getBaseTaxAmount(): string|float|null;
 
     /**
-     * @param string $taxAmount
+     * @param string|float $taxAmount
      *
      * @return self
      */
-    public function setBaseTaxAmount(string $taxAmount): self;
+    public function setBaseTaxAmount(string|float $taxAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getTaxAmount(): ?string;
+    public function getTaxAmount(): string|float|null;
 
     /**
-     * @param string $taxAmount
+     * @param string|float $taxAmount
      *
      * @return self
      */
-    public function setTaxAmount(string $taxAmount): self;
+    public function setTaxAmount(string|float $taxAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseShippingAmount(): ?string;
+    public function getBaseShippingAmount(): string|float|null;
 
     /**
-     * @param string $shippingAmount
+     * @param string|float $shippingAmount
      *
      * @return self
      */
-    public function setBaseShippingAmount(string $shippingAmount): self;
+    public function setBaseShippingAmount(string|float $shippingAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getShippingAmount(): ?string;
+    public function getShippingAmount(): string|float|null;
 
     /**
-     * @param string $shippingAmount
+     * @param string|float $shippingAmount
      *
      * @return self
      */
-    public function setShippingAmount(string $shippingAmount): self;
+    public function setShippingAmount(string|float $shippingAmount): self;
 
     /**
      * @return string|null

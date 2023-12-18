@@ -11,8 +11,6 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
@@ -20,7 +18,7 @@ use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order;
 
-class SetOrderAddresses implements ModifierInterface
+class SetOrderAddresses extends AbstractModifier
 {
     public function __construct(
         private readonly Order\AddressFactory $orderAddressFactory
@@ -28,22 +26,15 @@ class SetOrderAddresses implements ModifierInterface
     }
 
     /**
-     * @param DataObject&ExternalOrderInterface $model
-     * @param DataObject&OrderInterface         $result
+     * @param ExternalOrderInterface $model
+     * @param OrderInterface         $result
      *
      * @return OrderInterface
-     * @throws LocalizedException
      */
     public function process(
-        DataObject $model,
-        DataObject $result
-    ): DataObject {
-        if (!$result instanceof OrderInterface) {
-            throw new LocalizedException(
-                __('Expecting %1, but got %2', OrderInterface::class, get_class($result))
-            );
-        }
-
+        mixed $model,
+        mixed $result
+    ): mixed {
         $result->setBillingAddress(
             $this->formatOrderAddress(
                 AbstractAddress::TYPE_BILLING,
@@ -60,11 +51,6 @@ class SetOrderAddresses implements ModifierInterface
             );
 
         return $result;
-    }
-
-    public function supports(DataObject $entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 
     private function formatOrderAddress(

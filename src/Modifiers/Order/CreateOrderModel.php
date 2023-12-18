@@ -10,11 +10,10 @@ declare(strict_types=1);
 namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\OrderFactory;
 
-class CreateOrderModel implements ModifierInterface
+class CreateOrderModel extends AbstractModifier
 {
     public function __construct(
         private readonly OrderFactory $orderFactory
@@ -27,17 +26,12 @@ class CreateOrderModel implements ModifierInterface
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         if ($result === null) {
             $result = $this->orderFactory->create();
         }
 
         return $result;
-    }
-
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 }

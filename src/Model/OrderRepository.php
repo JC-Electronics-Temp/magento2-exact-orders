@@ -16,11 +16,6 @@ use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use JcElectronics\ExactOrders\Traits\CustomerInformationTrait;
-use JcElectronics\ExactOrders\Traits\FormatExternalOrderAddressTrait;
-use JcElectronics\ExactOrders\Traits\FormatExternalOrderDataTrait;
-use JcElectronics\ExactOrders\Traits\FormatOrderDataTrait;
-use JcElectronics\ExactOrders\Traits\StoreInformationTrait;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -38,26 +33,15 @@ use Magento\Store\Api\StoreRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    use FormatExternalOrderAddressTrait;
-    use FormatExternalOrderDataTrait;
-
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,
-        private readonly OrderItemRepositoryInterface $orderItemRepository,
-        private readonly CustomerRepositoryInterface $customerRepository,
-        private readonly CompanyManagementInterface $companyManagement,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly ServiceInputProcessor $serviceInputProcessor,
-        private readonly StoreRepositoryInterface $storeRepository,
-        private readonly ProductRepositoryInterface $productRepository,
         protected readonly ExternalOrderFactory $externalOrderFactory,
         protected readonly AddressFactory $externalOrderAddressFactory,
         protected readonly ItemFactory $externalOrderItemFactory,
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly AttachmentFactory $attachmentFactory,
-        private readonly Config $config,
         private readonly OrderManagementInterface $orderManagement,
-        private readonly Data $paymentHelper,
         protected readonly ScopeConfigInterface $scopeConfig,
         private readonly array $modifiers = []
     ) {
@@ -65,11 +49,14 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getById(string $id): ExternalOrderInterface
     {
-        return $this->formatExternalOrderData(
+        return $this->processModifiers(
             $this->orderRepository->get($id)
         );
     }
 
+    /**
+     * @throws NoSuchEntityException
+     */
     public function getByIncrementId(string $id): ExternalOrderInterface
     {
         $collection = $this->orderRepository
@@ -84,9 +71,14 @@ class OrderRepository implements OrderRepositoryInterface
             throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
         }
 
-        return $this->formatExternalOrderData(current($collection));
+        return $this->processModifiers(
+            current($collection)
+        );
     }
 
+    /**
+     * @throws NoSuchEntityException
+     */
     public function getByExternalId(string $id): ExternalOrderInterface
     {
         $collection = $this->orderRepository
@@ -101,13 +93,15 @@ class OrderRepository implements OrderRepositoryInterface
             throw NoSuchEntityException::singleField(OrderInterface::EXT_ORDER_ID, $id);
         }
 
-        return $this->formatExternalOrderData(current($collection));
+        return $this->processModifiers(
+            current($collection)
+        );
     }
 
     public function getList(SearchCriteriaInterface $searchCriteria): array
     {
         return array_map(
-            fn (OrderInterface $item) => $this->formatExternalOrderData($item),
+            fn (OrderInterface $item) => $this->processModifiers($item),
             $this->orderRepository->getList($searchCriteria)->getItems()
         );
     }
@@ -132,16 +126,16 @@ class OrderRepository implements OrderRepositoryInterface
         foreach ($attachments as $attachment) {
             try {
                 $attachmentObject = $this->attachmentRepository->getByEntity(
-                    (int) $result->getEntityId(),
+                    (int) $order->getEntityId(),
                     AttachmentInterface::ENTITY_TYPE_ORDER
                 );
             } catch (NoSuchEntityException) {
                 /** @var AttachmentInterface $attachmentObject */
                 $attachmentObject = $this->attachmentFactory->create();
+                $attachment->setParentId((int) $order->getEntityId());
             }
 
-            $attachmentObject->setParentId((int) $result->getEntityId())
-                ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_ORDER)
+            $attachmentObject->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_ORDER)
                 ->setFileName($attachment['name'])
                 ->setFileContent($attachment['file_data']);
 
@@ -149,7 +143,7 @@ class OrderRepository implements OrderRepositoryInterface
         }
     }
 
-    private function processModifiers($order)
+    private function processModifiers(mixed $order): mixed
     {
         $result = null;
 

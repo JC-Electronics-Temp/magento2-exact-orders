@@ -12,30 +12,22 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 use JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
-use JcElectronics\ExactOrders\Model\Config;
-use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\DataObject;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemExtensionFactory;
 use Magento\Sales\Api\Data\OrderItemInterface;
-use Magento\Sales\Api\Data\OrderPaymentInterface;
-use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
-use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\ItemFactory;
-use Magento\Store\Model\ScopeInterface;
 
-class SetOrderItems implements ModifierInterface
+class SetOrderItems extends AbstractModifier
 {
     public function __construct(
         private readonly ProductRepositoryInterface $productRepository,
@@ -48,11 +40,11 @@ class SetOrderItems implements ModifierInterface
 
     /**
      * @param ExternalOrderInterface $model
-     * @param OrderInterface         $result
+     * @param OrderInterface&Order   $result
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         foreach ($model->getItems() as $item) {
             $product = $this->getProductBySku($item->getSku());
@@ -84,6 +76,7 @@ class SetOrderItems implements ModifierInterface
                 ->setRowTotalInclTax($item->getRowTotal())
                 ->setTaxAmount($item->getTaxAmount());
 
+            // phpcs:disable Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
             $additionalData = array_reduce(
                 $item->getAdditionalData(),
                 static fn (array $carry, AdditionalDataInterface $data) => array_merge(
@@ -92,6 +85,7 @@ class SetOrderItems implements ModifierInterface
                 ),
                 []
             );
+            // phpcs:enable
             
             $extensionAttributes = $orderItem->getExtensionAttributes() ?: $this->extensionFactory->create();
             $extensionAttributes->setExpectedDeliveryDate($additionalData['expected_delivery_date'] ?? null)
@@ -105,12 +99,7 @@ class SetOrderItems implements ModifierInterface
         return $result;
     }
 
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
-    }
-
-    private function getOrderItemId(ItemInterface $item, int $orderId): ?int
+    private function getOrderItemId(ItemInterface $item, ?int $orderId): ?int
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(OrderItemInterface::SKU, $item->getSku())

@@ -11,15 +11,12 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\DataObject;
 use Magento\Payment\Helper\Data;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterfaceFactory;
 
-class SetPaymentInformation implements ModifierInterface
+class SetPaymentInformation extends AbstractModifier
 {
     public function __construct(
         private readonly OrderPaymentInterfaceFactory $paymentFactory,
@@ -33,16 +30,11 @@ class SetPaymentInformation implements ModifierInterface
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         $result->setPayment($this->formatPayment($model));
 
         return $result;
-    }
-
-    public function supports($entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
     }
 
     private function formatPayment(ExternalOrderInterface $order): OrderPaymentInterface

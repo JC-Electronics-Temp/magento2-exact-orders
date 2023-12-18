@@ -11,27 +11,22 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
-use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
-use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
-use Magento\Framework\DataObject;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
+use Magento\Sales\Api\Data\ShippingInterface;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
-use Magento\Sales\Api\Data\TotalInterface;
-use Magento\Sales\Model\Order\Address;
 use Magento\Sales\Model\Order\AddressFactory;
 use Magento\Sales\Model\Order\ShippingTotal;
 use Magento\Sales\Model\Order\ShippingTotalFactory;
 use Magento\Store\Model\ScopeInterface;
 
-class SetShippingInformation implements ModifierInterface
+class SetShippingInformation extends AbstractModifier
 {
     public function __construct(
         private readonly Config $config,
@@ -39,7 +34,8 @@ class SetShippingInformation implements ModifierInterface
         private readonly ShippingAssignmentInterfaceFactory $shippingAssignmentFactory,
         private readonly ShippingInterfaceFactory $shippingFactory,
         private readonly ShippingTotalFactory $shippingTotalFactory,
-        private readonly AddressFactory $addressFactory
+        private readonly AddressFactory $addressFactory,
+        private readonly ScopeConfigInterface $scopeConfig
     ) {
     }
 
@@ -49,7 +45,7 @@ class SetShippingInformation implements ModifierInterface
      *
      * @return OrderInterface
      */
-    public function process($model, $result)
+    public function process(mixed $model, mixed $result): mixed
     {
         $shippingMethod = $this->getShippingMethod(
             $model->getShippingMethod(),
@@ -67,13 +63,12 @@ class SetShippingInformation implements ModifierInterface
         return $result;
     }
 
-    public function supports($entity): bool
+    private function getShippingMethod(?string $code, int $storeId): array
     {
-        return $entity instanceof ExternalOrderInterface;
-    }
+        if ($code === null) {
+            return $this->config->getDefaultShippingMethod($storeId);
+        }
 
-    private function getShippingMethod(string $code, int $storeId)
-    {
         $shippingMethod = current(
             array_filter(
                 $this->config->getShippingMethodMapping($storeId),
@@ -98,8 +93,10 @@ class SetShippingInformation implements ModifierInterface
             ];
     }
 
-    private function getShippingAssigment(ExternalOrderInterface $order, array $shippingMethod)
-    {
+    private function getShippingAssigment(
+        ExternalOrderInterface $order,
+        array $shippingMethod
+    ): ShippingAssignmentInterface {
         /** @var ShippingTotal $totals */
         $totals = $this->shippingTotalFactory->create();
         $totals->setBaseShippingAmount($order->getBaseShippingAmount() ?: $order->getShippingAmount())
@@ -126,7 +123,7 @@ class SetShippingInformation implements ModifierInterface
             ->setCountryId($orderAddress->getCountry())
             ->setTelephone($orderAddress->getTelephone());
 
-        /** @var \Magento\Sales\Api\Data\ShippingInterface $shipping */
+        /** @var ShippingInterface $shipping */
         $shipping = $this->shippingFactory->create();
         $shipping->setMethod($shippingMethod['code'])
             ->setTotal($totals)

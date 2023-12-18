@@ -27,28 +27,28 @@ interface ItemInterface
         KEY_DISCOUNT_AMOUNT        = 'discount_amount';
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getOrderitemId(): ?string;
+    public function getOrderitemId(): string|int|null;
 
     /**
-     * @param string $orderItemId
+     * @param string|int $orderItemId
      *
      * @return self
      */
-    public function setOrderitemId(string $orderItemId): self;
+    public function setOrderitemId(string|int $orderItemId): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getOrderId(): ?string;
+    public function getOrderId(): string|int|null;
 
     /**
-     * @param string $orderId
+     * @param string|int $orderId
      *
      * @return self
      */
-    public function setOrderId(string $orderId): self;
+    public function setOrderId(string|int $orderId): self;
 
     /**
      * @return string|null
@@ -75,112 +75,112 @@ interface ItemInterface
     public function setSku(string $sku): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBasePrice(): ?string;
+    public function getBasePrice(): string|float|null;
 
     /**
-     * @param string $price
+     * @param string|float $price
      *
      * @return self
      */
-    public function setBasePrice(string $price): self;
+    public function setBasePrice(string|float $price): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getPrice(): ?string;
+    public function getPrice(): string|float|null;
 
     /**
-     * @param string $price
+     * @param string|float $price
      *
      * @return self
      */
-    public function setPrice(string $price): self;
+    public function setPrice(string|float $price): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseRowTotal(): ?string;
+    public function getBaseRowTotal(): string|float|null;
 
     /**
-     * @param string $rowTotal
+     * @param string|float $rowTotal
      *
      * @return self
      */
-    public function setBaseRowTotal(string $rowTotal): self;
+    public function setBaseRowTotal(string|float $rowTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getRowTotal(): ?string;
+    public function getRowTotal(): string|float|null;
 
     /**
-     * @param string $rowTotal
+     * @param string|float $rowTotal
      *
      * @return self
      */
-    public function setRowTotal(string $rowTotal): self;
+    public function setRowTotal(string|float $rowTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseTaxAmount(): ?string;
+    public function getBaseTaxAmount(): string|float|null;
 
     /**
-     * @param string $taxAmount
+     * @param string|float $taxAmount
      *
      * @return self
      */
-    public function setBaseTaxAmount(string $taxAmount): self;
+    public function setBaseTaxAmount(string|float $taxAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getTaxAmount(): ?string;
+    public function getTaxAmount(): string|float|null;
 
     /**
-     * @param string $taxAmount
+     * @param string|float $taxAmount
      *
      * @return self
      */
-    public function setTaxAmount(string $taxAmount): self;
+    public function setTaxAmount(string|float $taxAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getQty(): ?string;
+    public function getQty(): string|float|null;
 
     /**
-     * @param string $qty
+     * @param string|float $qty
      *
      * @return self
      */
-    public function setQty(string $qty): self;
+    public function setQty(string|float $qty): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseDiscountAmount(): ?string;
+    public function getBaseDiscountAmount(): string|float|null;
 
     /**
-     * @param string $discountAmount
+     * @param string|float $discountAmount
      *
      * @return self
      */
-    public function setBaseDiscountAmount(string $discountAmount): self;
+    public function setBaseDiscountAmount(string|float $discountAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getDiscountAmount(): ?string;
+    public function getDiscountAmount(): string|float|null;
 
     /**
-     * @param string $discountAmount
+     * @param string|float $discountAmount
      *
      * @return self
      */
-    public function setDiscountAmount(string $discountAmount): self;
+    public function setDiscountAmount(string|float $discountAmount): self;
 
     /**
      * @return \JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface[]

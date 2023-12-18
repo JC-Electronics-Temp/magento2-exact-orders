@@ -12,7 +12,6 @@ namespace JcElectronics\ExactOrders\Model;
 use Magento\Directory\Model\Currency;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 
@@ -64,11 +63,13 @@ class Config
         return $store->getBaseCurrency()->getCode();
     }
 
-    public function getShippingMethodMapping(): array
+    public function getShippingMethodMapping(?int $storeId = null): array
     {
         return $this->serializer->unserialize(
             $this->scopeConfig->getValue(
-                self::XML_PATH_SHIPPING_METHOD_MAPPING
+                self::XML_PATH_SHIPPING_METHOD_MAPPING,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
             )
         );
     }

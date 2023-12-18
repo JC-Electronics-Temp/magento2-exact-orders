@@ -51,7 +51,7 @@ class ShippingMethod extends Select
         $options = [];
 
         /** @var AbstractCarrierInterface&CarrierInterface $carrier */
-        foreach ($this->shippingConfig->getActiveCarriers() as $key => $carrier) {
+        foreach ($this->shippingConfig->getActiveCarriers() as $carrier) {
             $options[] = [
                 'label' => $this->scopeConfig->getValue(
                     sprintf('carriers/%s/title', $carrier->getCarrierCode())
