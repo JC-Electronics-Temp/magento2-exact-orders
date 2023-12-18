@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright Youwe. All rights reserved.
- * https://www.youweagency.com
+ * Copyright JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
  */
 
 declare(strict_types=1);
@@ -11,6 +11,7 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ShippingAssignmentFactory;
@@ -21,6 +22,7 @@ use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterface;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\AddressFactory;
 use Magento\Sales\Model\Order\ShippingTotal;
 use Magento\Sales\Model\Order\ShippingTotalFactory;
@@ -35,7 +37,8 @@ class SetShippingInformation extends AbstractModifier
         private readonly ShippingInterfaceFactory $shippingFactory,
         private readonly ShippingTotalFactory $shippingTotalFactory,
         private readonly AddressFactory $addressFactory,
-        private readonly ScopeConfigInterface $scopeConfig
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly CustomerRepositoryInterface $customerRepository
     ) {
     }
 
@@ -55,7 +58,7 @@ class SetShippingInformation extends AbstractModifier
         $result->setShippingDescription($shippingMethod['title']);
         $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
         $extensionAttributes->setShippingAssignments(
-            [$this->getShippingAssigment($model, $shippingMethod)]
+            [$this->getShippingAssigment($model, $result, $shippingMethod)]
         );
 
         $result->setExtensionAttributes($extensionAttributes);
@@ -81,39 +84,47 @@ class SetShippingInformation extends AbstractModifier
             : [
                 'code' => $shippingMethod['shipping_method'],
                 'title' => $this->scopeConfig->getValue(
-                    sprintf(
-                        'carriers/%s/title',
-                        current(
-                            explode('_', $shippingMethod['shipping_method'])
-                        )
-                    ),
-                    ScopeInterface::SCOPE_STORE,
-                    $storeId
-                ) ?? $shippingMethod['shipping_method']
+                        sprintf(
+                            'carriers/%s/title',
+                            current(
+                                explode('_', $shippingMethod['shipping_method'])
+                            )
+                        ),
+                        ScopeInterface::SCOPE_STORE,
+                        $storeId
+                    ) ?? $shippingMethod['shipping_method']
             ];
     }
 
     private function getShippingAssigment(
-        ExternalOrderInterface $order,
+        ExternalOrderInterface $externalOrder,
+        Order $order,
         array $shippingMethod
     ): ShippingAssignmentInterface {
         /** @var ShippingTotal $totals */
         $totals = $this->shippingTotalFactory->create();
-        $totals->setBaseShippingAmount($order->getBaseShippingAmount() ?: $order->getShippingAmount())
-            ->setBaseShippingInclTax($order->getBaseShippingAmount() ?: $order->getShippingAmount())
+        $totals->setBaseShippingAmount($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount())
+            ->setBaseShippingInclTax($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount())
             ->setBaseShippingTaxAmount(0)
-            ->setShippingAmount($order->getShippingAmount())
-            ->setShippingInclTax($order->getShippingAmount())
+            ->setShippingAmount($externalOrder->getShippingAmount())
+            ->setShippingInclTax($externalOrder->getShippingAmount())
             ->setShippingTaxAmount(0);
 
-        $orderAddress = $order->getShippingAddress();
+        $orderAddress = $externalOrder->getShippingAddress();
+        $customer     = $this->customerRepository->getById($order->getCustomerId());
 
         /** @var OrderAddressInterface $shippingAddress */
         $shippingAddress = $this->addressFactory->create();
         $shippingAddress->setAddressType(AbstractAddress::TYPE_SHIPPING)
             ->setTelephone($orderAddress->getTelephone())
-            ->setFirstname($orderAddress->getFirstname())
-            ->setLastname($orderAddress->getLastname())
+            ->setFirstname(
+                trim($orderAddress->getFirstname() ?? '')
+                    ?: $customer->getFirstname()
+            )
+            ->setLastname(
+                trim($orderAddress->getFirstname() ?? '')
+                    ?: $customer->getLastname()
+            )
             ->setCompany($orderAddress->getCompany())
             ->setStreet(
                 explode("\n", $orderAddress->getStreet())

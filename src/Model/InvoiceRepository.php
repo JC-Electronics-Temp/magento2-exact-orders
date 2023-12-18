@@ -13,16 +13,11 @@ use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
-use JcElectronics\ExactOrders\Model\ExternalInvoice\ItemFactory;
-use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
-use JcElectronics\ExactOrders\Traits\FormatExternalInvoiceDataTrait;
-use JcElectronics\ExactOrders\Traits\FormatExternalOrderAddressTrait;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface as MagentoInvoiceRepositoryInterface;
 

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright Youwe. All rights reserved.
- * https://www.youweagency.com
+ * Copyright JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
  */
 
 declare(strict_types=1);
@@ -20,8 +20,7 @@ class SetAddressInformation extends AbstractModifier
 {
     public function __construct(
         private readonly AddressFactory $addressFactory
-    )
-    {
+    ) {
     }
 
     /**
@@ -40,7 +39,7 @@ class SetAddressInformation extends AbstractModifier
 
     private function formatAddress(
         Address $address
-    ) {
+    ): AddressInterface {
         /** @var AddressInterface $invoiceAddress */
         $invoiceAddress = $this->addressFactory->create();
         $invoiceAddress

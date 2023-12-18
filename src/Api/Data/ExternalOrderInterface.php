@@ -77,9 +77,9 @@ interface ExternalOrderInterface
     public function setInvoiceIds(array $invoiceIds): self;
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getMagentoOrderId(): ?string;
+    public function getMagentoOrderId(): string|int|null;
 
     /**
      * @param string|int $orderId

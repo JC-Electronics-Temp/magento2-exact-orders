@@ -24,19 +24,19 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this->_getData(self::KEY_ID);
     }
 
-    public function setId(string $id): self
+    public function setId(string|int $id): self
     {
         $this->setData(self::KEY_ID, $id);
 
         return $this;
     }
 
-    public function getOrderId(): ?string
+    public function getOrderId(): string|int|null
     {
         return $this->_getData(self::KEY_ORDER_ID);
     }
 
-    public function setOrderId(string $orderId): self
+    public function setOrderId(string|int $orderId): self
     {
         $this->setData(self::KEY_ORDER_ID, $orderId);
 
@@ -55,96 +55,96 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this;
     }
 
-    public function getMagentoOrderId(): ?string
+    public function getMagentoOrderId(): string|int|null
     {
         return $this->_getData(self::KEY_MAGENTO_ORDER_ID);
     }
 
-    public function setMagentoOrderId(string $orderId): self
+    public function setMagentoOrderId(string|int $orderId): self
     {
         $this->setData(self::KEY_MAGENTO_ORDER_ID, $orderId);
 
         return $this;
     }
 
-    public function getMagentoCustomerId(): ?string
+    public function getMagentoCustomerId(): string|int|null
     {
         return $this->_getData(self::KEY_MAGENTO_CUSTOMER_ID);
     }
 
-    public function setMagentoCustomerId(string $magentoCustomerId): self
+    public function setMagentoCustomerId(string|int $magentoCustomerId): self
     {
         $this->setData(self::KEY_MAGENTO_CUSTOMER_ID, $magentoCustomerId);
 
         return $this;
     }
 
-    public function getExternalCustomerId(): ?string
+    public function getExternalCustomerId(): string|int|null
     {
         return $this->_getData(self::KEY_EXTERNAL_CUSTOMER_ID);
     }
 
-    public function setExternalCustomerId(string $externalCustomerId): self
+    public function setExternalCustomerId(string|int $externalCustomerId): self
     {
         $this->setData(self::KEY_EXTERNAL_CUSTOMER_ID, $externalCustomerId);
 
         return $this;
     }
 
-    public function getExtOrderId(): ?string
+    public function getExtOrderId(): string|int|null
     {
         return $this->_getData(self::KEY_EXTERNAL_ORDER_ID);
     }
 
-    public function setExtOrderId(string $extOrderId): self
+    public function setExtOrderId(string|int $extOrderId): self
     {
         $this->setData(self::KEY_EXTERNAL_ORDER_ID, $extOrderId);
 
         return $this;
     }
 
-    public function getBaseGrandtotal(): ?string
+    public function getBaseGrandtotal(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_GRAND_TOTAL);
     }
 
-    public function setBaseGrandtotal(string $grandTotal): self
+    public function setBaseGrandtotal(string|float $grandTotal): self
     {
         $this->setData(self::KEY_BASE_GRAND_TOTAL, $this->formatCurrencyValue($grandTotal));
 
         return $this;
     }
 
-    public function getBaseSubtotal(): ?string
+    public function getBaseSubtotal(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_SUBTOTAL);
     }
 
-    public function setBaseSubtotal(string $subtotal): self
+    public function setBaseSubtotal(string|float $subtotal): self
     {
         $this->setData(self::KEY_BASE_SUBTOTAL, $this->formatCurrencyValue($subtotal));
 
         return $this;
     }
 
-    public function getGrandtotal(): ?string
+    public function getGrandtotal(): string|float|null
     {
         return $this->_getData(self::KEY_GRAND_TOTAL);
     }
 
-    public function setGrandtotal(string $grandTotal): self
+    public function setGrandtotal(string|float $grandTotal): self
     {
         $this->setData(self::KEY_GRAND_TOTAL, $this->formatCurrencyValue($grandTotal));
 
         return $this;
     }
 
-    public function getSubtotal(): ?string
+    public function getSubtotal(): string|float|null
     {
         return   $this->_getData(self::KEY_SUBTOTAL);
     }
 
-    public function setSubtotal(string $subtotal): self
+    public function setSubtotal(string|float $subtotal): self
     {
         $this->setData(self::KEY_SUBTOTAL, $this->formatCurrencyValue($subtotal));
 
@@ -212,24 +212,24 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this;
     }
 
-    public function getBaseDiscountAmount(): ?string
+    public function getBaseDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_DISCOUNT_AMOUNT);
     }
 
-    public function setBaseDiscountAmount(string $discountAmount): self
+    public function setBaseDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_BASE_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
         return $this;
     }
 
-    public function getDiscountAmount(): ?string
+    public function getDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_DISCOUNT_AMOUNT);
     }
 
-    public function setDiscountAmount(string $discountAmount): self
+    public function setDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
@@ -248,48 +248,48 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this;
     }
 
-    public function getBaseTaxAmount(): ?string
+    public function getBaseTaxAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_TAX_AMOUNT);
     }
 
-    public function setBaseTaxAmount(string $taxAmount): self
+    public function setBaseTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_BASE_TAX_AMOUNT, $taxAmount);
 
         return $this;
     }
 
-    public function getTaxAmount(): ?string
+    public function getTaxAmount(): string|float|null
     {
         return $this->_getData(self::KEY_TAX_AMOUNT);
     }
 
-    public function setTaxAmount(string $taxAmount): self
+    public function setTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_TAX_AMOUNT, $this->formatCurrencyValue($taxAmount));
 
         return $this;
     }
 
-    public function getBaseShippingAmount(): ?string
+    public function getBaseShippingAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_SHIPPING_AMOUNT);
     }
 
-    public function setBaseShippingAmount(string $shippingAmount): self
+    public function setBaseShippingAmount(string|float $shippingAmount): self
     {
         $this->setData(self::KEY_BASE_SHIPPING_AMOUNT, $this->formatCurrencyValue($shippingAmount));
 
         return $this;
     }
 
-    public function getShippingAmount(): ?string
+    public function getShippingAmount(): string|float|null
     {
         return $this->_getData(self::KEY_SHIPPING_AMOUNT);
     }
 
-    public function setShippingAmount(string $shippingAmount): self
+    public function setShippingAmount(string|float $shippingAmount): self
     {
         $this->setData(self::KEY_SHIPPING_AMOUNT, $this->formatCurrencyValue($shippingAmount));
 

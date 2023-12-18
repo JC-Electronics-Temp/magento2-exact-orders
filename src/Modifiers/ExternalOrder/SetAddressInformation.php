@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright Youwe. All rights reserved.
- * https://www.youweagency.com
+ * Copyright JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
  */
 
 declare(strict_types=1);
@@ -33,19 +33,15 @@ class SetAddressInformation extends AbstractModifier
      */
     public function process(mixed $model, mixed $result): mixed
     {
-        $result
-            ->setBillingAddress(
-                $this->formatAddress($model->getBillingAddress())
-            )
-            ->setShippingAddress(
-                $this->formatAddress($model->getShippingAddress())
-            );
+        $result->setBillingAddress($this->formatAddress($model->getBillingAddress()))
+            ->setShippingAddress($this->formatAddress($model->getShippingAddress()));
 
         return $result;
     }
 
-    private function formatAddress(OrderAddressInterface $address): AddressInterface
-    {
+    private function formatAddress(
+        OrderAddressInterface $address
+    ): AddressInterface {
         /** @var AddressInterface $orderAddress */
         $orderAddress = $this->addressFactory->create();
         $orderAddress->setOrderaddressId((string) $address->getEntityId())
