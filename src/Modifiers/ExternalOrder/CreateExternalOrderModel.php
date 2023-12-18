@@ -11,7 +11,7 @@ namespace JcElectronics\ExactOrders\Modifiers\ExternalOrder;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 
-class CreateExternalOrder extends AbstractModifier
+class CreateExternalOrderModel extends AbstractModifier
 {
     public function __construct(
         private readonly ExternalOrderFactory $orderFactory

@@ -10,11 +10,9 @@
 >
     <preference for="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\OrderRepository" />
     <preference for="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\InvoiceRepository" />
-    <preference for="JcElectronics\ExactOrders\Api\ShipmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\ShipmentRepository" />
 
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice" />
-    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalShipmentInterface" type="JcElectronics\ExactOrders\Model\ExternalShipment" />
 
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice\Item" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Address" />
@@ -40,7 +38,6 @@
             <argument name="commands" xsi:type="array">
                 <item name="migrateInvoices" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteInvoices</item>
                 <item name="migrateOrders" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteOrders</item>
-                <item name="migrateShipments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteShipments</item>
                 <item name="migrateAttachments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateAttachments</item>
             </argument>
         </arguments>
@@ -50,18 +47,38 @@
         <arguments>
             <argument name="modifiers" xsi:type="array">
                 <!-- OrderInterface Modifiers -->
-                <item name="createOrderModel" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrderModel</item>
-                <item name="setBaseOrderData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBaseOrderData</item>
-                <item name="setCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCustomerData</item>
-                <item name="setPaymentInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetPaymentInformation</item>
-                <item name="setShippingInformation" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetShippingInformation</item>
-                <item name="setBillingAddress" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBillingAddress</item>
-                <item name="setCompanyInformation" sortOrder="600" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCompanyInformation</item>
-                <item name="setOrderTotals" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderTotals</item>
-                <item name="setOrderItems" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderItems</item>
-                <item name="addOrderAttachments" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\AddOrderAttachments</item>
+                <item name="Order::CreateOrderModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrderModel</item>
+                <item name="Order::SetBaseOrderData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBaseOrderData</item>
+                <item name="Order::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCustomerData</item>
+                <item name="Order::SetPaymentInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetPaymentInformation</item>
+                <item name="Order::SetShippingInformation" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetShippingInformation</item>
+                <item name="Order::SetBillingAddress" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBillingAddress</item>
+                <item name="Order::SetCompanyInformation" sortOrder="600" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCompanyInformation</item>
+                <item name="Order::SetOrderTotals" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderTotals</item>
+                <item name="Order::SetOrderItems" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderItems</item>
+                <item name="Order::AddOrderAttachments" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\AddOrderAttachments</item>
 
                 <!-- ExternalOrderInterface Modifiers -->
+                <item name="ExternalOrder::CreateExternalOrderModel" sortOrder="1000" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\CreateExternalOrderModel</item>
+                <item name="ExternalOrder::SetBaseOrderData" sortOrder="1100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetBaseOrderData</item>
+                <item name="ExternalOrder::SetCustomerData" sortOrder="1200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetCustomerData</item>
+                <item name="ExternalOrder::SetPaymentInformation" sortOrder="1300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetAddressInformation</item>
+                <item name="ExternalOrder::SetOrderTotals" sortOrder="1400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetOrderTotals</item>
+                <item name="ExternalOrder::SetOrderItems" sortOrder="1500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetOrderItems</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <!-- ExternalInvoiceInterface Modifiers -->
+                <item name="ExternalInvoice::CreateExternalInvoiceModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\CreateExternalInvoiceModel</item>
+                <item name="ExternalInvoice::SetBaseInvoiceData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetBaseInvoiceData</item>
+                <item name="ExternalInvoice::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetCustomerData</item>
+                <item name="ExternalInvoice::SetAddressInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetAddressInformation</item>
+                <item name="ExternalInvoice::SetInvoiceTotals" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetInvoiceTotals</item>
+                <item name="ExternalInvoice::SetInvoiceItems" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetInvoiceItems</item>
             </argument>
         </arguments>
     </type>
@@ -79,10 +96,6 @@
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
         <plugin name="addAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\AddInvoiceAttachments"/>
         <plugin name="updateAdditionalInvoiceData" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\UpdateAdditionalInvoiceData"/>
-    </type>
-
-    <type name="Magento\Sales\Api\ShipmentRepositoryInterface">
-        <plugin name="addAttachmentsToShipment" type="JcElectronics\ExactOrders\Plugin\Sales\Shipment\AddShipmentAttachments"/>
     </type>
 
     <type name="Magento\InventorySales\Model\AppendReservations">

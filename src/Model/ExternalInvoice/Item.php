@@ -14,36 +14,36 @@ use Magento\Framework\DataObject;
 
 class Item extends DataObject implements ItemInterface
 {
-    public function getInvoiceitemId(): ?string
+    public function getInvoiceitemId(): string|int|null
     {
         return $this->_getData(self::KEY_INVOICE_ITEM_ID);
     }
 
-    public function setInvoiceitemId(string $invoiceItemId): self
+    public function setInvoiceitemId(string|int $invoiceItemId): self
     {
         $this->setData(self::KEY_INVOICE_ITEM_ID, $invoiceItemId);
 
         return $this;
     }
 
-    public function getInvoiceId(): ?string
+    public function getInvoiceId(): string|int|null
     {
         return $this->_getData(self::KEY_INVOICE_ID);
     }
 
-    public function setInvoiceId(string $invoiceId): self
+    public function setInvoiceId(string|int $invoiceId): self
     {
         $this->setData(self::KEY_INVOICE_ID, $invoiceId);
 
         return $this;
     }
 
-    public function getOrderId(): ?string
+    public function getOrderId(): string|int|null
     {
         return $this->_getData(self::KEY_ORDER_ID);
     }
 
-    public function setOrderId(string $orderId): self
+    public function setOrderId(string|int $orderId): self
     {
         $this->setData(self::KEY_ORDER_ID, $orderId);
 
@@ -74,108 +74,108 @@ class Item extends DataObject implements ItemInterface
         return $this;
     }
 
-    public function getBasePrice(): ?string
+    public function getBasePrice(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_PRICE);
     }
 
-    public function setBasePrice(string $price): self
+    public function setBasePrice(string|float $price): self
     {
         $this->setData(self::KEY_BASE_PRICE, $this->formatCurrencyValue($price));
 
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): string|float|null
     {
         return $this->_getData(self::KEY_PRICE);
     }
 
-    public function setPrice(string $price): self
+    public function setPrice(string|float $price): self
     {
         $this->setData(self::KEY_PRICE, $this->formatCurrencyValue($price));
 
         return $this;
     }
 
-    public function getBaseRowTotal(): ?string
+    public function getBaseRowTotal(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_ROW_TOTAL);
     }
 
-    public function setBaseRowTotal(string $rowTotal): self
+    public function setBaseRowTotal(string|float $rowTotal): self
     {
         $this->setData(self::KEY_BASE_ROW_TOTAL, $this->formatCurrencyValue($rowTotal));
 
         return $this;
     }
 
-    public function getRowTotal(): ?string
+    public function getRowTotal(): string|float|null
     {
         return $this->_getData(self::KEY_ROW_TOTAL);
     }
 
-    public function setRowTotal(string $rowTotal): self
+    public function setRowTotal(string|float $rowTotal): self
     {
         $this->setData(self::KEY_ROW_TOTAL, $this->formatCurrencyValue($rowTotal));
 
         return $this;
     }
 
-    public function getBaseTaxAmount(): ?string
+    public function getBaseTaxAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_TAX_AMOUNT);
     }
 
-    public function setBaseTaxAmount(string $taxAmount): self
+    public function setBaseTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_BASE_TAX_AMOUNT, $this->formatCurrencyValue($taxAmount));
 
         return $this;
     }
 
-    public function getTaxAmount(): ?string
+    public function getTaxAmount(): string|float|null
     {
         return $this->_getData(self::KEY_TAX_AMOUNT);
     }
 
-    public function setTaxAmount(string $taxAmount): self
+    public function setTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_TAX_AMOUNT, $this->formatCurrencyValue($taxAmount));
 
         return $this;
     }
 
-    public function getQty(): ?string
+    public function getQty(): string|float|null
     {
         return $this->_getData(self::KEY_QTY);
     }
 
-    public function setQty(string $qty): self
+    public function setQty(string|float $qty): self
     {
         $this->setData(self::KEY_QTY, $qty);
 
         return $this;
     }
 
-    public function getBaseDiscountAmount(): ?string
+    public function getBaseDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_DISCOUNT_AMOUNT);
     }
 
-    public function setBaseDiscountAmount(string $discountAmount): self
+    public function setBaseDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_BASE_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
         return $this;
     }
 
-    public function getDiscountAmount(): ?string
+    public function getDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_DISCOUNT_AMOUNT);
     }
 
-    public function setDiscountAmount(string $discountAmount): self
+    public function setDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_DISCOUNT_AMOUNT, $this->formatCurrencyValue($discountAmount));
 
