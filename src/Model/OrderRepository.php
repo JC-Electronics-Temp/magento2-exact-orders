@@ -15,6 +15,7 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExternalOrder\AddressFactory;
 use JcElectronics\ExactOrders\Model\ExternalOrder\ItemFactory;
+use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use JcElectronics\ExactOrders\Traits\CustomerInformationTrait;
 use JcElectronics\ExactOrders\Traits\FormatExternalOrderAddressTrait;
 use JcElectronics\ExactOrders\Traits\FormatExternalOrderDataTrait;
@@ -37,7 +38,6 @@ use Magento\Store\Api\StoreRepositoryInterface;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    use FormatOrderDataTrait;
     use FormatExternalOrderAddressTrait;
     use FormatExternalOrderDataTrait;
 
@@ -58,7 +58,8 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly Config $config,
         private readonly OrderManagementInterface $orderManagement,
         private readonly Data $paymentHelper,
-        protected readonly ScopeConfigInterface $scopeConfig
+        protected readonly ScopeConfigInterface $scopeConfig,
+        private readonly array $modifiers = []
     ) {
     }
 
@@ -113,13 +114,22 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function save(ExternalOrderInterface $order): int
     {
-        $orderId     = $this->getMagentoOrderId($order->getMagentoIncrementId());
-        $orderEntity = $this->formatOrderData($order, $orderId);
-        $result      = $orderId === null
-            ? $this->orderManagement->place($orderEntity)
-            : $this->orderRepository->save($orderEntity);
+        /** @var OrderInterface $order */
+        $order  = $this->processModifiers($order);
+        $result = $order->getEntityId()
+            ? $this->orderRepository->save($order)
+            : $this->orderManagement->place($order);
 
-        foreach ($order->getAttachments() as $attachment) {
+        $this->saveAttachments($order);
+
+        return (int) $result->getEntityId();
+    }
+
+    private function saveAttachments(OrderInterface $order): void
+    {
+        $attachments = $order->getExtensionAttributes()->getAttachments() ?? [];
+
+        foreach ($attachments as $attachment) {
             try {
                 $attachmentObject = $this->attachmentRepository->getByEntity(
                     (int) $result->getEntityId(),
@@ -137,7 +147,21 @@ class OrderRepository implements OrderRepositoryInterface
 
             $this->attachmentRepository->save($attachmentObject);
         }
+    }
 
-        return (int) $result->getEntityId();
+    private function processModifiers($order)
+    {
+        $result = null;
+
+        /** @var ModifierInterface $modifier */
+        foreach ($this->modifiers as $modifier) {
+            if (!$modifier->supports($order)) {
+                continue;
+            }
+
+            $result = $modifier->process($order, $result);
+        }
+
+        return $result;
     }
 }

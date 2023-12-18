@@ -55,7 +55,6 @@ trait FormatOrderDataTrait
 
         return $this->serviceInputProcessor->convertValue(
             [
-                'entity_id' => $magentoOrderId,
                 'base_discount_amount' => $baseDiscount,
                 'base_grand_total' => $grandTotal,
                 'base_shipping_amount' => $baseShippingAmount,
@@ -69,28 +68,11 @@ trait FormatOrderDataTrait
                 'base_total_qty_ordered' => array_sum(
                     array_column($order->getItems(), 'qty')
                 ),
-                'is_virtual' => 0,
-                'created_at' => $order->getOrderDate(),
-                'customer_id' => $customer->getId(),
-                'customer_email' => $customer->getEmail(),
-                'customer_firstname' => $customer->getFirstname(),
-                'customer_group_id' => $customer->getGroupId(),
-                'customer_is_guest' => 0,
-                'customer_lastname' => $customer->getLastname(),
-                'customer_middlename' => $customer->getMiddlename(),
-                'customer_prefix' => $customer->getPrefix(),
-                'customer_suffix' => $customer->getSuffix(),
                 'discount_amount' => (float) $order->getDiscountAmount(),
-                'ext_customer_id' => $order->getExternalCustomerId(),
-                'ext_order_id' => $order->getExtOrderId(),
                 'grand_total' => (float) $order->getGrandtotal(),
-                'increment_id' => $orderIncrementId,
                 'shipping_amount' => (float) $order->getShippingAmount(),
                 'shipping_incl_tax' => (float) $order->getShippingAmount(),
                 'shipping_tax_amount' => 0,
-                'state' => strtolower($order->getState()),
-                'status' => $this->getOrderStatusByState($order->getState()),
-                'store_id' => $customer->getStoreId(),
                 'subtotal' => (float) $order->getSubtotal(),
                 'subtotal_incl_tax' => (float) $order->getSubtotal(),
                 'tax_amount' => (float) $order->getTaxAmount(),
@@ -102,22 +84,11 @@ trait FormatOrderDataTrait
                 'base_currency_code' => $this->config->getBaseCurrencyCode($store),
                 'global_currency_code' => $this->config->getGlobalCurrencyCode(),
                 'order_currency_code' => $this->config->getBaseCurrencyCode($store),
-                'updated_at' => $order->getUpdatedAt(),
                 'items' => $this->formatOrderItems($order->getItems(), $magentoOrderId),
                 'billing_address' => $this->formatOrderAddress(
                     $order->getBillingAddress(),
                     AbstractAddress::TYPE_BILLING
                 ),
-                'payment' => [
-                    'amount_ordered' => $order->getGrandtotal(),
-                    'amount_paid' => $order->getGrandtotal(),
-                    'method' => $this->getPaymentMethod($order->getPaymentMethod()),
-                    'base_amount_ordered' => $grandTotal,
-                    'base_amount_paid' => $grandTotal,
-                    'base_shipping_amount' => $baseShippingAmount,
-                    'shipping_amount' => (float) $order->getShippingAmount(),
-                ],
-                'shipping_description' => $shippingMethod['title'],
                 'extension_attributes' => [
                     'shipping_assignments' => [
                         [
