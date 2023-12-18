@@ -14,12 +14,12 @@ use Magento\Framework\DataObject;
 
 class Address extends DataObject implements AddressInterface
 {
-    public function getOrderaddressId(): ?string
+    public function getOrderaddressId(): string|int|null
     {
         return $this->_getData(self::KEY_ORDER_ADDRESS_ID);
     }
 
-    public function setOrderaddressId(string $orderAddressId): self
+    public function setOrderaddressId(string|int $orderAddressId): self
     {
         $this->setData(self::KEY_ORDER_ADDRESS_ID, $orderAddressId);
 

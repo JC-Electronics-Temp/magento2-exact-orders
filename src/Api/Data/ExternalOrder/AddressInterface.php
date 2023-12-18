@@ -23,16 +23,16 @@ interface AddressInterface
         KEY_ADDITIONAL_DATA           = 'additional_data';
 
     /**
-     * @return string|null
+     * @return string|int|null
      */
-    public function getOrderaddressId(): ?string;
+    public function getOrderaddressId(): string|int|null;
 
     /**
-     * @param  string $orderAddressId
+     * @param string|int $orderAddressId
      *
      * @return self
      */
-    public function setOrderaddressId(string $orderAddressId): self;
+    public function setOrderaddressId(string|int $orderAddressId): self;
 
     /**
      * @return string|null
