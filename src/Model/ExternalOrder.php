@@ -356,10 +356,10 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this;
     }
 
-    private function formatCurrencyValue(?string $value): ?string
+    private function formatCurrencyValue(string|int|float|null $value): ?float
     {
         return $value !== null
-            ? str_replace(',', '.', $value)
+            ? (float) str_replace(',', '.', $value)
             : null;
     }
 }
