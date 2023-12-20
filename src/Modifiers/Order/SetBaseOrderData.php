@@ -98,7 +98,7 @@ class SetBaseOrderData extends AbstractModifier
     private function getOrderStatus(ExternalOrderInterface $order): string
     {
         $orderStatuses = $this->config->getOrderStatuses();
-        $state         = strtolower($order->getState());
+        $state         = $this->getOrderState($order);
 
         if (!isset($orderStatuses[$state])) {
             throw new LocalizedException(
