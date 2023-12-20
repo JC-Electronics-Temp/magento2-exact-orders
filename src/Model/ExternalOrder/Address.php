@@ -126,7 +126,7 @@ class Address extends DataObject implements AddressInterface
 
     public function getAdditionalData(): array
     {
-        return $this->_getData(self::KEY_ADDITIONAL_DATA);
+        return $this->_getData(self::KEY_ADDITIONAL_DATA) ?? [];
     }
 
     public function setAdditionalData(array $additionalData): self
