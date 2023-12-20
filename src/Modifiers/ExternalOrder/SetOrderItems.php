@@ -46,10 +46,10 @@ class SetOrderItems extends AbstractModifier
                         ->setPrice($item->getPrice())
                         ->setBaseRowTotal($item->getBaseRowTotal())
                         ->setRowTotal($item->getRowTotal())
-                        ->setBaseTaxAmount($item->getBaseTaxAmount())
-                        ->setTaxAmount($item->getTaxAmount())
-                        ->setBaseDiscountAmount($item->getBaseDiscountAmount())
-                        ->setDiscountAmount($item->getDiscountAmount());
+                        ->setBaseTaxAmount($item->getBaseTaxAmount() ?? 0)
+                        ->setTaxAmount($item->getTaxAmount() ?? 0)
+                        ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?? 0)
+                        ->setDiscountAmount($item->getDiscountAmount() ?? 0);
 
                     return $orderItem;
                 },
