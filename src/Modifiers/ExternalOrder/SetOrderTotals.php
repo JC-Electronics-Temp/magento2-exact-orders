@@ -28,12 +28,12 @@ class SetOrderTotals extends AbstractModifier
             ->setBaseSubtotal($model->getBaseSubtotal())
             ->setGrandtotal($model->getGrandTotal())
             ->setSubtotal($model->getSubtotal())
-            ->setBaseDiscountAmount($model->getBaseDiscountAmount())
-            ->setDiscountAmount($model->getDiscountAmount())
-            ->setBaseTaxAmount($model->getBaseTaxAmount())
-            ->setTaxAmount($model->getTaxAmount())
-            ->setBaseShippingAmount($model->getBaseShippingAmount())
-            ->setShippingAmount($model->getShippingAmount());
+            ->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: 0)
+            ->setDiscountAmount($model->getDiscountAmount() ?: 0)
+            ->setBaseTaxAmount($model->getBaseTaxAmount() ?: 0)
+            ->setTaxAmount($model->getTaxAmount() ?: 0)
+            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: 0)
+            ->setShippingAmount($model->getShippingAmount() ?: 0);
 
         return $result;
     }
