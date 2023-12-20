@@ -69,7 +69,7 @@ class AddOrderAttachments extends AbstractAddAttachment
             }
 
             if (!$attachment->getParentId()) {
-                $attachment->setParentId($order->getEntityId());
+                $attachment->setParentId((int) $order->getEntityId());
             }
 
             $this->attachmentRepository->save($attachment);

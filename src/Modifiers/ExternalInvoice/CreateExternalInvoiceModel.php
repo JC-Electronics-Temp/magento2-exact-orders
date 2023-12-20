@@ -15,8 +15,7 @@ class CreateExternalInvoiceModel extends AbstractModifier
 {
     public function __construct(
         private readonly ExternalInvoiceFactory $invoiceFactory
-    )
-    {
+    ) {
     }
 
     public function process(mixed $model, mixed $result): mixed
