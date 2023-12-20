@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Plugin\Sales\Order;
 
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Plugin\Sales\AbstractAddAttachment;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderSearchResultInterface;
@@ -61,9 +62,14 @@ class AddOrderAttachments extends AbstractAddAttachment
     ): OrderInterface {
         $attachments = $order->getExtensionAttributes()->getAttachments() ?? [];
 
+        /** @var AttachmentInterface $attachment */
         foreach ($attachments as $attachment) {
             if ($attachment->getId()) {
                 continue;
+            }
+
+            if (!$attachment->getParentId()) {
+                $attachment->setParentId($order->getEntityId());
             }
 
             $this->attachmentRepository->save($attachment);

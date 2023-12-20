@@ -9,9 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
-use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
-use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
@@ -27,9 +24,7 @@ class OrderRepository implements OrderRepositoryInterface
     public function __construct(
         private readonly MagentoOrderRepositoryInterface $orderRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly OrderManagementInterface $orderManagement,
-        private readonly AttachmentFactory $attachmentFactory,
         private readonly array $modifiers = []
     ) {
     }
@@ -101,34 +96,7 @@ class OrderRepository implements OrderRepositoryInterface
             ? $this->orderRepository->save($order)
             : $this->orderManagement->place($order);
 
-        $this->saveAttachments($order);
-
         return (int) $result->getEntityId();
-    }
-
-    private function saveAttachments(OrderInterface $order): void
-    {
-        /** @var ExternalAttachmentInterface[] $attachments */
-        $attachments = $order->getExtensionAttributes()->getAttachments() ?? [];
-
-        foreach ($attachments as $attachment) {
-            try {
-                $orderAttachment = $this->attachmentRepository->getByEntity(
-                    (int) $order->getEntityId(),
-                    AttachmentInterface::ENTITY_TYPE_ORDER
-                );
-            } catch (NoSuchEntityException) {
-                /** @var AttachmentInterface $orderAttachment */
-                $orderAttachment = $this->attachmentFactory->create();
-                $orderAttachment->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_ORDER)
-                    ->setParentId($order->getEntityId());
-            }
-
-            $orderAttachment->setFileName($attachment->getName())
-                ->setFileContent($attachment->getFileData());
-
-            $this->attachmentRepository->save($orderAttachment);
-        }
     }
 
     private function processModifiers(mixed $order): mixed
