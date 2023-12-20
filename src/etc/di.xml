@@ -56,7 +56,6 @@
                 <item name="Order::SetCompanyInformation" sortOrder="600" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCompanyInformation</item>
                 <item name="Order::SetOrderTotals" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderTotals</item>
                 <item name="Order::SetOrderItems" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderItems</item>
-                <item name="Order::AddOrderAttachments" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\AddOrderAttachments</item>
 
                 <!-- ExternalOrderInterface Modifiers -->
                 <item name="ExternalOrder::CreateExternalOrderModel" sortOrder="1000" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\CreateExternalOrderModel</item>

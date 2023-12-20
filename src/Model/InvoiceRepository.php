@@ -11,6 +11,7 @@ namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
@@ -109,14 +110,22 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         );
 
         foreach ($invoice->getAttachments() as $attachment) {
-            /** @var AttachmentInterface $attachmentObject */
-            $attachmentObject = $this->attachmentFactory->create();
-            $attachmentObject->setParentId($invoiceId)
-                ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_INVOICE)
-                ->setFileName($attachment['name'])
-                ->setFileContent($attachment['file_data']);
+            try {
+                $invoiceAttachment = $this->attachmentRepository->getByEntity(
+                    (int) $invoice->getInvoiceId(),
+                    AttachmentInterface::ENTITY_TYPE_INVOICE
+                );
+            } catch (NoSuchEntityException) {
+                /** @var AttachmentInterface $invoiceAttachment */
+                $invoiceAttachment = $this->attachmentFactory->create();
+                $invoiceAttachment->setParentId($invoiceId)
+                    ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_INVOICE);
+            }
 
-            $this->attachmentRepository->save($attachmentObject);
+            $invoiceAttachment->setFileName($attachment->getName())
+                ->setFileContent($attachment->getFileData());
+
+            $this->attachmentRepository->save($invoiceAttachment);
         }
 
         return $invoiceId;

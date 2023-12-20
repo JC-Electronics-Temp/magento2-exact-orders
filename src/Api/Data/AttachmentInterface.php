@@ -21,8 +21,7 @@ interface AttachmentInterface
         KEY_ENTITY_ID      = 'entity_id',
         KEY_ENTITY_TYPE_ID = 'entity_type_id',
         ENTITY_TYPE_INVOICE = 'invoice',
-        ENTITY_TYPE_ORDER = 'order',
-        ENTITY_TYPE_SHIPMENT = 'shipment';
+        ENTITY_TYPE_ORDER = 'order';
 
     /**
      * @return mixed
