@@ -116,7 +116,6 @@ class SetShippingInformation extends AbstractModifier
         /** @var OrderAddressInterface $shippingAddress */
         $shippingAddress = $this->addressFactory->create();
         $shippingAddress->setAddressType(AbstractAddress::TYPE_SHIPPING)
-            ->setTelephone($orderAddress->getTelephone())
             ->setFirstname(
                 trim($orderAddress->getFirstname() ?? '')
                     ?: $customer->getFirstname()
@@ -132,7 +131,7 @@ class SetShippingInformation extends AbstractModifier
             ->setCity($orderAddress->getCity())
             ->setPostcode($orderAddress->getPostcode())
             ->setCountryId($orderAddress->getCountry())
-            ->setTelephone($orderAddress->getTelephone());
+            ->setTelephone($orderAddress->getTelephone() ?? '-');
 
         /** @var ShippingInterface $shipping */
         $shipping = $this->shippingFactory->create();

@@ -43,7 +43,6 @@ class SetBillingAddress extends AbstractModifier
         /** @var OrderAddressInterface $billingAddress */
         $billingAddress = $this->addressFactory->create();
         $billingAddress->setAddressType(AbstractAddress::TYPE_BILLING)
-            ->setTelephone($orderAddress->getTelephone())
             ->setFirstname(
                 trim($orderAddress->getFirstname() ?? '')
                     ?: $customer->getFirstname()
@@ -59,7 +58,7 @@ class SetBillingAddress extends AbstractModifier
             ->setCity($orderAddress->getCity())
             ->setPostcode($orderAddress->getPostcode())
             ->setCountryId($orderAddress->getCountry())
-            ->setTelephone($orderAddress->getTelephone());
+            ->setTelephone($orderAddress->getTelephone() ?? '-');
 
         $result->setBillingAddress($billingAddress);
 

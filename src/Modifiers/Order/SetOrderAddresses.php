@@ -72,7 +72,7 @@ class SetOrderAddresses extends AbstractModifier
                     $address->getStreet()
                 )
             )
-            ->setTelephone($address->getTelephone());
+            ->setTelephone($address->getTelephone() ?? '-');
 
         return $orderAddress;
     }
