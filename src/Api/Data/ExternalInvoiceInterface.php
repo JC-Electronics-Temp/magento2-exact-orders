@@ -311,7 +311,7 @@ interface ExternalInvoiceInterface
     public function getItems(): array;
 
     /**
-     * @param ItemInterface[] $items
+     * @param \JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface[] $items
      *
      * @return self
      */
