@@ -1,3 +1,13 @@
 parameters:
-  excludePaths:
-#    - %rootDir%/../../../path/to/exclude/*
+    level: 6
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        - '#(class|type) Magento\\TestFramework#i'
+        - '#(class|type) Magento\\\S*Factory#i'
+        - '#(class|type) JcElectronics\\TestFramework#i'
+        - '#(class|type) JcElectronics\\\S*Factory#i'
+        - '#(method) Magento\\Framework\\Api\\ExtensionAttributesInterface#i'
+        - '#(method) Magento\\\S*ExtensionAttributesInterface#i'
+        - '#(method) Magento\\\S*ExtensionInterface#i'

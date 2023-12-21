@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_invoice_save_before">
+        <observer name="addExtInvoiceIdToInvoice" instance="JcElectronics\ExactOrders\Observer\AddExternalInvoiceIdToInvoice" />
+    </event>
+</config>

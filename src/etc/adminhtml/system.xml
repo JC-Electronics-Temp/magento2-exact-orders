@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="jcelectronics" sortOrder="800" translate="label">
+            <label>JC-Electronics</label>
+        </tab>
+        <section id="exact_orders" sortOrder="10" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+            <label>Exact Orders</label>
+            <tab>jcelectronics</tab>
+            <resource>JcElectronics_ExactOrders::config_exact</resource>
+            <group id="orders" sortOrder="10" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+                <label>Orders</label>
+                <field id="external_order_increment_id" type="select" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Create new increment ID for external orders</label>
+                    <comment><![CDATA[When importing an external order, should we create a new Magento Increment ID for the order. If set to "No" , the external order ID will be set as increment ID.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="default_statuses" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Default Order Status Mapping</label>
+                    <frontend_model>JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\OrderStatuses</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+            </group>
+            <group id="shipping" sortOrder="20" showInWebsite="0" showInStore="0" showInDefault="1" translate="label">
+                <label>Shipment</label>
+                <field id="mapping" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Shipment Mapping</label>
+                    <frontend_model>JcElectronics\ExactOrders\Block\Adminhtml\Form\Field\ShippingMapping</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+                <field id="default" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Default Shipment Method</label>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allmethods</source_model>
+                </field>
+            </group>
+        </section>
+        <section id="payment">
+            <group id="external" sortOrder="100" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>External Payments</label>
+                <field id="active" type="select" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="50" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="51" showInDefault="1" showInWebsite="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+                <field id="model"/>
+            </group>
+        </section>
+    </system>
+</config>

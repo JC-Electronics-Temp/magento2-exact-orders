@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © JC-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <preference for="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\OrderRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\InvoiceRepository" />
+
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice" />
+
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice\Item" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Address" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder\Item" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\AdditionalDataInterface" type="JcElectronics\ExactOrders\Model\AdditionalData" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface" type="JcElectronics\ExactOrders\Model\ExternalAttachment" />
+
+    <preference for="JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface" type="JcElectronics\ExactOrders\Model\AttachmentRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\AttachmentInterface" type="JcElectronics\ExactOrders\Model\Attachment" />
+
+    <!-- Extended Sales Data -->
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedOrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedOrderItemRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderItemRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\ExtendedInvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\ExtendedInvoiceRepository" />
+
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedOrderInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrder" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedOrderItemInterface" type="JcElectronics\ExactOrders\Model\ExtendedOrderItem" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExtendedInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExtendedInvoice" />
+
+    <!-- Commands -->
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="migrateInvoices" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteInvoices</item>
+                <item name="migrateOrders" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateSubstituteOrders</item>
+                <item name="migrateAttachments" xsi:type="object">JcElectronics\ExactOrders\Console\Command\MigrateAttachments</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="JcElectronics\ExactOrders\Api\OrderRepositoryInterface">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <!-- OrderInterface Modifiers -->
+                <item name="Order::CreateOrderModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrderModel</item>
+                <item name="Order::SetBaseOrderData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBaseOrderData</item>
+                <item name="Order::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCustomerData</item>
+                <item name="Order::SetPaymentInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetPaymentInformation</item>
+                <item name="Order::SetShippingInformation" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetShippingInformation</item>
+                <item name="Order::SetBillingAddress" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBillingAddress</item>
+                <item name="Order::SetCompanyInformation" sortOrder="600" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCompanyInformation</item>
+                <item name="Order::SetOrderTotals" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderTotals</item>
+                <item name="Order::SetOrderItems" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetOrderItems</item>
+                <item name="Order::AddOrderAttachments" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\AddOrderAttachments</item>
+
+                <!-- ExternalOrderInterface Modifiers -->
+                <item name="ExternalOrder::CreateExternalOrderModel" sortOrder="1000" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\CreateExternalOrderModel</item>
+                <item name="ExternalOrder::SetBaseOrderData" sortOrder="1100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetBaseOrderData</item>
+                <item name="ExternalOrder::SetCustomerData" sortOrder="1200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetCustomerData</item>
+                <item name="ExternalOrder::SetPaymentInformation" sortOrder="1300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetAddressInformation</item>
+                <item name="ExternalOrder::SetOrderTotals" sortOrder="1400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetOrderTotals</item>
+                <item name="ExternalOrder::SetOrderItems" sortOrder="1500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalOrder\SetOrderItems</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <!-- ExternalInvoiceInterface Modifiers -->
+                <item name="ExternalInvoice::CreateExternalInvoiceModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\CreateExternalInvoiceModel</item>
+                <item name="ExternalInvoice::SetBaseInvoiceData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetBaseInvoiceData</item>
+                <item name="ExternalInvoice::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetCustomerData</item>
+                <item name="ExternalInvoice::SetAddressInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetAddressInformation</item>
+                <item name="ExternalInvoice::SetInvoiceTotals" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetInvoiceTotals</item>
+                <item name="ExternalInvoice::SetInvoiceItems" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetInvoiceItems</item>
+
+                <!-- InvoiceInterface Modifiers -->
+                <item name="Invoice::InvoiceOrder" sortOrder="60" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\InvoiceOrder</item>
+                <item name="Invoice::SetExtensionAttributes" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\SetExtensionAttributes</item>
+                <item name="Invoice::AddInvoiceAttachments" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\AddInvoiceAttachments</item>
+                <item name="Invoice::StoreUpdatedInvoice" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\StoreUpdatedInvoice</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Store attachments on sales entities -->
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="addAttachmentsToOrder" type="JcElectronics\ExactOrders\Plugin\Sales\Order\AddOrderAttachments"/>
+        <plugin name="updateAdditionalOrderData" type="JcElectronics\ExactOrders\Plugin\Sales\Order\UpdateAdditionalOrderData"/>
+    </type>
+
+    <type name="Magento\Sales\Api\OrderItemRepositoryInterface">
+        <plugin name="updateAdditionalOrderItemData" type="JcElectronics\ExactOrders\Plugin\Sales\Order\Item\UpdateAdditionalOrderItemData"/>
+    </type>
+
+    <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
+        <plugin name="addAttachmentsToInvoice" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\AddInvoiceAttachments"/>
+        <plugin name="updateAdditionalInvoiceData" type="JcElectronics\ExactOrders\Plugin\Sales\Invoice\UpdateAdditionalInvoiceData"/>
+    </type>
+
+    <type name="Magento\InventorySales\Model\AppendReservations">
+        <plugin name="disableStockCheckForExactOrders" type="JcElectronics\ExactOrders\Plugin\InventorySales\DisableStockCheckForExactOrders"/>
+    </type>
+</config>
