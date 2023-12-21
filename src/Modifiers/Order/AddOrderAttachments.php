@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\AttachmentFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -63,6 +62,8 @@ class AddOrderAttachments extends AbstractModifier
                 $model->getAttachments()
             )
         );
+
+        $extensionAttributes->setExtensionAttributes($extensionAttributes);
 
         return $result;
     }

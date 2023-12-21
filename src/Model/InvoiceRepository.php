@@ -18,6 +18,7 @@ use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\Data\InvoiceExtensionFactory;
 use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface as MagentoInvoiceRepositoryInterface;
@@ -30,6 +31,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         private readonly AttachmentRepositoryInterface $attachmentRepository,
         private readonly AttachmentFactory $attachmentFactory,
         private readonly InvoiceOrderInterface $invoiceOrder,
+        private readonly InvoiceExtensionFactory $extensionFactory,
         private readonly array $modifiers = []
     ) {
     }
@@ -102,12 +104,16 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         );
     }
 
-    public function save(
-        ExternalInvoiceInterface $invoice
-    ): int {
+    public function save(ExternalInvoiceInterface $invoice): int 
+    {
         $invoiceId = $this->invoiceOrder->execute(
             current($invoice->getOrderIds())
         );
+        
+        $magentoInvoice      = $this->invoiceRepository->get($invoiceId);
+        $extensionAttributes = $magentoInvoice->getExtensionAttributes() ?: $this->extensionFactory->create();
+        $extensionAttributes->setExtInvoiceId($invoice->getExtInvoiceId());
+        $magentoInvoice->setExtensionAttributes($extensionAttributes);
 
         foreach ($invoice->getAttachments() as $attachment) {
             try {

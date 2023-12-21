@@ -13,6 +13,9 @@ use JcElectronics\ExactOrders\Api\Data\ExtendedInvoiceInterface;
 use JcElectronics\ExactOrders\Api\ExtendedInvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExtendedInvoiceFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\Data\InvoiceExtension;
+use Magento\Sales\Api\Data\InvoiceExtensionFactory;
+use Magento\Sales\Api\Data\InvoiceExtensionInterface;
 use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Api\Data\InvoiceSearchResultInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
@@ -21,7 +24,8 @@ class UpdateAdditionalInvoiceData
 {
     public function __construct(
         private readonly ExtendedInvoiceRepositoryInterface $repository,
-        private readonly ExtendedInvoiceFactory $extendedInvoiceFactory
+        private readonly ExtendedInvoiceFactory $extendedInvoiceFactory,
+        private readonly InvoiceExtensionFactory $extensionFactory
     ) {
     }
 
@@ -30,7 +34,7 @@ class UpdateAdditionalInvoiceData
         InvoiceInterface $result
     ): InvoiceInterface {
         $extendedInvoice     = $this->getExtendedDataByInvoice($result);
-        $extensionAttributes = $result->getExtensionAttributes();
+        $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
         $extensionAttributes->setExtInvoiceId($extendedInvoice->getExtInvoiceId());
 
         $result->setExtensionAttributes($extensionAttributes);

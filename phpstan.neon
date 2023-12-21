@@ -6,6 +6,8 @@ parameters:
     ignoreErrors:
         - '#(class|type) Magento\\TestFramework#i'
         - '#(class|type) Magento\\\S*Factory#i'
+        - '#(class|type) JcElectronics\\TestFramework#i'
+        - '#(class|type) JcElectronics\\\S*Factory#i'
         - '#(method) Magento\\Framework\\Api\\ExtensionAttributesInterface#i'
         - '#(method) JcElectronics\\ExactOrders\\Api\\Data\\ExternalInvoiceInterface::getData#i'
         - '#(method) JcElectronics\\ExactOrders\\Api\\Data\\ExternalInvoiceInterface::setData#i'
