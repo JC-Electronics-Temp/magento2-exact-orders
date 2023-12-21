@@ -84,6 +84,7 @@
                 <item name="Invoice::InvoiceOrder" sortOrder="60" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\InvoiceOrder</item>
                 <item name="Invoice::SetExtensionAttributes" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\SetExtensionAttributes</item>
                 <item name="Invoice::AddInvoiceAttachments" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\AddInvoiceAttachments</item>
+                <item name="Invoice::StoreUpdatedInvoice" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\StoreUpdatedInvoice</item>
             </argument>
         </arguments>
     </type>

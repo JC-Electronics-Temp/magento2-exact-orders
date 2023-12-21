@@ -104,37 +104,12 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         );
     }
 
-    public function save(ExternalInvoiceInterface $invoice): int 
+    public function save(ExternalInvoiceInterface $invoice): int
     {
-        $invoiceId = $this->invoiceOrder->execute(
-            current($invoice->getOrderIds())
-        );
-        
-        $magentoInvoice      = $this->invoiceRepository->get($invoiceId);
-        $extensionAttributes = $magentoInvoice->getExtensionAttributes() ?: $this->extensionFactory->create();
-        $extensionAttributes->setExtInvoiceId($invoice->getExtInvoiceId());
-        $magentoInvoice->setExtensionAttributes($extensionAttributes);
+        /** @var InvoiceInterface $invoice */
+        $invoice = $this->processModifiers($invoice);
 
-        foreach ($invoice->getAttachments() as $attachment) {
-            try {
-                $invoiceAttachment = $this->attachmentRepository->getByEntity(
-                    (int) $invoice->getInvoiceId(),
-                    AttachmentInterface::ENTITY_TYPE_INVOICE
-                );
-            } catch (NoSuchEntityException) {
-                /** @var AttachmentInterface $invoiceAttachment */
-                $invoiceAttachment = $this->attachmentFactory->create();
-                $invoiceAttachment->setParentId($invoiceId)
-                    ->setEntityTypeId(AttachmentInterface::ENTITY_TYPE_INVOICE);
-            }
-
-            $invoiceAttachment->setFileName($attachment->getName())
-                ->setFileContent($attachment->getFileData());
-
-            $this->attachmentRepository->save($invoiceAttachment);
-        }
-
-        return $invoiceId;
+        return $invoice->getId();
     }
 
     private function processModifiers(mixed $invoice): mixed

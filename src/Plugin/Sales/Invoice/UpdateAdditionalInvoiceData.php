@@ -33,11 +33,15 @@ class UpdateAdditionalInvoiceData
         InvoiceRepositoryInterface $subject,
         InvoiceInterface $result
     ): InvoiceInterface {
-        $extendedInvoice     = $this->getExtendedDataByInvoice($result);
-        $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
-        $extensionAttributes->setExtInvoiceId($extendedInvoice->getExtInvoiceId());
+        try {
+            $extendedInvoice     = $this->getExtendedDataByInvoice($result);
+            $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
+            $extensionAttributes->setExtInvoiceId($extendedInvoice->getExtInvoiceId());
 
-        $result->setExtensionAttributes($extensionAttributes);
+            $result->setExtensionAttributes($extensionAttributes);
+        } catch (NoSuchEntityException) {
+            return $result;
+        }
 
         return $result;
     }
@@ -58,7 +62,12 @@ class UpdateAdditionalInvoiceData
         $result,
         InvoiceInterface $invoice
     ): void {
-        $extInvoiceId = $invoice->getExtensionAttributes()->getExtInvoiceId();
+        $extensionAttributes = $invoice->getExtensionAttributes() ?: $this->extensionFactory->create();
+        $extInvoiceId = $extensionAttributes->getExtInvoiceId();
+
+        if (!$extInvoiceId) {
+            return;
+        }
 
         try {
             $extendedInvoice = $this->repository->getByInvoiceId((int) $invoice->getEntityId());
