@@ -62,7 +62,7 @@ class AddInvoiceAttachments extends AbstractModifier
             )
         );
 
-        $extensionAttributes->setExtensionAttributes($extensionAttributes);
+        $result->setExtensionAttributes($extensionAttributes);
 
         return $result;
     }

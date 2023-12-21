@@ -9,9 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
-use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
-use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use JcElectronics\ExactOrders\Api\Data\ExternalAttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
@@ -20,7 +17,6 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\InvoiceExtensionFactory;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface as MagentoInvoiceRepositoryInterface;
 
 class InvoiceRepository implements InvoiceRepositoryInterface
@@ -28,10 +24,6 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     public function __construct(
         private readonly MagentoInvoiceRepositoryInterface $invoiceRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly AttachmentRepositoryInterface $attachmentRepository,
-        private readonly AttachmentFactory $attachmentFactory,
-        private readonly InvoiceOrderInterface $invoiceOrder,
-        private readonly InvoiceExtensionFactory $extensionFactory,
         private readonly array $modifiers = []
     ) {
     }
@@ -109,7 +101,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         /** @var InvoiceInterface $invoice */
         $invoice = $this->processModifiers($invoice);
 
-        return $invoice->getId();
+        return (int) $invoice->getEntityId();
     }
 
     private function processModifiers(mixed $invoice): mixed

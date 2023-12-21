@@ -20,6 +20,8 @@ class StoreUpdatedInvoice extends AbstractModifier
 
     public function process(mixed $model, mixed $result): mixed
     {
-        return $this->invoiceRepository->save($result);
+        $this->invoiceRepository->save($result);
+
+        return $result;
     }
 }
