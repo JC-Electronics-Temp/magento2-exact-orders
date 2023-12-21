@@ -9,19 +9,14 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Modifiers\Invoice;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\InvoiceItemInterface;
-use Magento\Sales\Api\Data\InvoiceItemCreationInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
-use Magento\Sales\Api\InvoiceItemRepositoryInterface;
 use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order\Invoice\ItemCreation;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Invoice\ItemCreationFactory;
 
 class InvoiceOrder extends AbstractModifier
@@ -30,8 +25,6 @@ class InvoiceOrder extends AbstractModifier
         private readonly InvoiceOrderInterface $invoiceOrder,
         private readonly InvoiceRepositoryInterface $invoiceRepository,
         private readonly OrderRepositoryInterface $orderRepository,
-        private readonly InvoiceItemRepositoryInterface $invoiceItemRepository,
-        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly ItemCreationFactory $itemCreationFactory
     ) {
     }
@@ -44,11 +37,10 @@ class InvoiceOrder extends AbstractModifier
      */
     public function process(mixed $model, mixed $result): mixed
     {
-        $orderId = current($model->getOrderIds());
-        $order   = $this->orderRepository->get($orderId);
-
-        $invoiceId = $this->invoiceOrder
-            ->execute(
+        $orderId   = current($model->getOrderIds());
+        $order     = $this->orderRepository->get($orderId);
+        $invoiceId = $this->getInvoiceByOrder($order)
+            ?: $this->invoiceOrder->execute(
                 $orderId,
                 true,
                 $this->formatInvoiceItems($order->getItems())
@@ -72,5 +64,19 @@ class InvoiceOrder extends AbstractModifier
             },
             []
         );
+    }
+
+    private function getInvoiceByOrder(Order $order): ?int
+    {
+        $collection = $order->getInvoiceCollection();
+
+        if ($collection->getTotalCount() === 0) {
+            return null;
+        }
+
+        /** @var InvoiceInterface $invoice */
+        $invoice = current($collection->getItems());
+
+        return (int) $invoice->getEntityId();
     }
 }
