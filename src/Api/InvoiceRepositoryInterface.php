@@ -22,11 +22,11 @@ interface InvoiceRepositoryInterface
     public function getById(string $id): ExternalInvoiceInterface;
 
     /**
-     * @param string $incrementId
+     * @param string $id
      *
      * @return ExternalInvoiceInterface
      */
-    public function getByIncrementId(string $incrementId): ExternalInvoiceInterface;
+    public function getByIncrementId(string $id): ExternalInvoiceInterface;
 
     /**
      * @param string $id

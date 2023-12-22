@@ -38,18 +38,18 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     /**
      * @throws NoSuchEntityException
      */
-    public function getByIncrementId(string $incrementId): ExternalInvoiceInterface
+    public function getByIncrementId(string $id): ExternalInvoiceInterface
     {
         $collection = $this->invoiceRepository
             ->getList(
                 $this->searchCriteriaBuilder
-                    ->addFilter(InvoiceInterface::INCREMENT_ID, $incrementId)
+                    ->addFilter(InvoiceInterface::INCREMENT_ID, $id)
                     ->create()
             )
             ->getItems();
 
         if (count($collection) === 0) {
-            throw NoSuchEntityException::singleField(InvoiceInterface::INCREMENT_ID, $incrementId);
+            throw NoSuchEntityException::singleField(InvoiceInterface::INCREMENT_ID, $id);
         }
 
         return $this->processModifiers(
