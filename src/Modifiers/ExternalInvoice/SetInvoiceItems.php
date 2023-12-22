@@ -51,13 +51,13 @@ class SetInvoiceItems extends AbstractModifier
                     ->setSku($item->getSku())
                     ->setQty($item->getQty())
                     ->setBasePrice($item->getBasePrice())
-                    ->setBaseRowTotal($item->getBaseRowTotal())
-                    ->setBaseTaxAmount($item->getBaseTaxAmount())
-                    ->setBaseDiscountAmount($item->getBaseDiscountAmount())
+                    ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal())
+                    ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
+                    ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
                     ->setPrice($item->getPrice())
                     ->setRowTotal($item->getRowTotal())
-                    ->setTaxAmount($item->getTaxAmount())
-                    ->setDiscountAmount($item->getDiscountAmount());
+                    ->setTaxAmount($item->getTaxAmount() ?: 0)
+                    ->setDiscountAmount($item->getDiscountAmount() ?: 0);
 
                 $carry[] = $invoiceItem;
 

@@ -194,10 +194,12 @@ class Item extends DataObject implements ItemInterface
         return $this;
     }
 
-    private function formatCurrencyValue(?string $value): ?string
+    private function formatCurrencyValue(string|int|float|null $value): ?float
     {
-        return $value !== null
-            ? str_replace(',', '.', $value)
-            : null;
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        return (float) str_replace(',', '.', $value);
     }
 }
