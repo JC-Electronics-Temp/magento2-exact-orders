@@ -45,8 +45,8 @@ class SetPaymentInformation extends AbstractModifier
             ->setAmountPaid($order->getGrandtotal())
             ->setBaseAmountOrdered($order->getBaseGrandtotal() ?: $order->getGrandtotal())
             ->setBaseAmountPaid($order->getBaseGrandtotal() ?: $order->getGrandtotal())
-            ->setShippingAmount($order->getShippingAmount())
-            ->setBaseShippingAmount($order->getBaseShippingAmount() ?: $order->getShippingAmount())
+            ->setShippingAmount($order->getShippingAmount() ?: 0)
+            ->setBaseShippingAmount($order->getBaseShippingAmount() ?: $order->getShippingAmount() ?: 0)
             ->setMethod($this->getPaymentMethod($order));
 
         return $payment;

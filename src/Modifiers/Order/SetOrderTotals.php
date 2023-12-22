@@ -25,11 +25,15 @@ class SetOrderTotals extends AbstractModifier
     ) {
     }
 
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+
     /**
      * @param ExternalOrderInterface $model
      * @param OrderInterface&Order   $result
      *
      * @return OrderInterface
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
@@ -37,25 +41,25 @@ class SetOrderTotals extends AbstractModifier
             array_column($model->getItems(), 'qty')
         );
 
-        $result->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: $model->getDiscountAmount())
+        $result->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: $model->getDiscountAmount() ?: 0)
             ->setBaseGrandTotal($model->getBaseGrandtotal() ?: $model->getGrandtotal())
-            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: $model->getShippingAmount())
-            ->setBaseShippingInclTax($model->getBaseShippingAmount() ?: $model->getShippingAmount())
+            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: $model->getShippingAmount() ?: 0)
+            ->setBaseShippingInclTax($result->getBaseShippingAmount())
             ->setBaseShippingTaxAmount(0)
             ->setBaseSubtotal($model->getBaseSubtotal() ?: $model->getSubtotal())
-            ->setBaseSubtotalInclTax($model->getBaseSubtotal() ?: $model->getSubtotal())
-            ->setBaseTaxAmount($model->getBaseTaxAmount() ?: $model->getTaxAmount())
+            ->setBaseSubtotalInclTax($result->getBaseSubtotal())
+            ->setBaseTaxAmount($model->getBaseTaxAmount() ?: $model->getTaxAmount() ?: 0)
             ->setBaseTotalDue(0)
             ->setBaseTotalPaid($model->getGrandtotal())
             ->setBaseTotalQtyOrdered($numberOfItems)
-            ->setDiscountAmount($model->getDiscountAmount())
+            ->setDiscountAmount($model->getDiscountAmount() ?: 0)
             ->setGrandTotal($model->getGrandtotal())
-            ->setShippingAmount($model->getShippingAmount())
-            ->setShippingInclTax($model->getShippingAmount())
+            ->setShippingAmount($model->getShippingAmount() ?: 0)
+            ->setShippingInclTax($result->getShippingAmount())
             ->setShippingTaxAmount(0)
             ->setSubtotal($model->getSubtotal())
             ->setSubtotalInclTax($model->getSubtotal())
-            ->setTaxAmount($model->getTaxAmount())
+            ->setTaxAmount($model->getTaxAmount() ?: 0)
             ->setTotalItemCount($numberOfItems)
             ->setTotalPaid($model->getGrandtotal())
             ->setTotalQtyOrdered($numberOfItems)
@@ -65,4 +69,6 @@ class SetOrderTotals extends AbstractModifier
 
         return $result;
     }
+
+    // phpcs:enable
 }

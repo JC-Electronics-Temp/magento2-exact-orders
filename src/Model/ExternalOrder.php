@@ -96,7 +96,7 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this->_getData(self::KEY_EXTERNAL_ORDER_ID);
     }
 
-    public function setExtOrderId(string|int $extOrderId): self
+    public function setExtOrderId(string|int|null $extOrderId): self
     {
         $this->setData(self::KEY_EXTERNAL_ORDER_ID, $extOrderId);
 

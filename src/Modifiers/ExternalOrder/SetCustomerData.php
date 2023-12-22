@@ -25,7 +25,7 @@ class SetCustomerData extends AbstractModifier
     public function process(mixed $model, mixed $result): mixed
     {
         $result->setMagentoCustomerId($model->getCustomerId())
-            ->setExternalCustomerId($model->getExtCustomerId());
+            ->setExternalCustomerId($model->getExtCustomerId() ?: '');
 
         return $result;
     }

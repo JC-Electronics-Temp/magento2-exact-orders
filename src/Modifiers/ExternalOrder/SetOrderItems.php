@@ -29,12 +29,19 @@ class SetOrderItems extends AbstractModifier
      * @param ExternalOrderInterface $result
      *
      * @return ExternalOrderInterface
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
         $result->setItems(
-            array_map(
-                function (OrderItemInterface $item) {
+            array_reduce(
+                $model->getItems(),
+                function (array $carry, OrderItemInterface $item) {
+                    if ((int) $item->getQtyOrdered() === 0) {
+                        return $carry;
+                    }
+
                     /** @var ItemInterface $orderItem */
                     $orderItem = $this->itemFactory->create();
                     $orderItem->setOrderId($item->getOrderId())
@@ -44,16 +51,20 @@ class SetOrderItems extends AbstractModifier
                         ->setQty($item->getQtyOrdered())
                         ->setBasePrice($item->getBasePrice())
                         ->setPrice($item->getPrice())
-                        ->setBaseRowTotal($item->getBaseRowTotal())
-                        ->setRowTotal($item->getRowTotal())
-                        ->setBaseTaxAmount($item->getBaseTaxAmount() ?? 0)
-                        ->setTaxAmount($item->getTaxAmount() ?? 0)
-                        ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?? 0)
-                        ->setDiscountAmount($item->getDiscountAmount() ?? 0);
+                        ->setBaseRowTotal(
+                            $item->getBaseRowTotal()
+                                ?: $item->getRowTotal()
+                                ?: $orderItem->getBasePrice() * $orderItem->getQty()
+                        )
+                        ->setRowTotal($item->getRowTotal() ?: $item->getPrice() * $item->getQtyOrdered())
+                        ->setBaseTaxAmount($item->getBaseTaxAmount() ?: 0)
+                        ->setTaxAmount($item->getTaxAmount() ?: 0)
+                        ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: 0)
+                        ->setDiscountAmount($item->getDiscountAmount() ?: 0);
 
                     return $orderItem;
                 },
-                $model->getItems(),
+                []
             )
         );
 

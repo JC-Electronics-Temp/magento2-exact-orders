@@ -96,6 +96,12 @@ class SetShippingInformation extends AbstractModifier
             ];
     }
 
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
     private function getShippingAssigment(
         ExternalOrderInterface $externalOrder,
         Order $order,
@@ -103,11 +109,11 @@ class SetShippingInformation extends AbstractModifier
     ): ShippingAssignmentInterface {
         /** @var ShippingTotal $totals */
         $totals = $this->shippingTotalFactory->create();
-        $totals->setBaseShippingAmount($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount())
-            ->setBaseShippingInclTax($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount())
+        $totals->setBaseShippingAmount($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount() ?: 0)
+            ->setBaseShippingInclTax($externalOrder->getBaseShippingAmount() ?: $externalOrder->getShippingAmount() ?: 0)
             ->setBaseShippingTaxAmount(0)
-            ->setShippingAmount($externalOrder->getShippingAmount())
-            ->setShippingInclTax($externalOrder->getShippingAmount())
+            ->setShippingAmount($externalOrder->getShippingAmount() ?: 0)
+            ->setShippingInclTax($externalOrder->getShippingAmount() ?: 0)
             ->setShippingTaxAmount(0);
 
         $orderAddress = $externalOrder->getShippingAddress();
@@ -145,4 +151,6 @@ class SetShippingInformation extends AbstractModifier
 
         return $shippingAssigment;
     }
+
+    // phpcs:enable
 }

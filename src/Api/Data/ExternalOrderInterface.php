@@ -118,11 +118,11 @@ interface ExternalOrderInterface
     public function getExtOrderId(): string|int|null;
 
     /**
-     * @param string|int $extOrderId
+     * @param string|int|null $extOrderId
      *
      * @return self
      */
-    public function setExtOrderId(string|int $extOrderId): self;
+    public function setExtOrderId(string|int|null $extOrderId): self;
 
     /**
      * @return string|float|null
