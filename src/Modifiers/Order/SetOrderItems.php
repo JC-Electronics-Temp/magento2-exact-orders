@@ -39,12 +39,16 @@ class SetOrderItems extends AbstractModifier
     ) {
     }
 
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+
     /**
      * @param ExternalOrderInterface $model
      * @param OrderInterface&Order   $result
      *
      * @return OrderInterface
      * @throws LocalizedException
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
@@ -67,20 +71,20 @@ class SetOrderItems extends AbstractModifier
                 ->setSku($item->getSku())
                 ->setProductType($product->getTypeId())
                 ->setQtyOrdered($item->getQty())
-                ->setBaseDiscountAmount($item->getBaseDiscountAmount())
-                ->setBaseOriginalPrice($item->getBasePrice())
-                ->setBasePrice($item->getBasePrice())
-                ->setBasePriceInclTax($item->getBasePrice())
-                ->setBaseRowTotal($item->getBaseRowTotal())
-                ->setBaseRowTotalInclTax($item->getBaseRowTotal())
-                ->setBaseTaxAmount($item->getBaseTaxAmount())
-                ->setDiscountAmount($item->getDiscountAmount())
+                ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
+                ->setBasePrice($item->getBasePrice() ?: $item->getPrice())
+                ->setBaseOriginalPrice($orderItem->getBasePrice())
+                ->setBasePriceInclTax($orderItem->getBasePrice())
+                ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $orderItem->getBasePrice() * $orderItem->getQtyOrdered())
+                ->setBaseRowTotalInclTax($orderItem->getBaseRowTotal())
+                ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
+                ->setDiscountAmount($item->getDiscountAmount() ?: 0)
                 ->setOriginalPrice($item->getPrice())
                 ->setPrice($item->getPrice())
                 ->setPriceInclTax($item->getPrice())
-                ->setRowTotal($item->getRowTotal())
-                ->setRowTotalInclTax($item->getRowTotal())
-                ->setTaxAmount($item->getTaxAmount());
+                ->setRowTotal($item->getRowTotal() ?: $orderItem->getPrice() * $orderItem->getQtyOrdered())
+                ->setRowTotalInclTax($orderItem->getRowTotal())
+                ->setTaxAmount($item->getTaxAmount() ?: 0);
 
             // phpcs:disable Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
             $additionalData = array_reduce(
@@ -108,6 +112,8 @@ class SetOrderItems extends AbstractModifier
 
         return $result;
     }
+
+    // phpcs:enable
 
     private function getOrderItemId(ItemInterface $item, ?int $orderId): ?int
     {

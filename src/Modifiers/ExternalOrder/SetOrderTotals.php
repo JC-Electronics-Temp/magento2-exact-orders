@@ -16,25 +16,31 @@ use Magento\Sales\Model\OrderFactory;
 
 class SetOrderTotals extends AbstractModifier
 {
+    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+
     /**
      * @param OrderInterface         $model
      * @param ExternalOrderInterface $result
      *
      * @return ExternalOrderInterface
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
-        $result->setBaseGrandtotal($model->getBaseGrandTotal())
-            ->setBaseSubtotal($model->getBaseSubtotal())
+        $result->setBaseGrandtotal($model->getBaseGrandTotal() ?: $model->getGrandTotal())
+            ->setBaseSubtotal($model->getBaseSubtotal() ?: $model->getSubtotal())
             ->setGrandtotal($model->getGrandTotal())
             ->setSubtotal($model->getSubtotal())
-            ->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: 0)
+            ->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: $model->getDiscountAmount() ?: 0)
             ->setDiscountAmount($model->getDiscountAmount() ?: 0)
-            ->setBaseTaxAmount($model->getBaseTaxAmount() ?: 0)
+            ->setBaseTaxAmount($model->getBaseTaxAmount() ?: $model->getTaxAmount() ?: 0)
             ->setTaxAmount($model->getTaxAmount() ?: 0)
-            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: 0)
+            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: $model->getShippingAmount() ?: 0)
             ->setShippingAmount($model->getShippingAmount() ?: 0);
 
         return $result;
     }
+
+    // phpcs:enable
 }
