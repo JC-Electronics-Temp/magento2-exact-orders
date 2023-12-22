@@ -121,7 +121,7 @@ class SetShippingInformation extends AbstractModifier
                     ?: $customer->getFirstname()
             )
             ->setLastname(
-                trim($orderAddress->getFirstname() ?? '')
+                trim($orderAddress->getLastname() ?? '')
                     ?: $customer->getLastname()
             )
             ->setCompany($orderAddress->getCompany())
