@@ -37,7 +37,7 @@ class SetOrderItems extends AbstractModifier
         $result->setItems(
             array_reduce(
                 $model->getItems(),
-                function (array $carry, OrderItemInterface $item) {
+                function (array $carry, OrderItemInterface $item): array {
                     if ((int) $item->getQtyOrdered() === 0) {
                         return $carry;
                     }
@@ -62,7 +62,9 @@ class SetOrderItems extends AbstractModifier
                         ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: 0)
                         ->setDiscountAmount($item->getDiscountAmount() ?: 0);
 
-                    return $orderItem;
+                    $carry[] = $orderItem;
+
+                    return $carry;
                 },
                 []
             )
