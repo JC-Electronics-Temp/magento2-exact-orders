@@ -15,6 +15,7 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
@@ -43,10 +44,15 @@ class SetOrderItems extends AbstractModifier
      * @param OrderInterface&Order   $result
      *
      * @return OrderInterface
+     * @throws LocalizedException
      */
     public function process(mixed $model, mixed $result): mixed
     {
         foreach ($model->getItems() as $item) {
+            if ((int) $item->getQty() === 0) {
+                continue;
+            }
+
             $product = $this->getProductBySku($item->getSku());
 
             if ($product === null) {
@@ -94,6 +100,10 @@ class SetOrderItems extends AbstractModifier
             $orderItem->setExtensionAttributes($extensionAttributes);
 
             $result->addItem($orderItem);
+        }
+
+        if (count($result->getItems()) === 0) {
+            throw new LocalizedException(__('Order has no valid items and can\'t be imported'));
         }
 
         return $result;
