@@ -72,7 +72,7 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this->_getData(self::KEY_MAGENTO_CUSTOMER_ID);
     }
 
-    public function setMagentoCustomerId(string $magentoCustomerId): self
+    public function setMagentoCustomerId(?string $magentoCustomerId): self
     {
         $this->setData(self::KEY_MAGENTO_CUSTOMER_ID, $magentoCustomerId);
 
@@ -84,7 +84,7 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this->_getData(self::KEY_EXTERNAL_INVOICE_ID);
     }
 
-    public function setExtInvoiceId(string $extInvoiceId): self
+    public function setExtInvoiceId(?string $extInvoiceId): self
     {
         $this->setData(self::KEY_EXTERNAL_INVOICE_ID, $extInvoiceId);
 
@@ -96,55 +96,55 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this->_getData(self::KEY_PO_NUMBER);
     }
 
-    public function setPoNumber(string $poNumber): self
+    public function setPoNumber(?string $poNumber): self
     {
         $this->setData(self::KEY_PO_NUMBER, $poNumber);
 
         return $this;
     }
 
-    public function getBaseGrandtotal(): ?string
+    public function getBaseGrandtotal(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_GRAND_TOTAL));
     }
 
-    public function setBaseGrandtotal(string $grandTotal): self
+    public function setBaseGrandtotal(string|float $grandTotal): self
     {
         $this->setData(self::KEY_BASE_GRAND_TOTAL, $grandTotal);
 
         return $this;
     }
 
-    public function getBaseSubtotal(): ?string
+    public function getBaseSubtotal(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_SUBTOTAL));
     }
 
-    public function setBaseSubtotal(string $subtotal): self
+    public function setBaseSubtotal(string|float $subtotal): self
     {
         $this->setData(self::KEY_BASE_SUBTOTAL, $subtotal);
 
         return $this;
     }
 
-    public function getGrandtotal(): ?string
+    public function getGrandtotal(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_GRAND_TOTAL));
     }
 
-    public function setGrandtotal(string $grandTotal): self
+    public function setGrandtotal(string|float $grandTotal): self
     {
         $this->setData(self::KEY_GRAND_TOTAL, $grandTotal);
 
         return $this;
     }
 
-    public function getSubtotal(): ?string
+    public function getSubtotal(): string|float|null
     {
         return   $this->formatCurrencyValue($this->_getData(self::KEY_SUBTOTAL));
     }
 
-    public function setSubtotal(string $subtotal): self
+    public function setSubtotal(string|float $subtotal): self
     {
         $this->setData(self::KEY_SUBTOTAL, $subtotal);
 
@@ -188,24 +188,24 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this;
     }
 
-    public function getBaseDiscountAmount(): ?string
+    public function getBaseDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_DISCOUNT_AMOUNT);
     }
 
-    public function setBaseDiscountAmount(string $discountAmount): self
+    public function setBaseDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_BASE_DISCOUNT_AMOUNT, $discountAmount);
 
         return $this;
     }
 
-    public function getDiscountAmount(): ?string
+    public function getDiscountAmount(): string|float|null
     {
         return $this->_getData(self::KEY_DISCOUNT_AMOUNT);
     }
 
-    public function setDiscountAmount(string $discountAmount): self
+    public function setDiscountAmount(string|float $discountAmount): self
     {
         $this->setData(self::KEY_DISCOUNT_AMOUNT, $discountAmount);
 
@@ -224,48 +224,48 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this;
     }
 
-    public function getBaseTaxAmount(): ?string
+    public function getBaseTaxAmount(): string|float|null
     {
         return $this->_getData(self::KEY_BASE_TAX_AMOUNT);
     }
 
-    public function setBaseTaxAmount(string $taxAmount): self
+    public function setBaseTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_BASE_TAX_AMOUNT, $taxAmount);
 
         return $this;
     }
 
-    public function getTaxAmount(): ?string
+    public function getTaxAmount(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_TAX_AMOUNT));
     }
 
-    public function setTaxAmount(string $taxAmount): self
+    public function setTaxAmount(string|float $taxAmount): self
     {
         $this->setData(self::KEY_TAX_AMOUNT, $taxAmount);
 
         return $this;
     }
 
-    public function getBaseShippingAmount(): ?string
+    public function getBaseShippingAmount(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_BASE_SHIPPING_AMOUNT));
     }
 
-    public function setBaseShippingAmount(string $shippingAmount): self
+    public function setBaseShippingAmount(string|float $shippingAmount): self
     {
         $this->setData(self::KEY_BASE_SHIPPING_AMOUNT, $shippingAmount);
 
         return $this;
     }
 
-    public function getShippingAmount(): ?string
+    public function getShippingAmount(): string|float|null
     {
         return $this->formatCurrencyValue($this->_getData(self::KEY_SHIPPING_AMOUNT));
     }
 
-    public function setShippingAmount(string $shippingAmount): self
+    public function setShippingAmount(string|float $shippingAmount): self
     {
         $this->setData(self::KEY_SHIPPING_AMOUNT, $shippingAmount);
 
@@ -320,10 +320,12 @@ class ExternalInvoice extends DataObject implements ExternalInvoiceInterface
         return $this;
     }
 
-    private function formatCurrencyValue(?string $value): ?string
+    private function formatCurrencyValue(string|int|float|null $value): ?float
     {
-        return $value !== null
-            ? str_replace(',', '.', $value)
-            : null;
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        return (float) str_replace(',', '.', $value);
     }
 }

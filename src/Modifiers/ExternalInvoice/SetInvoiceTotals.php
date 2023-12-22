@@ -20,17 +20,19 @@ class SetInvoiceTotals extends AbstractModifier
      * @param ExternalInvoiceInterface $result
      *
      * @return ExternalInvoiceInterface
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
-        $result->setBaseTaxAmount($model->getBaseTaxAmount())
-            ->setBaseDiscountAmount($model->getBaseDiscountAmount())
-            ->setBaseShippingAmount($model->getBaseShippingAmount())
+        $result->setBaseTaxAmount($model->getBaseTaxAmount() ?: $model->getTaxAmount() ?: '0')
+            ->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: $model->getDiscountAmount() ?: '0')
+            ->setBaseShippingAmount($model->getBaseShippingAmount() ?: $model->getShippingAmount() ?: '0')
             ->setBaseSubtotal($model->getBaseSubtotal())
             ->setBaseGrandtotal($model->getBaseGrandTotal())
-            ->setTaxAmount($model->getTaxAmount())
-            ->setDiscountAmount($model->getDiscountAmount())
-            ->setShippingAmount($model->getShippingAmount())
+            ->setTaxAmount($model->getTaxAmount() ?: '0')
+            ->setDiscountAmount($model->getDiscountAmount() ?: '0')
+            ->setShippingAmount($model->getShippingAmount() ?: '0')
             ->setSubtotal($model->getSubtotal())
             ->setGrandtotal($model->getGrandTotal());
 

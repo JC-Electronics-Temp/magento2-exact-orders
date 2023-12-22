@@ -91,11 +91,11 @@ interface ExternalInvoiceInterface
     public function getMagentoCustomerId(): ?string;
 
     /**
-     * @param string $magentoCustomerId
+     * @param string|null $magentoCustomerId
      *
      * @return self
      */
-    public function setMagentoCustomerId(string $magentoCustomerId): self;
+    public function setMagentoCustomerId(?string $magentoCustomerId): self;
 
     /**
      * @return string|null
@@ -103,11 +103,11 @@ interface ExternalInvoiceInterface
     public function getExtInvoiceId(): ?string;
 
     /**
-     * @param string $extInvoiceId
+     * @param string|null $extInvoiceId
      *
      * @return self
      */
-    public function setExtInvoiceId(string $extInvoiceId): self;
+    public function setExtInvoiceId(?string $extInvoiceId): self;
 
     /**
      * @return string|null
@@ -115,59 +115,59 @@ interface ExternalInvoiceInterface
     public function getPoNumber(): ?string;
 
     /**
-     * @param string $poNumber
+     * @param string|null $poNumber
      *
      * @return self
      */
-    public function setPoNumber(string $poNumber): self;
+    public function setPoNumber(?string $poNumber): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseGrandtotal(): ?string;
+    public function getBaseGrandtotal(): string|float|null;
 
     /**
      * @param string $grandTotal
      *
      * @return self
      */
-    public function setBaseGrandtotal(string $grandTotal): self;
+    public function setBaseGrandtotal(string|float $grandTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseSubtotal(): ?string;
+    public function getBaseSubtotal(): string|float|null;
 
     /**
      * @param string $subtotal
      *
      * @return self
      */
-    public function setBaseSubtotal(string $subtotal): self;
+    public function setBaseSubtotal(string|float $subtotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getGrandtotal(): ?string;
+    public function getGrandtotal(): string|float|null;
 
     /**
      * @param string $grandTotal
      *
      * @return self
      */
-    public function setGrandtotal(string $grandTotal): self;
+    public function setGrandtotal(string|float $grandTotal): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getSubtotal(): ?string;
+    public function getSubtotal(): string|float|null;
 
     /**
      * @param string $subtotal
      *
      * @return self
      */
-    public function setSubtotal(string $subtotal): self;
+    public function setSubtotal(string|float $subtotal): self;
 
     /**
      * @return string|null
@@ -210,28 +210,28 @@ interface ExternalInvoiceInterface
     ): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getBaseDiscountAmount(): ?string;
+    public function getBaseDiscountAmount(): string|float|null;
 
     /**
      * @param string $discountAmount
      *
      * @return self
      */
-    public function setBaseDiscountAmount(string $discountAmount): self;
+    public function setBaseDiscountAmount(string|float $discountAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getDiscountAmount(): ?string;
+    public function getDiscountAmount(): string|float|null;
 
     /**
      * @param string $discountAmount
      *
      * @return self
      */
-    public function setDiscountAmount(string $discountAmount): self;
+    public function setDiscountAmount(string|float $discountAmount): self;
 
     /**
      * @return string|null
@@ -246,52 +246,52 @@ interface ExternalInvoiceInterface
     public function setInvoiceDate(string $invoiceDate): self;
 
     /**
-     * @return string|null
+     * @return string|float|null;
      */
-    public function getBaseTaxAmount(): ?string;
+    public function getBaseTaxAmount(): string|float|null;
+
+    /**
+     * @param string|float $taxAmount
+     *
+     * @return self
+     */
+    public function setBaseTaxAmount(string|float $taxAmount): self;
+
+    /**
+     * @return string|float|null
+     */
+    public function getTaxAmount(): string|float|null;
 
     /**
      * @param string $taxAmount
      *
      * @return self
      */
-    public function setBaseTaxAmount(string $taxAmount): self;
+    public function setTaxAmount(string|float $taxAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getTaxAmount(): ?string;
-
-    /**
-     * @param string $taxAmount
-     *
-     * @return self
-     */
-    public function setTaxAmount(string $taxAmount): self;
-
-    /**
-     * @return string|null
-     */
-    public function getBaseShippingAmount(): ?string;
+    public function getBaseShippingAmount(): string|float|null;
 
     /**
      * @param string $shippingAmount
      *
      * @return self
      */
-    public function setBaseShippingAmount(string $shippingAmount): self;
+    public function setBaseShippingAmount(string|float $shippingAmount): self;
 
     /**
-     * @return string|null
+     * @return string|float|null
      */
-    public function getShippingAmount(): ?string;
+    public function getShippingAmount(): string|float|null;
 
     /**
      * @param string $shippingAmount
      *
      * @return self
      */
-    public function setShippingAmount(string $shippingAmount): self;
+    public function setShippingAmount(string|float $shippingAmount): self;
 
     /**
      * @return string|null
@@ -311,7 +311,7 @@ interface ExternalInvoiceInterface
     public function getItems(): array;
 
     /**
-     * @param ItemInterface[] $items
+     * @param \JcElectronics\ExactOrders\Api\Data\ExternalInvoice\ItemInterface[] $items
      *
      * @return self
      */
