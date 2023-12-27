@@ -55,7 +55,9 @@ class AddOrderAttachments extends AbstractModifier
                     }
 
                     $orderAttachment->setFileName($attachment->getName())
-                        ->setFileContent($attachment->getFileData());
+                        ->setFileContent(
+                            base64_decode($attachment->getFileData(), true)
+                        );
 
                     return $orderAttachment;
                 },
