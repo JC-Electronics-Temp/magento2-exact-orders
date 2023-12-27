@@ -55,7 +55,7 @@ class Address extends DataObject implements AddressInterface
         return $this->_getData(self::KEY_COMPANY);
     }
 
-    public function setCompany(string $company): self
+    public function setCompany(?string $company): self
     {
         $this->setData(self::KEY_COMPANY, $company);
 
