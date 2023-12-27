@@ -35,21 +35,56 @@ interface AttachmentInterface
      */
     public function setId($value);
 
-    public function getParentId(): int;
+    /**
+     * @return int|null
+     */
+    public function getParentId(): ?int;
 
+    /**
+     * @param int $parentId
+     *
+     * @return self
+     */
     public function setParentId(int $parentId): self;
 
-    public function getEntityTypeId(): string;
+    /**
+     * @return string|null
+     */
+    public function getEntityTypeId(): ?string;
 
+    /**
+     * @param string $entityTypeId
+     *
+     * @return self
+     */
     public function setEntityTypeId(string $entityTypeId): self;
 
-    public function getFileName(): string;
+    /**
+     * @return string|null
+     */
+    public function getFileName(): ?string;
 
+    /**
+     * @param string $fileName
+     *
+     * @return self
+     */
     public function setFileName(string $fileName): self;
 
-    public function getFileContent(): string;
+    /**
+     * @return string|null
+     */
+    public function getFileContent(): ?string;
 
+    /**
+     * @param string $fileContent
+     *
+     * @return self
+     */
     public function setFileContent(string $fileContent): self;
 
-    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface;
+    /**
+     * @return InvoiceInterface|OrderInterface|ShipmentInterface|null
+     */
+    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface|null;
 }

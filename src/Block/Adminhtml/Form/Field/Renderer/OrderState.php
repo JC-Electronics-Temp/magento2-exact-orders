@@ -33,7 +33,7 @@ class OrderState extends Select
         return $this->setId($value);
     }
 
-    public function _toHtml(): string
+    protected function _toHtml(): string
     {
         if (!$this->getOptions()) {
             $this->setOptions($this->getSourceOptions());

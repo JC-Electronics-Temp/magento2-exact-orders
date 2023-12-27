@@ -60,7 +60,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return [$this->_cacheTag . '_' . $this->getId()];
     }
 
-    public function getParentId(): int
+    public function getParentId(): ?int
     {
         return (int)$this->_getData(static::KEY_ENTITY_ID);
     }
@@ -72,7 +72,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return $this;
     }
 
-    public function getEntityTypeId(): string
+    public function getEntityTypeId(): ?string
     {
         return $this->_getData(static::KEY_ENTITY_TYPE_ID);
     }
@@ -84,7 +84,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return $this;
     }
 
-    public function getFileName(): string
+    public function getFileName(): ?string
     {
         return $this->_getData(self::KEY_FILE_NAME);
     }
@@ -96,7 +96,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return $this;
     }
 
-    public function getFileContent(): string
+    public function getFileContent(): ?string
     {
         return $this->_getData(self::KEY_FILE_CONTENT);
     }
@@ -108,7 +108,7 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return $this;
     }
 
-    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface
+    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface|null
     {
         return match ($this->getEntityTypeId()) {
             'invoice' => $this->invoiceRepository->get($this->getParentId()),
