@@ -27,6 +27,8 @@ use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order as OrderModel;
 
@@ -43,7 +45,8 @@ class View implements HttpGetActionInterface
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly Structure $structure,
         private readonly FileFactory $fileFactory,
-        private readonly RawFactory $resultRawFactory
+        private readonly RawFactory $resultRawFactory,
+        private readonly InvoiceRepositoryInterface $invoiceRepository
     ) {
     }
 
@@ -82,7 +85,7 @@ class View implements HttpGetActionInterface
     ): bool {
         $orderId = $attachment->getEntityTypeId() === AttachmentInterface::ENTITY_TYPE_ORDER
             ? $attachment->getParentId()
-            : $attachment->getParentEntity()->getOrderId();
+            : $this->getOrderIdByInvoice($attachment);
 
         /** @var OrderModel $order */
         $order                 = $this->orderRepository->get($orderId);
@@ -130,5 +133,16 @@ class View implements HttpGetActionInterface
             $attachment->getEntityTypeId(),
             $attachment->getFileName()
         );
+    }
+
+    public function getOrderIdByInvoice(AttachmentInterface $attachment): ?int
+    {
+        try {
+            return (int) $this->invoiceRepository
+                ->get($attachment->getParentId())
+                ->getOrderId();
+        } catch (NoSuchEntityException) {
+            return null;
+        }
     }
 }
