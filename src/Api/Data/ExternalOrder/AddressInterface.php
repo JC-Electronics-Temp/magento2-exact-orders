@@ -68,7 +68,7 @@ interface AddressInterface
      *
      * @return self
      */
-    public function setCompany(string $company): self;
+    public function setCompany(?string $company): self;
 
     /**
      * @return string|null
