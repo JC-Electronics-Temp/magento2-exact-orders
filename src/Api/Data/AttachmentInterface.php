@@ -9,10 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
-use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\ShipmentInterface;
-
 interface AttachmentInterface
 {
     public const KEY_ID    = 'attachment_id',
@@ -82,9 +78,4 @@ interface AttachmentInterface
      * @return self
      */
     public function setFileContent(string $fileContent): self;
-
-    /**
-     * @return InvoiceInterface|OrderInterface|ShipmentInterface|null
-     */
-    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface|null;
 }

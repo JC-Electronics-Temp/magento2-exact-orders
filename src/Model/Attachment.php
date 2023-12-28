@@ -31,25 +31,6 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
 
     protected $_cacheTag = self::CACHE_TAG;
 
-    public function __construct(
-        Context $context,
-        Registry $registry,
-        private readonly InvoiceRepositoryInterface $invoiceRepository,
-        private readonly OrderRepositoryInterface $orderRepository,
-        private readonly ShipmentRepositoryInterface $shipmentRepository,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $resource,
-            $resourceCollection,
-            $data
-        );
-    }
-
     protected function _construct(): void
     {
         $this->_init(AttachmentResourceModel::class);
@@ -106,16 +87,6 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         $this->setData(self::KEY_FILE_CONTENT, $fileContent);
 
         return $this;
-    }
-
-    public function getParentEntity(): InvoiceInterface|OrderInterface|ShipmentInterface|null
-    {
-        return match ($this->getEntityTypeId()) {
-            'invoice' => $this->invoiceRepository->get($this->getParentId()),
-            'order' => $this->orderRepository->get($this->getParentId()),
-            'shipment' => $this->shipmentRepository->get($this->getParentId()),
-            default => throw new UnhandledMatchError($this->getEntityTypeId()),
-        };
     }
 
     private function normalizeFilename(string $fileName): string
