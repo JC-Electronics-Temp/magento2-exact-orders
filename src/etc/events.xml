@@ -9,4 +9,8 @@
     <event name="sales_order_invoice_save_before">
         <observer name="addExtInvoiceIdToInvoice" instance="JcElectronics\ExactOrders\Observer\AddExternalInvoiceIdToInvoice" />
     </event>
+
+    <event name="sales_order_item_collection_load_after">
+        <observer name="addExtensionAttributesToOrderItems" instance="JcElectronics\ExactOrders\Observer\AddExtensionAttributesToOrderItems" />
+    </event>
 </config>

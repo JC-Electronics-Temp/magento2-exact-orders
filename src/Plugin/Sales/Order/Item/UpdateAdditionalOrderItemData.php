@@ -13,6 +13,7 @@ use JcElectronics\ExactOrders\Api\Data\ExtendedOrderItemInterface;
 use JcElectronics\ExactOrders\Api\ExtendedOrderItemRepositoryInterface;
 use JcElectronics\ExactOrders\Model\ExtendedOrderItemFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\Data\OrderItemSearchResultInterface;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
@@ -21,7 +22,8 @@ class UpdateAdditionalOrderItemData
 {
     public function __construct(
         private readonly ExtendedOrderItemRepositoryInterface $repository,
-        private readonly ExtendedOrderItemFactory $extendedOrderFactory
+        private readonly ExtendedOrderItemFactory $extendedOrderFactory,
+        private readonly OrderExtensionFactory $extensionFactory
     ) {
     }
 
@@ -31,7 +33,7 @@ class UpdateAdditionalOrderItemData
     ): OrderItemInterface {
         try {
             $extendedOrderItem = $this->getExtendedDataByOrderItem($result);
-            $extensionAttributes = $result->getExtensionAttributes();
+            $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
             $extensionAttributes->setSerialNumber($extendedOrderItem->getSerialNumber())
                 ->setExpectedDeliveryDate($extendedOrderItem->getExpectedDeliveryDate());
 
