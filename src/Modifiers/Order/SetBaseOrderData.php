@@ -22,12 +22,16 @@ use Magento\Sales\Model\OrderFactory;
 class SetBaseOrderData extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly Config $config,
-        private readonly OrderRepositoryInterface $orderRepository,
-        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderExtensionFactory $extensionFactory
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**
@@ -40,7 +44,7 @@ class SetBaseOrderData extends AbstractModifier
     {
         $customer = $this->customerRepository->getById($model->getMagentoCustomerId());
 
-        $result->setEntityId($this->getOrderEntityId($model))
+        $result->setEntityId($this->getOrderEntity($model)->getEntityId())
             ->setIsVirtual(false)
             ->setCreatedAt($model->getOrderDate())
             ->setExtOrderId($model->getExtOrderId())
@@ -56,23 +60,6 @@ class SetBaseOrderData extends AbstractModifier
         $result->setExtensionAttributes($extensionAttributes);
 
         return $result;
-    }
-
-    private function getOrderEntityId(ExternalOrderInterface $order): ?int
-    {
-        $collection = $this->orderRepository->getList(
-            $this->searchCriteriaBuilder
-                ->addFilter(OrderInterface::INCREMENT_ID, $order->getMagentoIncrementId())
-                ->create()
-        );
-
-        if ($collection->getTotalCount() === 0) {
-            return null;
-        }
-
-        $entity = current($collection->getItems());
-
-        return (int) $entity->getEntityId();
     }
 
     private function getIncrementId(ExternalOrderInterface $order): ?string
