@@ -47,7 +47,7 @@
         <arguments>
             <argument name="modifiers" xsi:type="array">
                 <!-- OrderInterface Modifiers -->
-                <item name="Order::CreateOrderModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrderModel</item>
+                <item name="Order::CreateOrFetchOrderModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrFetchOrderModel</item>
                 <item name="Order::SetBaseOrderData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBaseOrderData</item>
                 <item name="Order::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCustomerData</item>
                 <item name="Order::SetPaymentInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetPaymentInformation</item>
