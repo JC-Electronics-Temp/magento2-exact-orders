@@ -17,6 +17,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 
 class SetBaseOrderData extends AbstractModifier
@@ -36,9 +37,9 @@ class SetBaseOrderData extends AbstractModifier
 
     /**
      * @param ExternalOrderInterface $model
-     * @param OrderInterface         $result
+     * @param Order                  $result
      *
-     * @return OrderInterface
+     * @return Order
      */
     public function process(mixed $model, mixed $result): mixed
     {
@@ -51,7 +52,13 @@ class SetBaseOrderData extends AbstractModifier
             ->setState($this->getOrderState($model))
             ->setStatus($this->getOrderStatus($model))
             ->setStoreId($customer->getStoreId())
-            ->setUpdatedAt($model->getUpdatedAt());
+            ->setUpdatedAt($model->getUpdatedAt())
+            ->setEmailSent(0)
+            ->setData('send_email', 0)
+            ->setBaseToGlobalRate(1)
+            ->setBaseToOrderRate(1)
+            ->setStoreToBaseRate(0)
+            ->setStoreToOrderRate(0);
 
         $extensionAttributes = $result->getExtensionAttributes() ?: $this->extensionFactory->create();
         $extensionAttributes->setIsExternalOrder(true);
