@@ -15,14 +15,17 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderFactory;
 
-class CreateOrderModel extends AbstractModifier
+class CreateOrFetchOrderModel extends AbstractModifier
 {
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderFactory $orderFactory
     ) {
-        parent::__construct($orderRepository, $searchCriteriaBuilder);
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**
@@ -38,5 +41,10 @@ class CreateOrderModel extends AbstractModifier
         }
 
         return $result;
+    }
+
+    public function supports(mixed $entity): bool
+    {
+        return $entity instanceof ExternalOrderInterface;
     }
 }

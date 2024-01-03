@@ -44,8 +44,7 @@ class SetBaseOrderData extends AbstractModifier
     {
         $customer = $this->customerRepository->getById($model->getMagentoCustomerId());
 
-        $result->setEntityId($this->getOrderEntity($model)->getEntityId())
-            ->setIsVirtual(false)
+        $result->setIsVirtual(false)
             ->setCreatedAt($model->getOrderDate())
             ->setExtOrderId($model->getExtOrderId())
             ->setIncrementId($this->getIncrementId($model))

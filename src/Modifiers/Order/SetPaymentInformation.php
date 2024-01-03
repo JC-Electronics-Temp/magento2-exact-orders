@@ -11,17 +11,25 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Payment\ExternalPayment;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Payment\Helper\Data;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterfaceFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class SetPaymentInformation extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderPaymentInterfaceFactory $paymentFactory,
         private readonly Data $paymentHelper
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**

@@ -13,6 +13,7 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderAddressInterface;
@@ -22,6 +23,7 @@ use Magento\Sales\Api\Data\ShippingAssignmentInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterface;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\AddressFactory;
 use Magento\Sales\Model\Order\ShippingTotal;
@@ -31,6 +33,8 @@ use Magento\Store\Model\ScopeInterface;
 class SetShippingInformation extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly Config $config,
         private readonly OrderExtensionFactory $extensionFactory,
         private readonly ShippingAssignmentInterfaceFactory $shippingAssignmentFactory,
@@ -40,6 +44,10 @@ class SetShippingInformation extends AbstractModifier
         private readonly ScopeConfigInterface $scopeConfig,
         private readonly CustomerRepositoryInterface $customerRepository
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**
