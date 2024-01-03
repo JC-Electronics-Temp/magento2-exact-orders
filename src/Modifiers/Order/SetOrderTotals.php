@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Modifiers\Order;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\ItemInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\Config;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -45,8 +46,10 @@ class SetOrderTotals extends AbstractModifier
      */
     public function process(mixed $model, mixed $result): mixed
     {
-        $numberOfItems =  array_sum(
-            array_column($model->getItems(), 'qty')
+        $numberOfItems = array_reduce(
+            $model->getItems(),
+            static fn (int $carry, ItemInterface $item) => $carry += $item->getQty(),
+            0
         );
 
         $result->setBaseDiscountAmount($model->getBaseDiscountAmount() ?: $model->getDiscountAmount() ?: 0)
@@ -73,6 +76,7 @@ class SetOrderTotals extends AbstractModifier
             ->setTotalQtyOrdered($numberOfItems)
             ->setBaseCurrencyCode($this->config->getBaseCurrencyCode($result->getStore()))
             ->setGlobalCurrencyCode($this->config->getGlobalCurrencyCode())
+            ->setStoreCurrencyCode($this->config->getBaseCurrencyCode($result->getStore()))
             ->setOrderCurrencyCode($this->config->getBaseCurrencyCode($result->getStore()));
 
         return $result;
