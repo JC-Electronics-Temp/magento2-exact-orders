@@ -13,18 +13,26 @@ use JcElectronics\ExactOrders\Api\AttachmentRepositoryInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Model\AttachmentFactory;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderFactory;
 
 class AddOrderAttachments extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderExtensionFactory $extensionFactory,
         private readonly AttachmentFactory $attachmentFactory,
         private readonly AttachmentRepositoryInterface $attachmentRepository
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**
@@ -68,5 +76,14 @@ class AddOrderAttachments extends AbstractModifier
         $result->setExtensionAttributes($extensionAttributes);
 
         return $result;
+    }
+
+    /**
+     * This is (for now) the only modifier that should run for every order.
+     * Both new and existing.
+     */
+    public function supports(mixed $entity): bool
+    {
+        return $entity instanceof ExternalOrderInterface;
     }
 }

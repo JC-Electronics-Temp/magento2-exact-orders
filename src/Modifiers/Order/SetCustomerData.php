@@ -11,13 +11,21 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class SetCustomerData extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly CustomerRepositoryInterface $customerRepository
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**

@@ -12,17 +12,25 @@ namespace JcElectronics\ExactOrders\Modifiers\Order;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrder\AddressInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Customer\Model\Address\AbstractAddress;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 class SetOrderAddresses extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly Order\AddressFactory $orderAddressFactory
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**

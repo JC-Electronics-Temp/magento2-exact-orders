@@ -13,20 +13,28 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Company\Api\CompanyManagementInterface;
 use Magento\Company\Api\Data\CompanyInterface;
 use Magento\Company\Api\Data\CompanyOrderInterfaceFactory;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Quote\Model\ShippingAssignmentFactory;
 use Magento\Sales\Api\Data\OrderExtension;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class SetCompanyInformation extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderExtensionFactory $extensionFactory,
         private readonly CompanyManagementInterface $companyManagement,
         private readonly CompanyOrderInterfaceFactory $companyOrderFactory
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     /**

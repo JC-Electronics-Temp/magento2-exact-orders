@@ -25,18 +25,24 @@ use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\Data\ShippingAssignmentInterfaceFactory;
 use Magento\Sales\Api\Data\ShippingInterfaceFactory;
 use Magento\Sales\Api\OrderItemRepositoryInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\ItemFactory;
 
 class SetOrderItems extends AbstractModifier
 {
     public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly ProductRepositoryInterface $productRepository,
         private readonly ItemFactory $itemFactory,
         private readonly OrderItemRepositoryInterface $orderItemRepository,
-        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderItemExtensionFactory $extensionFactory
     ) {
+        parent::__construct(
+            $orderRepository,
+            $searchCriteriaBuilder
+        );
     }
 
     // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
