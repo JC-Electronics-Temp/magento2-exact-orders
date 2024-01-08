@@ -10,6 +10,7 @@
 >
     <preference for="JcElectronics\ExactOrders\Api\OrderRepositoryInterface" type="JcElectronics\ExactOrders\Model\OrderRepository" />
     <preference for="JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface" type="JcElectronics\ExactOrders\Model\InvoiceRepository" />
+    <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice\SearchResults" />
 
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface" type="JcElectronics\ExactOrders\Model\ExternalOrder" />
     <preference for="JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface" type="JcElectronics\ExactOrders\Model\ExternalInvoice" />

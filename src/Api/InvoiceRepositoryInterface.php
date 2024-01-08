@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -38,16 +39,16 @@ interface InvoiceRepositoryInterface
     /**
      * @param string $id
      *
-     * @return ExternalInvoiceInterface[]
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface
      */
-    public function getByOrder(string $id): array;
+    public function getByOrder(string $id): SearchResultsInterface;
 
     /**
      * @param SearchCriteriaInterface $searchCriteria
      *
-     * @return array
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria): array;
+    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 
     /**
      * @param ExternalInvoiceInterface $invoice
