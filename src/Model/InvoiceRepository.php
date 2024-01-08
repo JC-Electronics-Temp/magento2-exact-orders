@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterfaceFactory;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
 use JcElectronics\ExactOrders\Api\InvoiceRepositoryInterface;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
@@ -17,13 +19,18 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\InvoiceExtensionFactory;
 use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\Data\InvoiceSearchResultInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface as MagentoInvoiceRepositoryInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class InvoiceRepository implements InvoiceRepositoryInterface
 {
     public function __construct(
         private readonly MagentoInvoiceRepositoryInterface $invoiceRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
+        private readonly SearchResultsInterfaceFactory $searchResultsFactory,
+        private readonly OrderRepositoryInterface $orderRepository,
         private readonly array $modifiers = []
     ) {
     }
@@ -79,21 +86,47 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         );
     }
 
-    public function getByOrder(string $id): array
+    /**
+     * @throws NoSuchEntityException
+     */
+    public function getByOrder(string $id): SearchResultsInterface
     {
+        $collection = $this->orderRepository->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(OrderInterface::INCREMENT_ID, $id)
+                ->create()
+        );
+
+        if (!$collection->getTotalCount()) {
+            throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
+        }
+
+        /** @var OrderInterface $order */
+        $order = current($collection->getItems());
+
         return $this->getList(
             $this->searchCriteriaBuilder
-                ->addFilter(InvoiceInterface::ORDER_ID, $id)
+                ->addFilter(InvoiceInterface::ORDER_ID, $order->getEntityId())
                 ->create()
         );
     }
 
-    public function getList(SearchCriteriaInterface $searchCriteria): array
+    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface
     {
-        return array_map(
-            fn (InvoiceInterface $item) => $this->processModifiers($item),
-            $this->invoiceRepository->getList($searchCriteria)->getItems()
+        $collection = $this->invoiceRepository->getList($searchCriteria);
+
+        /** @var SearchResultsInterface $searchResults */
+        $searchResults = $this->searchResultsFactory->create();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems(
+            array_map(
+                fn (InvoiceInterface $item) => $this->processModifiers($item),
+                $collection->getItems()
+            )
         );
+        $searchResults->setTotalCount($collection->getTotalCount());
+
+        return $searchResults;
     }
 
     public function save(ExternalInvoiceInterface $invoice): int
