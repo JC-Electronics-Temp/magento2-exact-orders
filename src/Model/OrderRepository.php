@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\SearchResultsInterface;
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\SearchResultsInterfaceFactory;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use JcElectronics\ExactOrders\Api\OrderRepositoryInterface;
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
@@ -25,6 +27,7 @@ class OrderRepository implements OrderRepositoryInterface
         private readonly MagentoOrderRepositoryInterface $orderRepository,
         private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
         private readonly OrderManagementInterface $orderManagement,
+        private readonly SearchResultsInterfaceFactory $searchResultsFactory,
         private readonly array $modifiers = []
     ) {
     }
@@ -41,13 +44,12 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function getByIncrementId(string $id): ExternalOrderInterface
     {
-        $collection = $this->orderRepository
-            ->getList(
-                $this->searchCriteriaBuilder
-                    ->addFilter(OrderInterface::INCREMENT_ID, $id)
-                    ->create()
-            )
-            ->getItems();
+        $collection = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(OrderInterface::INCREMENT_ID, $id)
+                ->create()
+        )
+        ->getItems();
 
         if (count($collection) === 0) {
             throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
@@ -63,13 +65,12 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function getByExternalId(string $id): ExternalOrderInterface
     {
-        $collection = $this->orderRepository
-            ->getList(
-                $this->searchCriteriaBuilder
-                    ->addFilter(OrderInterface::EXT_ORDER_ID, $id)
-                    ->create()
-            )
-            ->getItems();
+        $collection = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(OrderInterface::EXT_ORDER_ID, $id)
+                ->create()
+        )
+        ->getItems();
 
         if (count($collection) === 0) {
             throw NoSuchEntityException::singleField(OrderInterface::EXT_ORDER_ID, $id);
@@ -80,12 +81,22 @@ class OrderRepository implements OrderRepositoryInterface
         );
     }
 
-    public function getList(SearchCriteriaInterface $searchCriteria): array
+    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface
     {
-        return array_map(
-            fn (OrderInterface $item) => $this->processModifiers($item),
-            $this->orderRepository->getList($searchCriteria)->getItems()
+        $collection = $this->orderRepository->getList($searchCriteria);
+
+        /** @var SearchResultsInterface $searchResults */
+        $searchResults = $this->searchResultsFactory->create();
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems(
+            array_map(
+                fn (OrderInterface $item) => $this->processModifiers($item),
+                $collection->getItems()
+            )
         );
+        $searchResults->setTotalCount($collection->getTotalCount());
+
+        return $searchResults;
     }
 
     public function save(ExternalOrderInterface $order): int

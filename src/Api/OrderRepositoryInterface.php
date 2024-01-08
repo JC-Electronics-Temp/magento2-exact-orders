@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api;
 
+use JcElectronics\ExactOrders\Api\Data\ExternalOrder\SearchResultsInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
@@ -38,9 +39,9 @@ interface OrderRepositoryInterface
     /**
      * @param SearchCriteriaInterface $searchCriteria
      *
-     * @return array
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrder\SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria): array;
+    public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 
     /**
      * @param ExternalOrderInterface $order
