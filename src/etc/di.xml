@@ -82,7 +82,8 @@
                 <item name="ExternalInvoice::SetInvoiceItems" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\ExternalInvoice\SetInvoiceItems</item>
 
                 <!-- InvoiceInterface Modifiers -->
-                <item name="Invoice::InvoiceOrder" sortOrder="60" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\InvoiceOrder</item>
+                <item name="Invoice::FetchExistingInvoice" sortOrder="550" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\FetchExistingInvoice</item>
+                <item name="Invoice::InvoiceOrder" sortOrder="600" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\InvoiceOrder</item>
                 <item name="Invoice::SetExtensionAttributes" sortOrder="700" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\SetExtensionAttributes</item>
                 <item name="Invoice::AddInvoiceAttachments" sortOrder="800" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\AddInvoiceAttachments</item>
                 <item name="Invoice::StoreUpdatedInvoice" sortOrder="900" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Invoice\StoreUpdatedInvoice</item>
