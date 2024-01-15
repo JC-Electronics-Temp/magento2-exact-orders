@@ -11,19 +11,8 @@ namespace JcElectronics\ExactOrders\Model;
 
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as AttachmentResourceModel;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Registry;
-use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\ShipmentInterface;
-use Magento\Sales\Api\InvoiceRepositoryInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Api\ShipmentRepositoryInterface;
-use UnhandledMatchError;
 
 class Attachment extends AbstractModel implements AttachmentInterface, IdentityInterface
 {

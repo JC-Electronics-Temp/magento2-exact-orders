@@ -20,12 +20,8 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem;
-use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Controller\AbstractController\OrderLoaderInterface;
 use Magento\Sales\Controller\AbstractController\OrderViewAuthorizationInterface;
-use Magento\Sales\Controller\Order\PrintAction;
 use Magento\Sales\Controller\Order\PrintInvoice;
 use Magento\Sales\Model\Order\Invoice;
 

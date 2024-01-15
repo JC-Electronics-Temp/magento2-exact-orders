@@ -28,10 +28,10 @@ class FetchExistingInvoice extends AbstractModifier
      * @param ExternalInvoiceInterface $model
      * @param InvoiceInterface|null    $result
      *
-     * @return mixed
+     * @return InvoiceInterface|null
      * @throws LocalizedException
      */
-    public function process(mixed $model, mixed $result): mixed
+    public function process(mixed $model, mixed $result): InvoiceInterface|null
     {
         if (!$model->getInvoiceId() && empty($model->getOrderIds())) {
             throw new LocalizedException(__('Unable to create an invoice without invoice_id or order_ids'));
@@ -48,7 +48,7 @@ class FetchExistingInvoice extends AbstractModifier
         );
     }
 
-    private function getInvoiceByOrder(Order $order): ?int
+    private function getInvoiceByOrder(Order $order): ?InvoiceInterface
     {
         $collection = $order->getInvoiceCollection();
 
@@ -59,6 +59,6 @@ class FetchExistingInvoice extends AbstractModifier
         /** @var InvoiceInterface $invoice */
         $invoice = current($collection->getItems());
 
-        return (int) $invoice->getEntityId();
+        return $invoice;
     }
 }

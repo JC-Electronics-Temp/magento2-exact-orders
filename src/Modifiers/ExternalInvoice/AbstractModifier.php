@@ -11,7 +11,6 @@ namespace JcElectronics\ExactOrders\Modifiers\ExternalInvoice;
 
 use JcElectronics\ExactOrders\Modifiers\ModifierInterface;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\OrderInterface;
 
 abstract class AbstractModifier implements ModifierInterface
 {

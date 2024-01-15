@@ -48,16 +48,13 @@ class OrderRepository implements OrderRepositoryInterface
             $this->searchCriteriaBuilder
                 ->addFilter(OrderInterface::INCREMENT_ID, $id)
                 ->create()
-        )
-        ->getItems();
+        );
 
-        if (count($collection) === 0) {
+        if ($collection->getTotalCount() === 0) {
             throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
         }
 
-        return $this->processModifiers(
-            current($collection)
-        );
+        return current($collection->getItems());
     }
 
     /**
@@ -69,16 +66,13 @@ class OrderRepository implements OrderRepositoryInterface
             $this->searchCriteriaBuilder
                 ->addFilter(OrderInterface::EXT_ORDER_ID, $id)
                 ->create()
-        )
-        ->getItems();
+        );
 
-        if (count($collection) === 0) {
+        if ($collection->getTotalCount() === 0) {
             throw NoSuchEntityException::singleField(OrderInterface::EXT_ORDER_ID, $id);
         }
 
-        return $this->processModifiers(
-            current($collection)
-        );
+        return current($collection->getItems());
     }
 
     public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface
