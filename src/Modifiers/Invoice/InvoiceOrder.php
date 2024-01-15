@@ -31,9 +31,9 @@ class InvoiceOrder extends AbstractModifier
      * @param ExternalInvoiceInterface $model
      * @param InvoiceInterface|null    $result
      *
-     * @return mixed
+     * @return InvoiceInterface
      */
-    public function process(mixed $model, mixed $result): mixed
+    public function process(mixed $model, mixed $result): InvoiceInterface
     {
         if ($result instanceof InvoiceInterface) {
             return $result;

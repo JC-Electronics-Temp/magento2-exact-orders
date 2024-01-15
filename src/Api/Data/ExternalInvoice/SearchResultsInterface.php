@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data\ExternalInvoice;
 
-use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
-
 interface SearchResultsInterface extends \Magento\Framework\Api\SearchResultsInterface
 {
     /**

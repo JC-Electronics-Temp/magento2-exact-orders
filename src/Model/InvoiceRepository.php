@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use JcElectronics\ExactOrders\Api\Data\ExtendedInvoiceInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterface;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoice\SearchResultsInterfaceFactory;
 use JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface;
@@ -19,7 +20,6 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\InvoiceExtensionFactory;
 use Magento\Sales\Api\Data\InvoiceInterface;
-use Magento\Sales\Api\Data\InvoiceSearchResultInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface as MagentoInvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -47,21 +47,17 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function getByIncrementId(string $id): ExternalInvoiceInterface
     {
-        $collection = $this->invoiceRepository
-            ->getList(
-                $this->searchCriteriaBuilder
-                    ->addFilter(InvoiceInterface::INCREMENT_ID, $id)
-                    ->create()
-            )
-            ->getItems();
+        $collection = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(InvoiceInterface::INCREMENT_ID, $id)
+                ->create()
+        );
 
-        if (count($collection) === 0) {
+        if ($collection->getTotalCount() === 0) {
             throw NoSuchEntityException::singleField(InvoiceInterface::INCREMENT_ID, $id);
         }
 
-        return $this->processModifiers(
-            current($collection)
-        );
+        return current($collection->getItems());
     }
 
     /**
@@ -69,21 +65,20 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function getByExternalId(string $id): ExternalInvoiceInterface
     {
-        $collection = $this->invoiceRepository
-            ->getList(
-                $this->searchCriteriaBuilder
-                    ->addFilter('ext_invoice_id', $id)
-                    ->create()
-            )
-            ->getItems();
+        $collection = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(ExtendedInvoiceInterface::KEY_EXT_INVOICE_ID, $id)
+                ->create()
+        );
 
-        if (count($collection) === 0) {
-            throw NoSuchEntityException::singleField('ext_invoice_id', $id);
+        if ($collection->getTotalCount() === 0) {
+            throw NoSuchEntityException::singleField(
+                ExtendedInvoiceInterface::KEY_EXT_INVOICE_ID,
+                $id
+            );
         }
 
-        return $this->processModifiers(
-            current($collection)
-        );
+        return current($collection->getItems());
     }
 
     /**
@@ -91,18 +86,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function getByOrder(string $id): SearchResultsInterface
     {
-        $collection = $this->orderRepository->getList(
-            $this->searchCriteriaBuilder
-                ->addFilter(OrderInterface::INCREMENT_ID, $id)
-                ->create()
-        );
-
-        if (!$collection->getTotalCount()) {
-            throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
-        }
-
-        /** @var OrderInterface $order */
-        $order = current($collection->getItems());
+        $order = $this->getOrderByIncrementId($id);
 
         return $this->getList(
             $this->searchCriteriaBuilder
@@ -135,6 +119,24 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         $invoice = $this->processModifiers($invoice);
 
         return (int) $invoice->getEntityId();
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function getOrderByIncrementId(string $id): OrderInterface
+    {
+        $collection = $this->orderRepository->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(OrderInterface::INCREMENT_ID, $id)
+                ->create()
+        );
+
+        if ($collection->getTotalCount() === 0) {
+            throw NoSuchEntityException::singleField(OrderInterface::INCREMENT_ID, $id);
+        }
+
+        return current($collection->getItems());
     }
 
     private function processModifiers(mixed $invoice): mixed
