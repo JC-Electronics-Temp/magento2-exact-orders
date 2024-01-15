@@ -101,6 +101,7 @@ class AttachmentRepository implements AttachmentRepositoryInterface
 
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setTotalCount($collection->getSize());
         $searchResults->setItems($collection->getItems());
 
         return $searchResults;
