@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright Youwe. All rights reserved.
- * https://www.youweagency.com
+ * Copyright Jc-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
  */
 
 declare(strict_types=1);
@@ -43,13 +43,14 @@ class DownloadAttachment
         callable $proceed
     ): ResultInterface|ResponseInterface {
         $invoiceId  = (int) $this->request->getParam('invoice_id');
-        $attachment = $this->getAttachmentByInvoiceId($invoiceId);
+        $invoice    = $this->invoiceRepository->get($invoiceId);
+        $attachment = $this->getAttachmentByInvoice($invoice);
 
         if (!$attachment instanceof AttachmentInterface) {
             /** @var Redirect $redirect */
             $redirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
             $redirect->setPath(
-                sprintf('sales/order/view/invoice_id/%d', $invoiceId)
+                sprintf('sales/order/invoice/order_id/%d', $invoice->getOrderId())
             );
 
             return $redirect;
@@ -71,22 +72,17 @@ class DownloadAttachment
         );
     }
 
-    private function getAttachmentByInvoiceId(int $invoiceId): ?AttachmentInterface
+    private function getAttachmentByInvoice(Invoice $invoice): ?AttachmentInterface
     {
-        try {
-            /** @var Invoice $invoice */
-            $invoice = $this->invoiceRepository->get($invoiceId);
-        } catch (NoSuchEntityException) {
-            return null;
-        }
-
         if (!$this->orderViewAuthorization->canView($invoice->getOrder())) {
             return null;
         }
 
         try {
-            return $this->attachmentRepository
-                ->getByEntity($invoiceId, AttachmentInterface::ENTITY_TYPE_ORDER);
+            return $this->attachmentRepository->getByEntity(
+                (int) $invoice->getEntityId(),
+                AttachmentInterface::ENTITY_TYPE_INVOICE
+            );
         } catch (NoSuchEntityException) {
             return null;
         }
