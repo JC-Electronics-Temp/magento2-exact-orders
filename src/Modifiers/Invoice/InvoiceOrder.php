@@ -15,6 +15,7 @@ use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\InvoiceOrderInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Invoice\ItemCreationFactory;
 
 class InvoiceOrder extends AbstractModifier
@@ -39,13 +40,21 @@ class InvoiceOrder extends AbstractModifier
             return $result;
         }
 
-        $orderId   = current($model->getOrderIds());
-        $order     = $this->orderRepository->get($orderId);
+        $orderId     = current($model->getOrderIds());
+        $order       = $this->orderRepository->get($orderId);
+        $orderStatus = $order->getStatus();
+
         $invoiceId = $this->invoiceOrder->execute(
             $orderId,
             true,
             $this->formatInvoiceItems($order->getItems())
         );
+
+        /* If the original order state was 'processing', revert the status after creating the invoice */
+        if ($order->getState() === Order::STATE_PROCESSING) {
+            $order->setStatus($orderStatus);
+            $this->orderRepository->save($order);
+        }
 
         return $this->invoiceRepository->get($invoiceId);
     }
