@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Controller\Attachment;
 
+use Exception;
 use JcElectronics\ExactOrders\Model\AttachmentRepository;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use Laminas\Mime\Mime;
@@ -66,17 +67,21 @@ class View implements HttpGetActionInterface
             return $result->forward('noroute');
         }
 
-        $this->fileFactory->create(
-            $attachment->getFileName(),
-            [
-                'type' => 'filename',
-                'value' => $this->getAttachmentFilePath($attachment)
-            ],
-            DirectoryList::VAR_DIR,
-            Mime::TYPE_OCTETSTREAM
-        );
+        try {
+            $this->fileFactory->create(
+                $attachment->getFileName(),
+                [
+                    'type' => 'filename',
+                    'value' => $this->getAttachmentFilePath($attachment)
+                ],
+                DirectoryList::VAR_DIR,
+                Mime::TYPE_OCTETSTREAM
+            );
 
-        return $this->resultRawFactory->create();
+            return $this->resultRawFactory->create();
+        } catch (Exception) {
+            return $result->forward('noroute');
+        }
     }
 
     private function canView(
@@ -91,6 +96,10 @@ class View implements HttpGetActionInterface
         $orderCompanyAttribute = $this->getCompanyOrderEntityBySalesOrder($order);
         $isCompanyOrder        = (bool) $orderCompanyAttribute->getOrderId();
         $customerId            = $this->userContext->getUserId();
+
+        if (!$customerId) {
+            return false;
+        }
 
         if (!$isCompanyOrder) {
             return $order->getCustomerId() === $customerId;
