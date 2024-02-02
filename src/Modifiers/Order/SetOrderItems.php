@@ -84,7 +84,7 @@ class SetOrderItems extends AbstractModifier
                 ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $orderItem->getBasePrice() * $orderItem->getQtyOrdered())
                 ->setBaseRowTotalInclTax($orderItem->getBaseRowTotal())
                 ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
-                ->setDiscountAmount($item->getDiscountAmount() ?: 0)
+                ->setDiscountAmount(0)
                 ->setOriginalPrice($item->getPrice())
                 ->setPrice($item->getPrice())
                 ->setPriceInclTax($item->getPrice())

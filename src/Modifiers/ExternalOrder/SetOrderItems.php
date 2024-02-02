@@ -59,8 +59,8 @@ class SetOrderItems extends AbstractModifier
                         ->setRowTotal($item->getRowTotal() ?: $item->getPrice() * $item->getQtyOrdered())
                         ->setBaseTaxAmount($item->getBaseTaxAmount() ?: 0)
                         ->setTaxAmount($item->getTaxAmount() ?: 0)
-                        ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: 0)
-                        ->setDiscountAmount($item->getDiscountAmount() ?: 0);
+                        ->setBaseDiscountAmount(0)
+                        ->setDiscountAmount(0);
 
                     $carry[] = $orderItem;
 

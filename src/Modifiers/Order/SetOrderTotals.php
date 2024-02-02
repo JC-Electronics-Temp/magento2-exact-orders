@@ -63,7 +63,7 @@ class SetOrderTotals extends AbstractModifier
             ->setBaseTotalDue(0)
             ->setBaseTotalPaid($model->getGrandtotal())
             ->setBaseTotalQtyOrdered($numberOfItems)
-            ->setDiscountAmount($model->getDiscountAmount() ?: 0)
+            ->setDiscountAmount(0)
             ->setGrandTotal($model->getGrandtotal())
             ->setShippingAmount($model->getShippingAmount() ?: 0)
             ->setShippingInclTax($result->getShippingAmount())
