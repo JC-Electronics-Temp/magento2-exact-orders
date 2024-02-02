@@ -71,7 +71,7 @@ class SetInvoiceItems extends AbstractModifier
                     ->setPrice($item->getPrice())
                     ->setRowTotal($item->getRowTotal() ?: $item->getPrice() * $item->getQty())
                     ->setTaxAmount($item->getTaxAmount() ?: 0)
-                    ->setDiscountAmount($item->getDiscountAmount() ?: 0);
+                    ->setDiscountAmount(0);
 
                 $carry[] = $invoiceItem;
 

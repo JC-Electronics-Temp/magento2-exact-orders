@@ -33,7 +33,7 @@ class SetInvoiceTotals extends AbstractModifier
             ->setBaseSubtotal($model->getBaseSubtotal() ?: $model->getSubtotal())
             ->setBaseGrandtotal($model->getBaseGrandTotal() ?: $model->getGrandTotal())
             ->setTaxAmount($model->getTaxAmount() ?: 0)
-            ->setDiscountAmount($model->getDiscountAmount() ?: 0)
+            ->setDiscountAmount(0)
             ->setShippingAmount($model->getShippingAmount() ?: 0)
             ->setSubtotal($model->getSubtotal())
             ->setGrandtotal($model->getGrandTotal());
