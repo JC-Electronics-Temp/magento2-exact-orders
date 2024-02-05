@@ -94,11 +94,11 @@ interface ExternalOrderInterface
     public function getMagentoCustomerId(): string|int|null;
 
     /**
-     * @param string|int $magentoCustomerId
+     * @param string|int|null $magentoCustomerId
      *
      * @return self
      */
-    public function setMagentoCustomerId(string|int $magentoCustomerId): self;
+    public function setMagentoCustomerId(string|int|null $magentoCustomerId): self;
 
     /**
      * @return string|int|null

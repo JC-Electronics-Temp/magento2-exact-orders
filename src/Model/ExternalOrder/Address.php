@@ -81,7 +81,7 @@ class Address extends DataObject implements AddressInterface
         return $this->_getData(self::KEY_POSTCODE);
     }
 
-    public function setPostcode(string $postcode): self
+    public function setPostcode(?string $postcode): self
     {
         $this->setData(self::KEY_POSTCODE, $postcode);
 

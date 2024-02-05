@@ -72,7 +72,7 @@ class ExternalOrder extends DataObject implements ExternalOrderInterface
         return $this->_getData(self::KEY_MAGENTO_CUSTOMER_ID);
     }
 
-    public function setMagentoCustomerId(string|int $magentoCustomerId): self
+    public function setMagentoCustomerId(string|int|null $magentoCustomerId): self
     {
         $this->setData(self::KEY_MAGENTO_CUSTOMER_ID, $magentoCustomerId);
 
