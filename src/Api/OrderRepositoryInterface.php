@@ -18,21 +18,21 @@ interface OrderRepositoryInterface
     /**
      * @param string $id
      *
-     * @return ExternalOrderInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface
      */
     public function getById(string $id): ExternalOrderInterface;
 
     /**
      * @param string $id
      *
-     * @return ExternalOrderInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface
      */
     public function getByIncrementId(string $id): ExternalOrderInterface;
 
     /**
      * @param string $id
      *
-     * @return ExternalOrderInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface
      */
     public function getByExternalId(string $id): ExternalOrderInterface;
 
@@ -44,7 +44,7 @@ interface OrderRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 
     /**
-     * @param ExternalOrderInterface $order
+     * @param \JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface $order
      *
      * @return int
      */

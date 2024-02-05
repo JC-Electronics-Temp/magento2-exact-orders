@@ -18,21 +18,21 @@ interface InvoiceRepositoryInterface
     /**
      * @param string $id
      *
-     * @return ExternalInvoiceInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface
      */
     public function getById(string $id): ExternalInvoiceInterface;
 
     /**
      * @param string $id
      *
-     * @return ExternalInvoiceInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface
      */
     public function getByIncrementId(string $id): ExternalInvoiceInterface;
 
     /**
      * @param string $id
      *
-     * @return ExternalInvoiceInterface
+     * @return \JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface
      */
     public function getByExternalId(string $id): ExternalInvoiceInterface;
 
@@ -51,7 +51,7 @@ interface InvoiceRepositoryInterface
     public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 
     /**
-     * @param ExternalInvoiceInterface $invoice
+     * @param \JcElectronics\ExactOrders\Api\Data\ExternalInvoiceInterface $invoice
      *
      * @return int
      */
