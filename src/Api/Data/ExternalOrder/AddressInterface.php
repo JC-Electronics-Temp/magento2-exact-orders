@@ -88,11 +88,11 @@ interface AddressInterface
     public function getPostcode(): ?string;
 
     /**
-     * @param string $postcode
+     * @param string|null $postcode
      *
      * @return self
      */
-    public function setPostcode(string $postcode): self;
+    public function setPostcode(?string $postcode): self;
 
     /**
      * @return string|null
