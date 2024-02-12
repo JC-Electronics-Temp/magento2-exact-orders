@@ -48,9 +48,10 @@ class AddOrderAttachments extends AbstractModifier
             array_map(
                 function ($attachment) use ($result) {
                     try {
-                        $orderAttachment = $this->attachmentRepository->getByEntity(
+                        $orderAttachment = $this->attachmentRepository->getByAttachmentName(
                             (int) $result->getEntityId(),
-                            AttachmentInterface::ENTITY_TYPE_ORDER
+                            AttachmentInterface::ENTITY_TYPE_ORDER,
+                            $attachment->getName()
                         );
                     } catch (NoSuchEntityException) {
                         /** @var AttachmentInterface $orderAttachment */
