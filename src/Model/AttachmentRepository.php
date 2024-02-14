@@ -78,6 +78,34 @@ class AttachmentRepository implements AttachmentRepositoryInterface
         return $item;
     }
 
+    public function getByAttachmentName(
+        int $entityId,
+        string $entityType,
+        string $fileName
+    ): AttachmentInterface {
+        $items = $this->getList(
+            $this->searchCriteriaBuilder
+                ->addFilter(AttachmentInterface::KEY_ENTITY_ID, $entityId)
+                ->addFilter(AttachmentInterface::KEY_ENTITY_TYPE_ID, $entityType)
+                ->addFilter(AttachmentInterface::KEY_FILE_NAME, $this->normalizeFilename($fileName))
+                ->create()
+        )->getItems();
+
+        if (count($items) === 0) {
+            throw NoSuchEntityException::doubleField(
+                AttachmentInterface::KEY_ENTITY_ID,
+                $entityId,
+                AttachmentInterface::KEY_ENTITY_TYPE_ID,
+                $entityType
+            );
+        }
+
+        /** @var AttachmentInterface $item */
+        $item = current($items);
+
+        return $item;
+    }
+
     public function delete(AttachmentInterface $attachment): void
     {
         $this->resourceModel->delete($attachment);
@@ -105,5 +133,31 @@ class AttachmentRepository implements AttachmentRepositoryInterface
         $searchResults->setItems($collection->getItems());
 
         return $searchResults;
+    }
+
+    private function normalizeFilename(string $fileName): string
+    {
+        $pathInfo = pathinfo($fileName);
+        $fileExtension = strtolower($pathInfo['extension']);
+        $fileName = strtolower(
+            trim(
+                preg_replace(
+                    '/_+/',
+                    '_',
+                    preg_replace(
+                        '/[^a-zA-Z0-9]/',
+                        '_',
+                        $pathInfo['filename']
+                    )
+                ),
+                '_'
+            )
+        );
+
+        return  sprintf(
+            '%s.%s',
+            $fileName,
+            $fileExtension
+        );
     }
 }

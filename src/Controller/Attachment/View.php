@@ -102,7 +102,7 @@ class View implements HttpGetActionInterface
         }
 
         if (!$isCompanyOrder) {
-            return $order->getCustomerId() === $customerId;
+            return (int) $order->getCustomerId() === (int) $customerId;
         }
 
         $customer                  = $this->customerRepository->getById($customerId);

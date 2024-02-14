@@ -23,5 +23,7 @@ interface AttachmentRepositoryInterface
 
     public function getByEntity(int $entityId, string $entityType): AttachmentInterface;
 
+    public function getByAttachmentName(int $entityId, string $entityType, string $fileName): AttachmentInterface;
+
     public function getList(SearchCriteriaInterface $searchCriteria): SearchResultsInterface;
 }

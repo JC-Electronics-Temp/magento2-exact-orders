@@ -39,9 +39,10 @@ class AddInvoiceAttachments extends AbstractModifier
             array_map(
                 function ($attachment) use ($result) {
                     try {
-                        $orderAttachment = $this->attachmentRepository->getByEntity(
+                        $orderAttachment = $this->attachmentRepository->getByAttachmentName(
                             (int) $result->getEntityId(),
-                            AttachmentInterface::ENTITY_TYPE_INVOICE
+                            AttachmentInterface::ENTITY_TYPE_INVOICE,
+                            $attachment->getName()
                         );
                     } catch (NoSuchEntityException) {
                         /** @var AttachmentInterface $orderAttachment */
