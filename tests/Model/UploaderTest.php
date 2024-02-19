@@ -15,6 +15,9 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @coversDefaultClass \JcElectronics\ExactOrders\Model\Uploader
+ */
 class UploaderTest extends TestCase
 {
     /**

@@ -13,8 +13,9 @@ use Magento\InventorySales\Model\AppendReservations;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterfaceFactory;
 use Magento\InventorySalesApi\Api\Data\SalesEventExtensionFactory;
-use Magento\Sales\Api\Data\OrderExtension;
+use Magento\Sales\Api\Data\OrderExtensionInterface;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Api\WebsiteRepositoryInterface;
 
 class DisableStockCheckForExactOrders
@@ -36,12 +37,12 @@ class DisableStockCheckForExactOrders
     public function aroundReserve(
         AppendReservations $subject,
         callable $proceed,
-        $websiteId,
-        $itemsBySku,
-        $order,
-        $itemsToSell
+        int|string $websiteId,
+        array $itemsBySku,
+        OrderInterface $order,
+        array $itemsToSell
     ): array {
-        /** @var OrderExtension $extensionAttributes */
+        /** @var OrderExtensionInterface $extensionAttributes */
         $extensionAttributes = $order->getExtensionAttributes() ?: $this->extensionFactory->create();
 
         if (!$extensionAttributes->getIsExternalOrder()) {
