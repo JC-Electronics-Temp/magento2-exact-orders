@@ -1,4 +1,4 @@
-# JC-Electonics Exact Orders
+# JC-Electronics Exact Orders
 
 With this module it's possible to migrate and update orders from Exact to Magento
 orders, making them available in the account pages and the overall order overview
