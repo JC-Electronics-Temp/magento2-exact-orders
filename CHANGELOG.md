@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.
 
 ## [Unreleased]
 
+## [1.5.5] - 2024-03-15
+
+### Fixed
+
+- Don't break script when street address is empty
+
 ### Added
 
 - Added changelog and readme files
@@ -164,7 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.
 - Add custom data to order items
 - Implement modifiers per entity type
 
-[unreleased]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.4...HEAD
+[unreleased]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.5...HEAD
+[1.5.4]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.4...1.5.5
 [1.5.4]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.3...1.5.4
 [1.5.3]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/JC-Electronics-Temp/magento2-exact-orders/compare/1.5.1...1.5.2

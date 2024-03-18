@@ -140,7 +140,7 @@ class SetShippingInformation extends AbstractModifier
             )
             ->setCompany($orderAddress->getCompany())
             ->setStreet(
-                explode("\n", $orderAddress->getStreet())
+                explode("\n", $orderAddress->getStreet() ?? '')
             )
             ->setCity($orderAddress->getCity())
             ->setPostcode($orderAddress->getPostcode())
