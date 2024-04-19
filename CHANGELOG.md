@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.
 
 ## [Unreleased]
 
+## [1.6.0] - 2024-04-18
+
+### Changed
+
+- Make compatible with Magento 2.4.7
+
+## [1.5.5] - 2024-03-15
+
+### Fixed
+
+- Don't break script when street address is empty
+
 ### Added
 
 - Added changelog and readme files
