@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Api\Data;
 
+use DateTime;
+
 interface AttachmentInterface
 {
     public const KEY_ID    = 'attachment_id',
@@ -16,6 +18,7 @@ interface AttachmentInterface
         KEY_FILE_CONTENT = 'file_content',
         KEY_ENTITY_ID      = 'entity_id',
         KEY_ENTITY_TYPE_ID = 'entity_type_id',
+        KEY_CREATED_AT      = 'created_at',
         ENTITY_TYPE_INVOICE = 'invoice',
         ENTITY_TYPE_ORDER = 'order';
 
@@ -78,4 +81,16 @@ interface AttachmentInterface
      * @return self
      */
     public function setFileContent(string $fileContent): self;
+
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt(): DateTime;
+
+    /**
+     * @param DateTime $createdAt
+     *
+     * @return self
+     */
+    public function setCreatedAt(DateTime $createdAt): self;
 }

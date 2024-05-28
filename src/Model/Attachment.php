@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JcElectronics\ExactOrders\Model;
 
+use DateTime;
+use DateTimeInterface;
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
 use JcElectronics\ExactOrders\Model\ResourceModel\Attachment as AttachmentResourceModel;
 use Magento\Framework\DataObject\IdentityInterface;
@@ -76,6 +78,16 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         $this->setData(self::KEY_FILE_CONTENT, $fileContent);
 
         return $this;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return new DateTime($this->_getData(self::KEY_CREATED_AT));
+    }
+
+    public function setCreatedAt(DateTime $createdAt): self
+    {
+        return $this->setData(self::KEY_CREATED_AT, $createdAt->format('Y-m-d H:i:s'));
     }
 
     private function normalizeFilename(string $fileName): string

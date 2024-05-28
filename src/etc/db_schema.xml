@@ -82,6 +82,7 @@
         <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
         <column xsi:type="varchar" name="entity_type_id" length="20" nullable="false" comment="Entity Type ID"/>
         <column xsi:type="varchar" name="file" nullable="false" comment="File Name"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
 
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="attachment_id"/>
