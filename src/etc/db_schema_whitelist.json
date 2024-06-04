@@ -14,7 +14,8 @@
             "attachment_id": true,
             "entity_id": true,
             "entity_type_id": true,
-            "file": true
+            "file": true,
+            "created_at": true
         },
         "constraint": {
             "PRIMARY": true,
