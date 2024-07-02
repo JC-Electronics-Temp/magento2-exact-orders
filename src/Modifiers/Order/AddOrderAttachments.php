@@ -78,13 +78,4 @@ class AddOrderAttachments extends AbstractModifier
 
         return $result;
     }
-
-    /**
-     * This is (for now) the only modifier that should run for every order.
-     * Both new and existing.
-     */
-    public function supports(mixed $entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
-    }
 }

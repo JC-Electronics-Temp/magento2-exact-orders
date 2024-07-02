@@ -80,14 +80,14 @@ class Attachment extends AbstractModel implements AttachmentInterface, IdentityI
         return $this;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): ?string
     {
-        return new DateTime($this->_getData(self::KEY_CREATED_AT));
+        return $this->_getData(self::KEY_CREATED_AT) ?: null;
     }
 
-    public function setCreatedAt(DateTime $createdAt): self
+    public function setCreatedAt(?string $createdAt): self
     {
-        return $this->setData(self::KEY_CREATED_AT, $createdAt->format('Y-m-d H:i:s'));
+        return $this->setData(self::KEY_CREATED_AT, $createdAt);
     }
 
     private function normalizeFilename(string $fileName): string

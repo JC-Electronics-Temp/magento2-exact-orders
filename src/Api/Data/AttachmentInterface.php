@@ -83,14 +83,14 @@ interface AttachmentInterface
     public function setFileContent(string $fileContent): self;
 
     /**
-     * @return DateTime
+     * @return string|null
      */
-    public function getCreatedAt(): DateTime;
+    public function getCreatedAt(): ?string;
 
     /**
-     * @param DateTime $createdAt
+     * @param string|null $createdAt
      *
      * @return self
      */
-    public function setCreatedAt(DateTime $createdAt): self;
+    public function setCreatedAt(?string $createdAt): self;
 }
