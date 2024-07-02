@@ -42,9 +42,4 @@ class CreateOrFetchOrderModel extends AbstractModifier
 
         return $result;
     }
-
-    public function supports(mixed $entity): bool
-    {
-        return $entity instanceof ExternalOrderInterface;
-    }
 }
