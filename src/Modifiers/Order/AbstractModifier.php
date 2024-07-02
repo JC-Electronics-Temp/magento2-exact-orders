@@ -26,7 +26,7 @@ abstract class AbstractModifier implements ModifierInterface
     public function supports(mixed $entity): bool
     {
         return $entity instanceof ExternalOrderInterface &&
-                !$this->getOrderEntity($entity) instanceof OrderInterface;
+            $this->getOrderEntity($entity) instanceof OrderInterface;
     }
 
     protected function getOrderEntity(ExternalOrderInterface $order): ?OrderInterface
