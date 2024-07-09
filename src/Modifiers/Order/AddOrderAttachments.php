@@ -35,6 +35,11 @@ class AddOrderAttachments extends AbstractModifier
         );
     }
 
+    public function supports(mixed $entity): bool
+    {
+        return $entity instanceof ExternalOrderInterface;
+    }
+
     /**
      * @param ExternalOrderInterface $model
      * @param OrderInterface         $result

@@ -52,6 +52,7 @@
                 <item name="Order::CreateOrFetchOrderModel" sortOrder="90" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\CreateOrFetchOrderModel</item>
                 <item name="Order::SetBaseOrderData" sortOrder="100" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBaseOrderData</item>
                 <item name="Order::SetCustomerData" sortOrder="200" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetCustomerData</item>
+                <item name="Order::SetExternalOrderData" sortOrder="250" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetExternalOrderData</item>
                 <item name="Order::SetPaymentInformation" sortOrder="300" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetPaymentInformation</item>
                 <item name="Order::SetShippingInformation" sortOrder="400" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetShippingInformation</item>
                 <item name="Order::SetBillingAddress" sortOrder="500" xsi:type="object">JcElectronics\ExactOrders\Modifiers\Order\SetBillingAddress</item>
