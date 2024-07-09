@@ -27,6 +27,7 @@ class CreateOrFetchOrderModel extends AbstractModifier
             $searchCriteriaBuilder
         );
     }
+
     public function supports(mixed $entity): bool
     {
         return $entity instanceof ExternalOrderInterface;

@@ -72,7 +72,7 @@ class SetOrderItems extends AbstractModifier
 
             $orderItem = $this->getOrderItemFromExternalOrder($item, (int) $result->getEntityId()) ?? $this->itemFactory->create();
 
-            if (!$orderItem->getId()) {
+            if (!$orderItem->getItemId()) {
                 $this->fillNewOrderItem($orderItem, $product, $item);
             }
 
