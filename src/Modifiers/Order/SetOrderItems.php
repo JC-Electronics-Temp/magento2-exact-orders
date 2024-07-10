@@ -111,7 +111,8 @@ class SetOrderItems extends AbstractModifier
         $orderItem->setProductId($product->getId())
             ->setName($item->getName())
             ->setSku($item->getSku())
-            ->setProductType($product->getTypeId());
+            ->setProductType($product->getTypeId())
+            ->setQtyOrdered($item->getQty());
 
         return $this;
     }
@@ -121,21 +122,27 @@ class SetOrderItems extends AbstractModifier
         ProductInterface $product,
         ItemInterface $item
     ): self {
-        $basePrice = $item->getBasePrice() ?: $item->getPrice();
+        $price         = $item->getPrice();
+        $basePrice     = $item->getBasePrice() ?: $price;
+        $rowTotal      = $item->getRowTotal() ?: $price * $orderItem->getQtyOrdered();
+        $baseRowTotal  = $item->getBaseRowTotal() ?: $rowTotal;
+        $taxAmount     = $item->getTaxAmount() ?: 0;
+        $baseTaxAmount = $item->getBaseTaxAmount() ?: $taxAmount;
+
         $orderItem->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
             ->setBasePrice($basePrice)
             ->setBaseOriginalPrice($basePrice)
             ->setBasePriceInclTax($basePrice)
-            ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $basePrice * $orderItem->getQtyOrdered())
-            ->setBaseRowTotalInclTax($orderItem->getBaseRowTotal())
-            ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
+            ->setBaseRowTotal($baseRowTotal)
+            ->setBaseRowTotalInclTax($baseRowTotal)
+            ->setBaseTaxAmount($baseTaxAmount)
             ->setDiscountAmount(0)
-            ->setOriginalPrice($item->getPrice())
-            ->setPrice($item->getPrice())
-            ->setPriceInclTax($item->getPrice())
-            ->setRowTotal($item->getRowTotal() ?: $orderItem->getPrice() * $orderItem->getQtyOrdered())
-            ->setRowTotalInclTax($orderItem->getRowTotal())
-            ->setTaxAmount($item->getTaxAmount() ?: 0);
+            ->setOriginalPrice($price)
+            ->setPrice($price)
+            ->setPriceInclTax($price)
+            ->setRowTotal($rowTotal)
+            ->setRowTotalInclTax($rowTotal)
+            ->setTaxAmount($taxAmount);
 
         return $this;
     }
