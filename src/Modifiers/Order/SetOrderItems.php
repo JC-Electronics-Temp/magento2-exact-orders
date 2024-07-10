@@ -73,7 +73,8 @@ class SetOrderItems extends AbstractModifier
             $orderItem = $this->getOrderItemFromExternalOrder($item, (int) $result->getEntityId()) ?? $this->itemFactory->create();
 
             if (!$orderItem->getItemId()) {
-                $this->fillNewOrderItem($orderItem, $product, $item);
+                $this->setBasicOrderItemData($orderItem, $product, $item)
+                    ->setOrderItemPriceData($orderItem, $product, $item);
             }
 
             // phpcs:disable Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
@@ -102,21 +103,30 @@ class SetOrderItems extends AbstractModifier
         return $result;
     }
 
-    private function fillNewOrderItem(
+    private function setBasicOrderItemData(
         OrderItemInterface|Order\Item $orderItem,
         ProductInterface $product,
         ItemInterface $item
-    ): void {
+    ): self {
         $orderItem->setProductId($product->getId())
             ->setName($item->getName())
             ->setSku($item->getSku())
-            ->setProductType($product->getTypeId())
-            ->setQtyOrdered($item->getQty())
-            ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
-            ->setBasePrice($item->getBasePrice() ?: $item->getPrice())
-            ->setBaseOriginalPrice($orderItem->getBasePrice())
-            ->setBasePriceInclTax($orderItem->getBasePrice())
-            ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $orderItem->getBasePrice() * $orderItem->getQtyOrdered())
+            ->setProductType($product->getTypeId());
+
+        return $this;
+    }
+
+    private function setOrderItemPriceData(
+        OrderItemInterface|Order\Item $orderItem,
+        ProductInterface $product,
+        ItemInterface $item
+    ): self {
+        $basePrice = $item->getBasePrice() ?: $item->getPrice();
+        $orderItem->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
+            ->setBasePrice($basePrice)
+            ->setBaseOriginalPrice($basePrice)
+            ->setBasePriceInclTax($basePrice)
+            ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $basePrice * $orderItem->getQtyOrdered())
             ->setBaseRowTotalInclTax($orderItem->getBaseRowTotal())
             ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
             ->setDiscountAmount(0)
@@ -126,9 +136,10 @@ class SetOrderItems extends AbstractModifier
             ->setRowTotal($item->getRowTotal() ?: $orderItem->getPrice() * $orderItem->getQtyOrdered())
             ->setRowTotalInclTax($orderItem->getRowTotal())
             ->setTaxAmount($item->getTaxAmount() ?: 0);
+
+        return $this;
     }
 
-    // phpcs:enable
     private function getOrderItemFromExternalOrder(ItemInterface $item, ?int $orderId): ?OrderItemInterface
     {
         $searchCriteria = $this->searchCriteriaBuilder
