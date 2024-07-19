@@ -7,9 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.
 
 ## [Unreleased]
 
-## [1.6.1] - 2024-07-09
+## [1.7.0] - 2024-0
+
+### Added
+
+- Display Exact information on order view in admin.
+
+## [1.6.3] - 2024-07-10
+
+### Changed
+
+- Add variables to reduce cyclomatic complexity.
+
+## [1.6.2] - 2024-07-02
 
 ### Fixed
+
+- Simplify order modifiers
+- Replace `\DateTime` with string for `created_at` in attachments
+
+## [1.6.1] - 2024-07-02
+
+### Fixed
+
 - Order data of an existing order was overwritten
 - Order items are only updated if they are not set yet
 

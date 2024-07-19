@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @var Info $block
+ * @var Escaper $escaper
+ */
+
+use Magento\Framework\Escaper;
+use Magento\Sales\Block\Adminhtml\Order\View\Info;
+
+$order = $block->getOrder();
+?>
+
+<tr>
+    <th><?= $escaper->escapeHtml(__('External Order ID')) ?></th>
+    <td><span id="ext_order_id"><?= $escaper->escapeHtml($order->getExtOrderId()) ?></span></td>
+</tr>
