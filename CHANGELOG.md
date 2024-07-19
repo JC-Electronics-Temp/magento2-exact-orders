@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.
 
 ## [Unreleased]
 
+## [1.6.1] - 2024-07-09
+
+### Fixed
+- Order data of an existing order was overwritten
+- Order items are only updated if they are not set yet
+
 ## [1.6.0] - 2024-04-18
 
 ### Changed

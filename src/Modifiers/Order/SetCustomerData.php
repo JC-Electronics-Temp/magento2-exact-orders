@@ -28,6 +28,11 @@ class SetCustomerData extends AbstractModifier
         );
     }
 
+    public function supports(mixed $entity): bool
+    {
+        return parent::supports($entity) && !$entity->getOrderId();
+    }
+
     /**
      * @param ExternalOrderInterface $model
      * @param OrderInterface         $result
@@ -39,8 +44,7 @@ class SetCustomerData extends AbstractModifier
         $customer = $this->customerRepository
             ->getById($model->getMagentoCustomerId());
 
-        $result->setExtCustomerId($model->getExternalCustomerId())
-            ->setCustomerId($customer->getId())
+        $result->setCustomerId($customer->getId())
             ->setCustomerEmail($customer->getEmail())
             ->setCustomerPrefix($customer->getPrefix())
             ->setCustomerFirstname($customer->getFirstname())

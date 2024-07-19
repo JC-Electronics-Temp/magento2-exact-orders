@@ -45,7 +45,10 @@ class SetOrderItems extends AbstractModifier
         );
     }
 
-    // phpcs:disable Generic.Metrics.CyclomaticComplexity.TooHigh
+    public function supports(mixed $entity): bool
+    {
+        return $entity instanceof ExternalOrderInterface && $entity->getItems();
+    }
 
     /**
      * @param ExternalOrderInterface $model
@@ -53,8 +56,6 @@ class SetOrderItems extends AbstractModifier
      *
      * @return OrderInterface
      * @throws LocalizedException
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function process(mixed $model, mixed $result): mixed
     {
@@ -69,28 +70,12 @@ class SetOrderItems extends AbstractModifier
                 continue;
             }
 
-            /** @var OrderItemInterface $orderItem */
-            $orderItem = $this->itemFactory->create();
-            $orderItem->setItemId($this->getOrderItemId($item, (int) $result->getEntityId()))
-                ->setProductId($product->getId())
-                ->setName($item->getName())
-                ->setSku($item->getSku())
-                ->setProductType($product->getTypeId())
-                ->setQtyOrdered($item->getQty())
-                ->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
-                ->setBasePrice($item->getBasePrice() ?: $item->getPrice())
-                ->setBaseOriginalPrice($orderItem->getBasePrice())
-                ->setBasePriceInclTax($orderItem->getBasePrice())
-                ->setBaseRowTotal($item->getBaseRowTotal() ?: $item->getRowTotal() ?: $orderItem->getBasePrice() * $orderItem->getQtyOrdered())
-                ->setBaseRowTotalInclTax($orderItem->getBaseRowTotal())
-                ->setBaseTaxAmount($item->getBaseTaxAmount() ?: $item->getTaxAmount() ?: 0)
-                ->setDiscountAmount(0)
-                ->setOriginalPrice($item->getPrice())
-                ->setPrice($item->getPrice())
-                ->setPriceInclTax($item->getPrice())
-                ->setRowTotal($item->getRowTotal() ?: $orderItem->getPrice() * $orderItem->getQtyOrdered())
-                ->setRowTotalInclTax($orderItem->getRowTotal())
-                ->setTaxAmount($item->getTaxAmount() ?: 0);
+            $orderItem = $this->getOrderItemFromExternalOrder($item, (int) $result->getEntityId()) ?? $this->itemFactory->create();
+
+            if (!$orderItem->getItemId()) {
+                $this->setBasicOrderItemData($orderItem, $product, $item)
+                    ->setOrderItemPriceData($orderItem, $product, $item);
+            }
 
             // phpcs:disable Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
             $additionalData = array_reduce(
@@ -102,13 +87,12 @@ class SetOrderItems extends AbstractModifier
                 []
             );
             // phpcs:enable
-            
+
             $extensionAttributes = $orderItem->getExtensionAttributes() ?: $this->extensionFactory->create();
             $extensionAttributes->setExpectedDeliveryDate($additionalData['expected_delivery_date'] ?? null)
                 ->setSerialNumber($additionalData['serial_number'] ?? null);
 
             $orderItem->setExtensionAttributes($extensionAttributes);
-
             $result->addItem($orderItem);
         }
 
@@ -119,9 +103,51 @@ class SetOrderItems extends AbstractModifier
         return $result;
     }
 
-    // phpcs:enable
+    private function setBasicOrderItemData(
+        OrderItemInterface|Order\Item $orderItem,
+        ProductInterface $product,
+        ItemInterface $item
+    ): self {
+        $orderItem->setProductId($product->getId())
+            ->setName($item->getName())
+            ->setSku($item->getSku())
+            ->setProductType($product->getTypeId())
+            ->setQtyOrdered($item->getQty());
 
-    private function getOrderItemId(ItemInterface $item, ?int $orderId): ?int
+        return $this;
+    }
+
+    private function setOrderItemPriceData(
+        OrderItemInterface|Order\Item $orderItem,
+        ProductInterface $product,
+        ItemInterface $item
+    ): self {
+        $price         = $item->getPrice();
+        $basePrice     = $item->getBasePrice() ?: $price;
+        $rowTotal      = $item->getRowTotal() ?: $price * $orderItem->getQtyOrdered();
+        $baseRowTotal  = $item->getBaseRowTotal() ?: $rowTotal;
+        $taxAmount     = $item->getTaxAmount() ?: 0;
+        $baseTaxAmount = $item->getBaseTaxAmount() ?: $taxAmount;
+
+        $orderItem->setBaseDiscountAmount($item->getBaseDiscountAmount() ?: $item->getDiscountAmount() ?: 0)
+            ->setBasePrice($basePrice)
+            ->setBaseOriginalPrice($basePrice)
+            ->setBasePriceInclTax($basePrice)
+            ->setBaseRowTotal($baseRowTotal)
+            ->setBaseRowTotalInclTax($baseRowTotal)
+            ->setBaseTaxAmount($baseTaxAmount)
+            ->setDiscountAmount(0)
+            ->setOriginalPrice($price)
+            ->setPrice($price)
+            ->setPriceInclTax($price)
+            ->setRowTotal($rowTotal)
+            ->setRowTotalInclTax($rowTotal)
+            ->setTaxAmount($taxAmount);
+
+        return $this;
+    }
+
+    private function getOrderItemFromExternalOrder(ItemInterface $item, ?int $orderId): ?OrderItemInterface
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(OrderItemInterface::SKU, $item->getSku())
@@ -132,13 +158,11 @@ class SetOrderItems extends AbstractModifier
             $searchCriteria->addFilter(OrderItemInterface::ORDER_ID, $orderId);
         }
 
-        $orderItem  = current(
-            $this->orderItemRepository->getList(
-                $searchCriteria->create()
-            )->getItems()
-        );
-
-        return $orderItem ? (int) $orderItem->getItemId() : null;
+        return current(
+            $this->orderItemRepository
+                ->getList($searchCriteria->create())
+                ->getItems()
+        ) ?: null;
     }
 
     private function getProductBySku(string $sku): ?ProductInterface
