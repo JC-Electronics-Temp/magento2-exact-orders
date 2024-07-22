@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright Youwe. All rights reserved.
- * https://www.youweagency.com
+ * Copyright Jc-Electronics. All rights reserved.
+ * https://www.jc-electronics.com
  */
 
 declare(strict_types=1);
