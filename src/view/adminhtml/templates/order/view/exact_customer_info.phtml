@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+use JcElectronics\ExactOrders\ViewModel\Adminhtml\Order\View\Customer;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Customer $customerViewModel */
+$customerViewModel = $block->getData('customer_view_model');
+$order = $customerViewModel->getOrder();
+?>
+<tr>
+    <th><?= $escaper->escapeHtml(__('External Customer ID')) ?></th>
+    <td><span id="ext_customer_id"><?= $escaper->escapeHtml($order->getExtCustomerId()) ?></span></td>
+</tr>

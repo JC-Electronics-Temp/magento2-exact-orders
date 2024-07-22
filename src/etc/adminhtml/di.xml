@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Youwe. All rights reserved.
+ * https://www.youweagency.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Sales\Block\Adminhtml\Items\Column\DefaultColumn">
+        <plugin
+            name="addExactDataToOrderOptions"
+            type="JcElectronics\ExactOrders\Plugin\Adminhtml\Sales\Order\View\SetCustomOrderOptions"
+        />
+    </type>
+</config>

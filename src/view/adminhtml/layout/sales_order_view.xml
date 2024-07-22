@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceBlock name="order_info">
+            <block
+                class="Magento\Sales\Block\Adminhtml\Order\View\Info"
+                name="exact_order_info"
+                template="JcElectronics_ExactOrders::order/view/exact_order_info.phtml"
+            />
+        </referenceBlock>
+
+        <referenceContainer name="extra_customer_info">
+            <block
+                name="exact_customer_info"
+                template="JcElectronics_ExactOrders::order/view/exact_customer_info.phtml"
+            >
+                <arguments>
+                    <argument name="customer_view_model" xsi:type="object">
+                        JcElectronics\ExactOrders\ViewModel\Adminhtml\Order\View\Customer
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <referenceContainer name="order_additional_info">
+            <block class="JcElectronics\ExactOrders\Block\Adminhtml\Order\View\Attachments" name="order_attachments"
+                   template="JcElectronics_ExactOrders::order/view/attachments.phtml"/>
+        </referenceContainer>
+    </body>
+</page>
