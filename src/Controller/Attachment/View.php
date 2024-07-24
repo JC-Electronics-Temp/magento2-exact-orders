@@ -23,6 +23,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Forward;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\Controller\ResultFactory;
@@ -45,12 +46,14 @@ class View implements HttpGetActionInterface
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly Structure $structure,
         private readonly FileFactory $fileFactory,
-        private readonly RawFactory $resultRawFactory,
         private readonly InvoiceRepositoryInterface $invoiceRepository
     ) {
     }
 
-    public function execute(): ResultInterface
+    /**
+     * @return ResponseInterface|Forward|ResultInterface
+     */
+    public function execute()
     {
         $id = (int) $this->request->getParam('id');
 
@@ -68,7 +71,7 @@ class View implements HttpGetActionInterface
         }
 
         try {
-            $this->fileFactory->create(
+            return $this->fileFactory->create(
                 $attachment->getFileName(),
                 [
                     'type' => 'filename',
@@ -77,8 +80,6 @@ class View implements HttpGetActionInterface
                 DirectoryList::VAR_DIR,
                 Mime::TYPE_OCTETSTREAM
             );
-
-            return $this->resultRawFactory->create();
         } catch (Exception) {
             return $result->forward('noroute');
         }
