@@ -23,8 +23,8 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\Http\FileFactory;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Forward;
-use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -45,12 +45,14 @@ class View implements HttpGetActionInterface
         private readonly CustomerRepositoryInterface $customerRepository,
         private readonly Structure $structure,
         private readonly FileFactory $fileFactory,
-        private readonly RawFactory $resultRawFactory,
         private readonly InvoiceRepositoryInterface $invoiceRepository
     ) {
     }
 
-    public function execute(): ResultInterface
+    /**
+     * @return ResponseInterface|Forward|ResultInterface
+     */
+    public function execute()
     {
         $id = (int) $this->request->getParam('id');
 
@@ -59,34 +61,27 @@ class View implements HttpGetActionInterface
 
         try {
             $attachment = $this->attachmentRepository->get($id);
-        } catch (NoSuchEntityException) {
-            return $result->forward('noroute');
-        }
 
-        if (!$this->canView($attachment)) {
-            return $result->forward('noroute');
-        }
+            if (!$this->canView($attachment)) {
+                return $result->forward('noroute');
+            }
 
-        try {
-            $this->fileFactory->create(
+            return $this->fileFactory->create(
                 $attachment->getFileName(),
                 [
                     'type' => 'filename',
                     'value' => $this->getAttachmentFilePath($attachment)
                 ],
                 DirectoryList::VAR_DIR,
-                Mime::TYPE_OCTETSTREAM
+                'application/pdf'
             );
-
-            return $this->resultRawFactory->create();
-        } catch (Exception) {
+        } catch (NoSuchEntityException | Exception) {
             return $result->forward('noroute');
         }
     }
 
-    private function canView(
-        AttachmentInterface $attachment
-    ): bool {
+    private function canView(AttachmentInterface $attachment): bool
+    {
         $orderId = $attachment->getEntityTypeId() === AttachmentInterface::ENTITY_TYPE_ORDER
             ? $attachment->getParentId()
             : $this->getOrderIdByInvoice($attachment);
@@ -122,7 +117,7 @@ class View implements HttpGetActionInterface
 
     private function getCompanyOrderEntityBySalesOrder(
         OrderModel $order
-    ): CompanyOrderInterface{
+    ): CompanyOrderInterface {
         /** @var CompanyOrderInterface $orderCompanyAttributes */
         $orderCompanyAttributes = $this->companyOrderFactory->create();
         $this->companyOrderResource->load(
