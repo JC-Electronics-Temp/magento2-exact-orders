@@ -3,11 +3,17 @@
 declare(strict_types=1);
 
 /**
- * @var \Magento\Backend\Block\Template $block
- * @var \Magento\Framework\Escaper $escaper
+ * @var Template $block
+ * @var Escaper $escaper
  */
 
-/** @var \JcElectronics\ExactOrders\ViewModel\Adminhtml\Order\Invoice\View\Attachments $viewModel */
+/** @var Attachments $viewModel */
+
+use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
+use JcElectronics\ExactOrders\ViewModel\Adminhtml\Order\Invoice\View\Attachments;
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
 $viewModel   = $block->getData('invoice_attachment_view_model');
 $attachments = $viewModel->getAttachments();
 ?>
@@ -18,7 +24,7 @@ $attachments = $viewModel->getAttachments();
     <div class="admin__page-section-content">
         <?php if (count($attachments)):?>
             <table>
-                <?php /** @var \JcElectronics\ExactOrders\Api\Data\AttachmentInterface $attachment */ ?>
+                <?php /** @var AttachmentInterface $attachment */ ?>
                 <?php foreach ($attachments as $attachment): ?>
                 <tr>
                     <td>
