@@ -3,20 +3,23 @@
 declare(strict_types=1);
 
 /**
- * @var Attachments $block
+ * @var Template $block
  * @var Escaper $escaper
  */
 
+/** @var Attachments $viewModel */
+
 use JcElectronics\ExactOrders\Api\Data\AttachmentInterface;
-use JcElectronics\ExactOrders\Block\Adminhtml\Order\View\Attachments;
+use JcElectronics\ExactOrders\ViewModel\Adminhtml\Order\Invoice\View\Attachments;
+use Magento\Backend\Block\Template;
 use Magento\Framework\Escaper;
 
-$attachments = $block->getAttachments();
+$viewModel   = $block->getData('invoice_attachment_view_model');
+$attachments = $viewModel->getAttachments();
 ?>
-
 <section class="admin__page-section">
     <div class="admin__page-section-title">
-        <span class="title"><?= $escaper->escapeHtml(__('Order Attachments')) ?></span>
+        <span class="title"><?= $escaper->escapeHtml(__('Invoice Attachments')) ?></span>
     </div>
     <div class="admin__page-section-content">
         <?php if (count($attachments)):?>
