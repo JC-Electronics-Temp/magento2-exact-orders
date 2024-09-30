@@ -15,6 +15,7 @@ use JcElectronics\ExactOrders\Api\Data\ExternalOrderInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\ShippingAssignmentFactory;
@@ -37,7 +38,8 @@ class SetOrderItems extends AbstractModifier
         private readonly ProductRepositoryInterface $productRepository,
         private readonly ItemFactory $itemFactory,
         private readonly OrderItemRepositoryInterface $orderItemRepository,
-        private readonly OrderItemExtensionFactory $extensionFactory
+        private readonly OrderItemExtensionFactory $extensionFactory,
+        private readonly ManagerInterface $eventManager,
     ) {
         parent::__construct(
             $orderRepository,
@@ -70,23 +72,30 @@ class SetOrderItems extends AbstractModifier
                 continue;
             }
 
-            $orderItem = $this->getOrderItemFromExternalOrder($item, (int) $result->getEntityId()) ?? $this->itemFactory->create();
-
-            if (!$orderItem->getItemId()) {
-                $this->setBasicOrderItemData($orderItem, $product, $item)
-                    ->setOrderItemPriceData($orderItem, $product, $item);
-            }
-
-            // phpcs:disable Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
+            $orderItem      = $this->getOrderItemFromExternalOrder($item, (int) $result->getEntityId()) ?? $this->itemFactory->create();
             $additionalData = array_reduce(
                 $item->getAdditionalData(),
+                // phpcs:ignore Magento2.Performance.ForeachArrayMerge.ForeachArrayMerge
                 static fn (array $carry, AdditionalDataInterface $data) => array_merge(
                     $carry,
                     [$data->getKey() => $data->getValue()]
                 ),
                 []
             );
-            // phpcs:enable
+
+            if (!$orderItem->getItemId()) {
+                $this->setBasicOrderItemData($orderItem, $product, $item)
+                    ->setOrderItemPriceData($orderItem, $product, $item);
+            }
+
+            $this->eventManager->dispatch(
+                'exact_order_set_order_item_before',
+                [
+                    'item' => $orderItem,
+                    'external_order_item' => $item,
+                    'order' => $result
+                ]
+            );
 
             $extensionAttributes = $orderItem->getExtensionAttributes() ?: $this->extensionFactory->create();
             $extensionAttributes->setExpectedDeliveryDate($additionalData['expected_delivery_date'] ?? null)
@@ -147,16 +156,13 @@ class SetOrderItems extends AbstractModifier
         return $this;
     }
 
-    private function getOrderItemFromExternalOrder(ItemInterface $item, ?int $orderId): ?OrderItemInterface
+    private function getOrderItemFromExternalOrder(ItemInterface $item, int $orderId): ?OrderItemInterface
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter(OrderItemInterface::SKU, $item->getSku())
             ->addFilter(OrderItemInterface::QTY_ORDERED, $item->getQty())
-            ->addFilter(OrderItemInterface::ROW_TOTAL, $item->getRowTotal());
-
-        if ($orderId !== null) {
-            $searchCriteria->addFilter(OrderItemInterface::ORDER_ID, $orderId);
-        }
+            ->addFilter(OrderItemInterface::ROW_TOTAL, $item->getRowTotal())
+            ->addFilter(OrderItemInterface::ORDER_ID, $orderId);
 
         return current(
             $this->orderItemRepository
