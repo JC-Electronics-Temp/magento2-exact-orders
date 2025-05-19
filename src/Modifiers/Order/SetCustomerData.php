@@ -28,11 +28,6 @@ class SetCustomerData extends AbstractModifier
         );
     }
 
-    public function supports(mixed $entity): bool
-    {
-        return parent::supports($entity) && !$entity->getOrderId();
-    }
-
     /**
      * @param ExternalOrderInterface $model
      * @param OrderInterface         $result
